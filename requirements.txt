@@ -1,0 +1,17 @@
+# requirements.txt
+# ─────────────────────────────────────────────────────────────
+# Marketing ETL — dependencias de Python
+# Probado con Python 3.11+
+# ─────────────────────────────────────────────────────────────
+
+# HTTP & Meta Graph API
+requests>=2.31.0
+
+# PostgreSQL
+psycopg2-binary>=2.9.9       # O psycopg2 (sin -binary) en producción Linux
+
+# Google Ads API (incluye oauth2 y grpc internamente)
+google-ads>=24.0.0
+
+# Variables de entorno desde archivo .env (desarrollo)
+python-dotenv>=1.0.0
