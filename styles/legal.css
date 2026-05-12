@@ -1,0 +1,62 @@
+.legal {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: calc(var(--space-4) + var(--space-3)) var(--space-3) var(--space-4);
+}
+.legal__back {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+  display: inline-block;
+  margin-bottom: var(--space-3);
+}
+.legal__back:hover { color: var(--bone); }
+.legal__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.05;
+  margin: 0 0 var(--space-2);
+}
+.legal__updated {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+  margin: 0 0 var(--space-4);
+}
+.legal h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  margin: var(--space-3) 0 var(--space-1);
+  color: var(--bone);
+}
+.legal h3 {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+  margin: var(--space-2) 0 var(--space-1);
+}
+.legal p, .legal li {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--bone-soft);
+  margin: 0 0 var(--space-2);
+}
+.legal strong { color: var(--bone); font-weight: 500; }
+.legal ul { padding-left: 1.2rem; }
+.legal a {
+  color: var(--bone);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+.legal a:hover { color: var(--rim); }

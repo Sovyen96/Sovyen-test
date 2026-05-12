@@ -270,6 +270,344 @@
   will-change: transform;
 }
 
+.expression__price {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.7em;
+  color: var(--bone-soft);
+  margin-left: 0.5rem;
+  font-weight: 300;
+}
+.expression__notes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.expression__notes li {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-soft);
+  padding-left: 1rem;
+  position: relative;
+}
+.expression__notes li::before {
+  content: '·';
+  position: absolute;
+  left: 0.2rem;
+  color: var(--rim);
+  font-size: 1.4rem;
+  line-height: 0.6;
+}
+.expression__buy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: stretch;
+  margin-top: auto;
+}
+.expression__buy .btn { flex: 1; min-width: 0; }
+
+.qty {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--bone-soft);
+}
+.qty__btn {
+  width: 2.4rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  color: var(--bone);
+  background: transparent;
+  transition: background 0.3s ease;
+}
+.qty__btn:hover {
+  background: var(--bone);
+  color: var(--ink);
+}
+.qty__input {
+  width: 2.6rem;
+  padding: 0.6rem 0;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--bone-soft);
+  border-right: 1px solid var(--bone-soft);
+  color: var(--bone);
+  font-family: var(--serif);
+  font-size: 1rem;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.qty__input::-webkit-outer-spin-button,
+.qty__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty__input:focus { outline: none; }
+
+.kit {
+  margin: var(--space-4) auto 0;
+  max-width: 80rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid rgba(232, 220, 196, 0.12);
+  background: linear-gradient(180deg, rgba(45, 90, 86, 0.08) 0%, transparent 100%);
+}
+@media (min-width: 900px) {
+  .kit {
+    grid-template-columns: 5fr 6fr;
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+}
+.kit__media {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+.kit__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.85) saturate(0.95);
+}
+.kit__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  line-height: 1.02;
+  margin: 0 0 var(--space-2);
+}
+.kit__body {
+  color: var(--bone-soft);
+  margin: 0 0 var(--space-2);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.kit__includes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border-top: 1px solid rgba(232, 220, 196, 0.12);
+  padding-top: var(--space-2);
+}
+.kit__includes li {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-soft);
+  padding-left: 1rem;
+  position: relative;
+}
+.kit__includes li::before {
+  content: '◇';
+  position: absolute;
+  left: 0;
+  color: var(--agave);
+  font-size: 0.7rem;
+  top: 0.35em;
+}
+.kit__price {
+  margin: 0 0 var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.kit__price-line {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  color: var(--bone);
+}
+.kit__price-save {
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--agave);
+}
+
+.trust {
+  padding: var(--space-3) var(--space-3);
+  border-top: 1px solid rgba(232, 220, 196, 0.08);
+  border-bottom: 1px solid rgba(232, 220, 196, 0.08);
+}
+.trust__row {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 80rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 700px) {
+  .trust__row { grid-template-columns: repeat(4, 1fr); }
+}
+.trust__item {
+  text-align: center;
+  padding: var(--space-1);
+}
+.trust__icon {
+  display: inline-block;
+  font-size: 1.4rem;
+  color: var(--rim);
+  margin-bottom: 0.4rem;
+}
+.trust__item h4 {
+  font-family: var(--sans);
+  font-size: var(--t-eyebrow);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone);
+  margin: 0 0 0.4rem;
+  font-weight: 500;
+}
+.trust__item p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--bone-soft);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.news {
+  padding: var(--space-4) var(--space-3);
+  background:
+    radial-gradient(ellipse at center, rgba(255, 140, 60, 0.06) 0%, transparent 60%),
+    var(--bg);
+}
+.news__inner {
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.news__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: var(--t-h2);
+  line-height: 1.02;
+  margin: 0 0 var(--space-2);
+}
+.news__body {
+  color: var(--bone-soft);
+  margin: 0 0 var(--space-3);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.news__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-width: 30rem;
+  margin: 0 auto var(--space-2);
+}
+@media (min-width: 540px) {
+  .news__form { flex-direction: row; }
+  .news__form input[type="email"] { flex: 1; }
+}
+.news__form input[type="email"] {
+  padding: 0.95rem 1rem;
+  background: transparent;
+  border: 1px solid var(--bone-soft);
+  color: var(--bone);
+  font-family: var(--serif);
+  font-size: 1rem;
+}
+.news__form input[type="email"]::placeholder {
+  color: rgba(212, 197, 166, 0.5);
+  font-style: italic;
+}
+.news__form input[type="email"]:focus {
+  outline: none;
+  border-color: var(--rim);
+}
+.news__legal {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-soft);
+  opacity: 0.7;
+  margin: 0;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+.news__legal a { text-decoration: underline; text-underline-offset: 0.2em; }
+
+/* Snipcart cart UI overrides — match the brand palette */
+:root {
+  --snipcart-color-default: var(--bone);
+  --snipcart-color-alt: var(--bone-soft);
+  --snipcart-color-primary: var(--bone);
+  --snipcart-color-buttonPrimary: var(--bone);
+  --snipcart-color-buttonPrimaryHover: var(--rim);
+  --snipcart-color-buttonPrimary-light: var(--rim);
+  --snipcart-color-link: var(--bone);
+  --snipcart-color-link-hover: var(--rim);
+  --snipcart-color-link-active: var(--rim);
+  --snipcart-color-icon: var(--bone);
+  --snipcart-color-error: #ff6b3d;
+
+  --snipcart-color-badge: var(--rim);
+  --snipcart-color-badge-active: var(--rim);
+
+  --snipcart-color-modalVeil: rgba(10, 10, 10, 0.85);
+
+  --snipcart-color-input: var(--bone);
+  --snipcart-color-inputBorder: rgba(232, 220, 196, 0.3);
+  --snipcart-color-inputBorderActive: var(--bone);
+  --snipcart-color-inputBg: rgba(10, 10, 10, 0.6);
+  --snipcart-color-inputPlaceholder: rgba(212, 197, 166, 0.5);
+  --snipcart-color-inputCheckedBg: var(--bone);
+  --snipcart-color-inputDisabled: rgba(212, 197, 166, 0.4);
+
+  --snipcart-color-headerBg: var(--bg);
+  --snipcart-color-headerBgHover: rgba(232, 220, 196, 0.05);
+
+  --snipcart-color-cartSummary: var(--bg);
+  --snipcart-color-cartSummaryItem: rgba(255, 255, 255, 0.04);
+  --snipcart-color-cartItemHeader: var(--bone-soft);
+
+  --snipcart-color-shippingMethodActive: var(--rim);
+
+  --snipcart-color-emptyCart: var(--bone-soft);
+
+  --snipcart-color-buttonStandardBg: transparent;
+  --snipcart-color-buttonStandard: var(--bone);
+  --snipcart-color-buttonStandardBorder: var(--bone-soft);
+
+  --snipcart-color-payment: var(--bone-soft);
+
+  --snipcart-font-primary: var(--sans);
+  --snipcart-font-secondary: var(--serif);
+}
+.snipcart {
+  font-family: var(--sans);
+}
+.snipcart-modal__container,
+.snipcart-cart-header,
+.snipcart-cart__content {
+  background: var(--bg) !important;
+  color: var(--bone) !important;
+}
+.snipcart__font--secondary,
+.snipcart__font--subtitle,
+.snipcart__font--xlarge,
+.snipcart__font--large {
+  font-family: var(--serif) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
