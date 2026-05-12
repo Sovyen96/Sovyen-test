@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Siluetas de Mónica Lazcano — Mezcal Artesanal</title>
+  <meta name="description" content="Mezcal artesanal Espadín. Casa Antonio Córdoba Mata. Hecho en México con Denominación de Origen Protegida." />
+
+  <meta property="og:title" content="Siluetas de Mónica Lazcano" />
+  <meta property="og:description" content="Muerte · Vida · Muerte. Mezcal Espadín 100% Agave Angustifolia." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_MX" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/sections.css" />
+
+  <link rel="preconnect" href="https://app.snipcart.com" />
+  <link rel="preconnect" href="https://cdn.snipcart.com" />
+  <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.7.1/default/snipcart.css" />
+</head>
+<body>
+  <!-- Age gate · NOM-142 / COFEPRIS -->
+  <div id="age-gate" class="age-gate" role="dialog" aria-modal="true" aria-labelledby="age-gate-title">
+    <div class="age-gate__inner">
+      <p class="eyebrow">Casa Antonio Córdoba Mata</p>
+      <h1 id="age-gate-title" class="age-gate__title">Mezcal es para mayores</h1>
+      <p class="age-gate__copy">Para entrar al sitio debes ser mayor de 18 años. La venta y consumo de bebidas alcohólicas a menores está prohibida por la ley.</p>
+      <div class="age-gate__date">
+        <label for="age-day">Tu fecha de nacimiento</label>
+        <div class="age-gate__inputs">
+          <input type="number" id="age-day" min="1" max="31" placeholder="DD" autocomplete="bday-day" inputmode="numeric" />
+          <input type="number" id="age-month" min="1" max="12" placeholder="MM" autocomplete="bday-month" inputmode="numeric" />
+          <input type="number" id="age-year" min="1900" max="2026" placeholder="AAAA" autocomplete="bday-year" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="age-gate__actions">
+        <button id="age-gate-enter" class="btn btn--primary" type="button">Entrar</button>
+        <button id="age-gate-leave" class="btn btn--ghost" type="button">Salir</button>
+      </div>
+      <p id="age-gate-error" class="age-gate__error" hidden></p>
+      <p class="age-gate__legal">El abuso en el consumo de este producto es nocivo para la salud.</p>
+    </div>
+  </div>
+
+  <header class="nav">
+    <a class="nav__brand" href="#hero">Mónica Lazcano</a>
+    <nav class="nav__links" aria-label="Principal">
+      <a href="#origen">Origen</a>
+      <a href="#proceso">Proceso</a>
+      <a href="#expresiones">Expresiones</a>
+      <a href="#tienda">Tienda</a>
+    </nav>
+    <button class="snipcart-checkout nav__cart" aria-label="Ver carrito">
+      Carrito · <span class="snipcart-items-count">0</span>
+    </button>
+  </header>
+
+  <section id="hero" class="hero">
+    <div class="hero__atmosphere" aria-hidden="true"></div>
+    <div class="hero__bottle" aria-hidden="true">
+      <img src="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg" alt="" />
+    </div>
+    <div class="hero__copy">
+      <p class="eyebrow" data-reveal>Siluetas de</p>
+      <h1 class="hero__title" data-split>Mónica Lazcano</h1>
+      <p class="hero__slogan" data-reveal>Muerte · Vida · Muerte</p>
+      <p class="hero__sub" data-reveal>Destilado de Agave · Hecho en México</p>
+    </div>
+    <p class="hero__scroll-hint" aria-hidden="true">Desliza ↓</p>
+  </section>
+
+  <section id="origen" class="scene scene--muerte">
+    <div class="scene__media">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/hf_20260512_215436_71ce5833-cae6-44ca-a45b-7e709d331dc0.png" alt="" loading="lazy" />
+    </div>
+    <div class="scene__copy">
+      <p class="eyebrow">— Muerte</p>
+      <h2 class="scene__title">El agave entregado al fuego.</h2>
+      <p class="scene__body">
+        Ocho años. El espadín madura sin prisa bajo el sol de Oaxaca.
+        Cuando llega su tiempo, el corazón se entrega al horno cónico
+        bajo tierra: piedra volcánica, lumbre, humo.
+      </p>
+      <p class="scene__body">De esa muerte nace todo lo demás.</p>
+    </div>
+  </section>
+
+  <section id="proceso" class="scene scene--vida">
+    <div class="scene__copy">
+      <p class="eyebrow">— Vida</p>
+      <h2 class="scene__title">El linaje que destila.</h2>
+      <p class="scene__body">
+        Casa Antonio Córdoba Mata custodia el oficio: tahona, fermentación
+        natural, alambique de cobre. Cada gota es paciencia, no fórmula.
+      </p>
+      <dl class="scene__specs">
+        <div><dt>Agave</dt><dd>100% Angustifolia · Joven</dd></div>
+        <div><dt>Vol.</dt><dd>45% Alc.</dd></div>
+        <div><dt>Net.</dt><dd>750 ml</dd></div>
+        <div><dt>D.O.</dt><dd>Protegida</dd></div>
+      </dl>
+    </div>
+    <div class="scene__media">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/hf_20260512_215445_985db3e4-90d1-4a86-8256-fdc749c3460f.png" alt="" loading="lazy" />
+    </div>
+  </section>
+
+  <section id="expresiones" class="expressions">
+    <header class="expressions__head">
+      <p class="eyebrow">— Tres expresiones</p>
+      <h2 class="expressions__title">Una misma silueta. Tres voces.</h2>
+    </header>
+
+    <div class="expressions__grid">
+      <article class="expression">
+        <div class="expression__media">
+          <img src="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg" alt="Mónica Lazcano Espadín" />
+        </div>
+        <div class="expression__copy">
+          <h3>Espadín</h3>
+          <p>Joven. Vegetal. Humo limpio. La voz pura del agave.</p>
+          <button
+            class="btn btn--primary snipcart-add-item"
+            data-item-id="ML-ESP-001"
+            data-item-name="Mónica Lazcano Espadín 750ml"
+            data-item-price="980.00"
+            data-item-url="/"
+            data-item-image="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg"
+            data-item-description="100% Agave Angustifolia Joven · 45% Alc · 750ml"
+            data-item-shippable="true"
+            data-item-weight="1500">
+            Añadir — $980 MXN
+          </button>
+        </div>
+      </article>
+
+      <article class="expression">
+        <div class="expression__media">
+          <img src="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg" alt="Mónica Lazcano Espadín con Gusano" />
+        </div>
+        <div class="expression__copy">
+          <h3>Espadín con Gusano</h3>
+          <p>Con el gusano de maguey. Tierra mineral, cuerpo más largo.</p>
+          <button
+            class="btn btn--primary snipcart-add-item"
+            data-item-id="ML-GUS-001"
+            data-item-name="Mónica Lazcano Espadín con Gusano 750ml"
+            data-item-price="1150.00"
+            data-item-url="/"
+            data-item-image="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg"
+            data-item-description="100% Agave Angustifolia con gusano · 45% Alc · 750ml"
+            data-item-shippable="true"
+            data-item-weight="1500">
+            Añadir — $1,150 MXN
+          </button>
+        </div>
+      </article>
+
+      <article class="expression">
+        <div class="expression__media">
+          <img src="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg" alt="Mónica Lazcano Mezcalo" />
+        </div>
+        <div class="expression__copy">
+          <h3>Mezcalo</h3>
+          <p>Vida · Muerte · Vida. El ciclo cerrado en cristal turquesa.</p>
+          <button
+            class="btn btn--primary snipcart-add-item"
+            data-item-id="ML-MZC-001"
+            data-item-name="Mónica Lazcano Mezcalo 750ml"
+            data-item-price="1480.00"
+            data-item-url="/"
+            data-item-image="https://d2ol7oe51mr4n9.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/726cb4ad-b7b0-403a-bf3a-265d4ab67d77.jpg"
+            data-item-description="100% Agave Angustifolia · 45% Alc · 750ml"
+            data-item-shippable="true"
+            data-item-weight="1500">
+            Añadir — $1,480 MXN
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="tienda" class="outro">
+    <div class="outro__media">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp/hf_20260512_215452_30bdc78d-8b1d-4e50-b6ad-7b4dcc656f6d.png" alt="" loading="lazy" />
+    </div>
+    <div class="outro__copy">
+      <p class="eyebrow">— Hecho en México</p>
+      <h2 class="outro__title">Una gota detiene el tiempo.</h2>
+      <p class="outro__body">
+        Envío exclusivo dentro de la República Mexicana. Verificamos
+        mayoría de edad al momento del checkout.
+      </p>
+      <button class="snipcart-checkout btn btn--primary">Ir al carrito</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__legal">
+      <p><strong>El abuso en el consumo de este producto es nocivo para la salud.</strong></p>
+      <p>Venta exclusiva a mayores de 18 años. Prohibida la venta a menores. Envíos sólo dentro de México.</p>
+      <p>Siluetas de Mónica Lazcano · Casa Antonio Córdoba Mata · Hecho en México · Denominación de Origen Protegida.</p>
+    </div>
+    <div class="footer__meta">
+      <p>© <span id="year"></span> Mónica Lazcano</p>
+      <a href="mailto:hola@monicalazcano.mx">hola@monicalazcano.mx</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script type="module" src="scripts/age-gate.js"></script>
+  <script type="module" src="scripts/main.js"></script>
+  <script type="module" src="scripts/scenes.js"></script>
+
+  <!-- Snipcart: replace data-api-key with your live key (pk_*) when ready -->
+  <div hidden id="snipcart" data-api-key="YOUR_SNIPCART_PUBLIC_API_KEY_HERE" data-config-modal-style="side"></div>
+  <script async src="https://cdn.snipcart.com/themes/v3.7.1/default/snipcart.js"></script>
+</body>
+</html>
