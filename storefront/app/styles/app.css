@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Paleta Mónica Lazcano — artesanal + minimalista */
+  --color-bone: #f5ede3;
+  --color-bone-soft: #faf5ee;
+  --color-clay: #c8956d;
+  --color-clay-deep: #a57244;
+  --color-terracotta: #8b4513;
+  --color-charcoal: #1a1612;
+  --color-charcoal-soft: #2d2823;
+  --color-agave: #6b7355;
+  --color-gold-earth: #b8895c;
+
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --tracking-wider-2: 0.18em;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bone);
+    color: var(--color-charcoal);
+    font-family: var(--font-body);
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: var(--color-clay-deep);
+    color: var(--color-bone);
+  }
+}
+
+@layer components {
+  .container-edge {
+    @apply mx-auto w-full max-w-[1440px] px-6 md:px-10 lg:px-16;
+  }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider-2);
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-sm uppercase tracking-[0.18em];
+    background: var(--color-charcoal);
+    color: var(--color-bone);
+    transition: all 300ms ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-clay-deep);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-sm uppercase tracking-[0.18em];
+    border: 1px solid var(--color-charcoal);
+    color: var(--color-charcoal);
+    transition: all 300ms ease;
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-charcoal);
+    color: var(--color-bone);
+  }
+
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 400ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .link-underline:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}

@@ -1,0 +1,14 @@
+node_modules
+.cache
+.env
+.env.*
+!.env.example
+.eslintcache
+.shopify
+.turbo
+build
+dist
+.DS_Store
+.vscode/
+.idea/
+*.local
