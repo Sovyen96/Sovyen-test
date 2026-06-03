@@ -51,12 +51,23 @@ export const FURNITURE = [
 ];
 
 // Zonas con etiqueta (no bloquean, sólo decoran y nombran espacios).
+// Funcionan además como "salas de reunión": dos personas dentro de la
+// misma zona se oyen aunque se muevan, no sólo por distancia bruta.
 export const ZONES = [
   { x: 1, y: 1, w: 8, h: 4, name: "Recepción" },
   { x: 2, y: 6, w: 6, h: 3, name: "Sala de Streaming" },
   { x: 9, y: 4, w: 13, h: 5, name: "Lounge" },
   { x: 1, y: 13, w: 13, h: 4, name: "Equipo Técnico" },
 ];
+
+/** Índice de la zona/sala que contiene la casilla, o -1 si ninguna. */
+export function zoneOf(tx, ty) {
+  for (let i = 0; i < ZONES.length; i++) {
+    const z = ZONES[i];
+    if (tx >= z.x && tx < z.x + z.w && ty >= z.y && ty < z.y + z.h) return i;
+  }
+  return -1;
+}
 
 // Asientos interactivos: el jugador se sienta con la tecla E si está
 // en una casilla adyacente. `dir` es la orientación al sentarse.

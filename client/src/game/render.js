@@ -35,6 +35,32 @@ export function drawFloor(ctx, cam) {
     }
   }
 
+  // Rejilla sutil de juntas del suelo.
+  ctx.strokeStyle = "rgba(120,110,90,0.07)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 1; x < COLS; x++) {
+    const px = x * TILE - cam.x;
+    ctx.moveTo(px, TILE - cam.y);
+    ctx.lineTo(px, (ROWS - 1) * TILE - cam.y);
+  }
+  for (let y = 1; y < ROWS; y++) {
+    const py = y * TILE - cam.y;
+    ctx.moveTo(TILE - cam.x, py);
+    ctx.lineTo((COLS - 1) * TILE - cam.x, py);
+  }
+  ctx.stroke();
+
+  // Rodapié: borde interior suave junto a las paredes.
+  ctx.strokeStyle = "rgba(0,0,0,0.10)";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(
+    TILE - cam.x + 1.5,
+    TILE - cam.y + 1.5,
+    (COLS - 2) * TILE - 3,
+    (ROWS - 2) * TILE - 3,
+  );
+
   // Pared divisoria con puerta.
   ctx.fillStyle = "#b9a98f";
   for (let x = 1; x < COLS - 1; x++) {
@@ -46,6 +72,31 @@ export function drawFloor(ctx, cam) {
     ctx.fillRect(px, py, TILE, 4);
     ctx.fillStyle = "#b9a98f";
   }
+}
+
+// ── Alfombras de las salas de reunión ──────────────────────────
+// Refuerzan visualmente cada sala (donde el audio es de grupo).
+const RUGS = ["#caa37a", "#5a86b0", "#5aa982", "#8a6fb0"];
+
+export function drawRugs(ctx, cam) {
+  ZONES.forEach((z, i) => {
+    const px = (z.x + 0.5) * TILE - cam.x;
+    const py = (z.y + 0.5) * TILE - cam.y;
+    const w = (z.w - 1) * TILE;
+    const h = (z.h - 1) * TILE;
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = RUGS[i % RUGS.length];
+    roundRect(ctx, px, py, w, h, 14);
+    ctx.fill();
+    // Borde interior de la alfombra.
+    ctx.globalAlpha = 0.7;
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 2;
+    roundRect(ctx, px + 6, py + 6, w - 12, h - 12, 10);
+    ctx.stroke();
+    ctx.restore();
+  });
 }
 
 // ── Zonas con etiqueta ─────────────────────────────────────────

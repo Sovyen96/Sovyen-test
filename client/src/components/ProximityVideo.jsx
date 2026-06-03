@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { socket, SERVER_URL } from "../socket.js";
 import { gameState } from "../game/gameState.js";
+import { zoneOf, ZONES } from "../game/mapData.js";
 
 const RANGE = 4;          // distancia (en tiles) para abrir la llamada
 const ICE_DEFAULT = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -134,11 +135,14 @@ export default function ProximityVideo() {
       const meP = me && gameState.players.get(me);
       if (!meP) return;
 
+      // Conectados si están cerca (≤ RANGE) o en la misma sala de reunión.
+      const myZone = zoneOf(meP.tx, meP.ty);
       const near = new Set();
       for (const [id, p] of gameState.players) {
         if (id === me) continue;
         const d = Math.hypot(p.tx - meP.tx, p.ty - meP.ty);
-        if (d <= RANGE) near.add(id);
+        const sameRoom = myZone !== -1 && zoneOf(p.tx, p.ty) === myZone;
+        if (d <= RANGE || sameRoom) near.add(id);
       }
 
       // Conectar con los nuevos (el id menor inicia la oferta).
@@ -295,6 +299,8 @@ export default function ProximityVideo() {
   }
 
   const remoteIds = Object.keys(remotes);
+  const meP = gameState.players.get(gameState.myId);
+  const room = meP ? zoneOf(meP.tx, meP.ty) : -1;
 
   return (
     <div className="rtc-panel">
@@ -327,8 +333,9 @@ export default function ProximityVideo() {
       </div>
       <p className="rtc-hint">
         {remoteIds.length
-          ? `Hablando con ${remoteIds.length} persona(s) cerca`
-          : "Acércate a alguien para hablar"}
+          ? `Hablando con ${remoteIds.length} persona(s)`
+          : "Acércate a alguien o entra en una sala"}
+        {room !== -1 ? ` · 🪑 ${ZONES[room].name}` : ""}
       </p>
     </div>
   );

@@ -4,7 +4,7 @@ import {
   TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked, SEATS, isNearBoard,
 } from "./mapData.js";
 import {
-  drawFloor, drawZones, drawFurniture, drawCharacter,
+  drawFloor, drawRugs, drawZones, drawFurniture, drawCharacter,
 } from "./render.js";
 import { EMOTES } from "./appearance.js";
 import { gameState } from "./gameState.js";
@@ -264,6 +264,7 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
       ctx.fillStyle = "#cdbfa6";
       ctx.fillRect(0, 0, viewW, viewH);
       drawFloor(ctx, cam);
+      drawRugs(ctx, cam);
       drawZones(ctx, cam);
       drawFurniture(ctx, cam);
 

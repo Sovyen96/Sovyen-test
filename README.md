@@ -1,5 +1,7 @@
 # 🏢 La Oficina de la IA — Oficina virtual multijugador (estilo Pokémon)
 
+![Captura de la oficina](./office-preview.png)
+
 Una oficina virtual top-down en pixel-art, inspirada en Gather Town. Tu avatar
 se mueve por la oficina tile a tile (estilo Pokémon), con colisiones contra los
 muebles, zonas con nombre (Recepción, Sala de Streaming, Lounge, Equipo Técnico)
@@ -51,6 +53,9 @@ para que el vídeo funcione entre redes distintas en reuniones reales.
   o tecla `F` junto a la pizarra de la oficina). Quien llega tarde ve lo ya dibujado.
 - 🗣️ **Indicador de "hablando"**: aro verde alrededor de quien tiene el micro
   activo y está hablando.
+- 🪑 **Salas de reunión con audio de grupo**: dentro de una misma sala (Recepción,
+  Streaming, Lounge, Equipo Técnico) os oís todos aunque os mováis, no sólo por
+  distancia. Cada sala tiene su alfombra.
 - 🔄 **Reconexión automática**: si se cae la red, vuelves a entrar solo.
 - 💾 **Perfil recordado**: tu nombre y avatar se guardan en el navegador.
 - 🟢 **Contador de gente en línea** en la cabecera.
