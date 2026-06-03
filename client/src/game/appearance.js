@@ -25,6 +25,16 @@ export const HAIR_STYLES = [
   { id: "bald", label: "Rapado" },
 ];
 
+export const ACCESSORIES = [
+  { id: "none", label: "Ninguno" },
+  { id: "headphones", label: "Cascos" },
+  { id: "hat", label: "Gorro" },
+  { id: "bow", label: "Lazo" },
+];
+
+// Emotes rápidos (teclas 1-6 en el juego).
+export const EMOTES = ["👍", "❤️", "😂", "🎉", "👋", "🔥"];
+
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 /** Genera una apariencia aleatoria (para prerellenar el editor). */
@@ -35,6 +45,7 @@ export function randomAppearance() {
     hair: pick(HAIR_STYLES).id,
     hairColor: pick(HAIR_COLORS),
     glasses: Math.random() < 0.3,
+    accessory: pick(ACCESSORIES).id,
   };
 }
 
@@ -46,5 +57,6 @@ export function normalizeAppearance(a = {}) {
     hair: a.hair || "short",
     hairColor: a.hairColor || HAIR_COLORS[1],
     glasses: !!a.glasses,
+    accessory: a.accessory || "none",
   };
 }

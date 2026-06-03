@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 import { socket } from "../socket.js";
 import {
-  TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked,
+  TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked, SEATS,
 } from "./mapData.js";
 import {
   drawFloor, drawZones, drawFurniture, drawCharacter,
 } from "./render.js";
+import { EMOTES } from "./appearance.js";
+import { gameState } from "./gameState.js";
 
 const SPEED = 5.5 * TILE; // píxeles por segundo
 const DIRS = {
@@ -22,12 +24,13 @@ const DELTA = {
  * Lienzo del juego. Renderiza la oficina y gestiona el movimiento
  * del jugador local y la interpolación de los jugadores remotos.
  */
-export default function OfficeCanvas({ me }) {
+export default function OfficeCanvas({ me, onPrompt }) {
   const canvasRef = useRef(null);
   const blockedRef = useRef(buildBlocked());
   const playersRef = useRef(new Map());
   const keysRef = useRef(new Set());
   const meIdRef = useRef(null);
+  const actionRef = useRef(false); // tecla E pendiente de procesar
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,33 +43,55 @@ export default function OfficeCanvas({ me }) {
       return blockedRef.current.has(`${tx},${ty}`);
     };
 
+    // Asiento adyacente (a una casilla) a la posición dada.
+    const findSeat = (tx, ty) =>
+      SEATS.find((s) => Math.abs(s.x - tx) + Math.abs(s.y - ty) === 1);
+
+    // Aviso contextual ("Pulsa E…"); evita re-render salvo que cambie.
+    let lastPrompt = "";
+    const setPrompt = (text) => {
+      if (text !== lastPrompt) {
+        lastPrompt = text;
+        onPrompt?.(text);
+      }
+    };
+
     const addPlayer = (p) => {
       playersRef.current.set(p.id, {
         ...p,
         px: p.tx * TILE,
         py: p.ty * TILE,
         moving: false,
+        sitting: !!p.sitting,
         animT: 0,
         bubble: null,
+        emote: null,
       });
     };
 
     // ── Eventos de socket ──────────────────────────────────────
     const onInit = ({ id, players }) => {
       meIdRef.current = id;
+      gameState.myId = id;
+      gameState.players = playersRef.current;
       playersRef.current.clear();
       players.forEach(addPlayer);
     };
     const onJoined = (p) => addPlayer(p);
-    const onMoved = ({ id, tx, ty, dir }) => {
+    const onMoved = ({ id, tx, ty, dir, sitting }) => {
       const p = playersRef.current.get(id);
       if (!p || id === meIdRef.current) return;
       p.tx = tx; p.ty = ty; p.dir = dir; p.moving = true;
+      if (typeof sitting === "boolean") p.sitting = sitting;
     };
     const onLeft = ({ id }) => playersRef.current.delete(id);
     const onChat = ({ id, text }) => {
       const p = playersRef.current.get(id);
       if (p) p.bubble = { text, until: performance.now() + 5000 };
+    };
+    const onEmote = ({ id, emoji }) => {
+      const p = playersRef.current.get(id);
+      if (p) p.emote = { emoji, start: performance.now(), until: performance.now() + 2500 };
     };
     // Cambios de apariencia/nombre (también aplican al propio avatar).
     const onUpdated = ({ id, ...fields }) => {
@@ -79,6 +104,7 @@ export default function OfficeCanvas({ me }) {
     socket.on("player-moved", onMoved);
     socket.on("player-left", onLeft);
     socket.on("chat", onChat);
+    socket.on("emote", onEmote);
     socket.on("player-updated", onUpdated);
 
     // ── Teclado ────────────────────────────────────────────────
@@ -91,6 +117,12 @@ export default function OfficeCanvas({ me }) {
       if (DIRS[e.code]) {
         keysRef.current.add(DIRS[e.code]);
         e.preventDefault();
+      } else if (e.code === "KeyE") {
+        actionRef.current = true;
+        e.preventDefault();
+      } else if (/^Digit[1-6]$/.test(e.code)) {
+        const emoji = EMOTES[Number(e.code.slice(5)) - 1];
+        if (emoji) socket.emit("emote", { emoji });
       }
     };
     const onKeyUp = (e) => {
@@ -123,28 +155,55 @@ export default function OfficeCanvas({ me }) {
         const targetX = meP.tx * TILE;
         const targetY = meP.ty * TILE;
         if (meP.px !== targetX || meP.py !== targetY) {
+          // En tránsito hacia la casilla objetivo.
           meP.moving = true;
           meP.animT += dt;
           const move = SPEED * dt;
           meP.px += Math.sign(targetX - meP.px) * Math.min(move, Math.abs(targetX - meP.px));
           meP.py += Math.sign(targetY - meP.py) * Math.min(move, Math.abs(targetY - meP.py));
+          setPrompt("");
+        } else if (meP.sitting) {
+          // Sentado: con E (o caminando tras un instante) se levanta.
+          meP.moving = false;
+          const dir = [...keysRef.current].pop();
+          if (actionRef.current || (dir && performance.now() - meP.sitT > 300)) {
+            meP.sitting = false;
+            meP.tx = meP.standTile.x;
+            meP.ty = meP.standTile.y;
+            socket.emit("move", { tx: meP.tx, ty: meP.ty, dir: meP.dir, sitting: false });
+          }
+          actionRef.current = false;
+          setPrompt(meP.sitting ? "Pulsa E o muévete para levantarte" : "");
         } else {
           meP.moving = false;
-          // ¿Hay una tecla pulsada? Iniciar el siguiente paso.
-          const dir = [...keysRef.current].pop();
-          if (dir) {
-            const [dx, dy] = DELTA[dir];
-            meP.dir = dir;
-            const nx = meP.tx + dx;
-            const ny = meP.ty + dy;
-            if (!isBlocked(nx, ny)) {
-              meP.tx = nx; meP.ty = ny; meP.moving = true;
-              socket.emit("move", { tx: nx, ty: ny, dir });
-            } else {
-              // Sólo gira sin avanzar; informa la orientación.
-              socket.emit("move", { tx: meP.tx, ty: meP.ty, dir });
+          const seat = findSeat(meP.tx, meP.ty);
+
+          if (actionRef.current && seat) {
+            // Sentarse en el asiento adyacente.
+            meP.standTile = { x: meP.tx, y: meP.ty };
+            meP.tx = seat.x; meP.ty = seat.y; meP.dir = seat.dir;
+            meP.sitting = true; meP.sitT = performance.now();
+            socket.emit("move", { tx: seat.x, ty: seat.y, dir: seat.dir, sitting: true });
+            setPrompt("");
+          } else {
+            // ¿Hay una tecla pulsada? Iniciar el siguiente paso.
+            const dir = [...keysRef.current].pop();
+            if (dir) {
+              const [dx, dy] = DELTA[dir];
+              meP.dir = dir;
+              const nx = meP.tx + dx;
+              const ny = meP.ty + dy;
+              if (!isBlocked(nx, ny)) {
+                meP.tx = nx; meP.ty = ny; meP.moving = true;
+                socket.emit("move", { tx: nx, ty: ny, dir });
+              } else {
+                // Sólo gira sin avanzar; informa la orientación.
+                socket.emit("move", { tx: meP.tx, ty: meP.ty, dir });
+              }
             }
+            setPrompt(seat ? "Pulsa E para sentarte" : "");
           }
+          actionRef.current = false;
         }
       }
 
@@ -202,6 +261,7 @@ export default function OfficeCanvas({ me }) {
         hair: me.hair,
         hairColor: me.hairColor,
         glasses: me.glasses,
+        accessory: me.accessory,
       },
     });
 
@@ -215,6 +275,7 @@ export default function OfficeCanvas({ me }) {
       socket.off("player-moved", onMoved);
       socket.off("player-left", onLeft);
       socket.off("chat", onChat);
+      socket.off("emote", onEmote);
       socket.off("player-updated", onUpdated);
     };
   }, []);

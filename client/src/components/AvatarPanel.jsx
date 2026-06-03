@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  SKIN_TONES, HAIR_COLORS, SHIRT_COLORS, HAIR_STYLES,
+  SKIN_TONES, HAIR_COLORS, SHIRT_COLORS, HAIR_STYLES, ACCESSORIES,
 } from "../game/appearance.js";
 import { drawAvatarBody } from "../game/render.js";
 
@@ -90,6 +90,20 @@ export default function AvatarPanel({ value, onChange }) {
 
         <label>Color de camiseta</label>
         <Swatches values={SHIRT_COLORS} current={value.color} onPick={(color) => set({ color })} />
+
+        <label>Accesorio</label>
+        <div className="style-row">
+          {ACCESSORIES.map((s) => (
+            <button
+              type="button"
+              key={s.id}
+              className={"style-btn" + (s.id === value.accessory ? " selected" : "")}
+              onClick={() => set({ accessory: s.id })}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
 
         <label className="check-row">
           <input

@@ -284,18 +284,20 @@ function drawMondrian(ctx, x, y, w, h) {
 
 // ── Avatar (personaje) ─────────────────────────────────────────
 export function drawCharacter(ctx, p, cam, opts = {}) {
+  const now = performance.now();
   const cx = p.px - cam.x + TILE / 2;
   const cy = p.py - cam.y + TILE / 2;
-  const bob = p.moving ? Math.sin(p.animT * 12) * 1.6 : 0;
+  const sit = p.sitting ? 4 : 0;
+  const bob = p.moving && !p.sitting ? Math.sin(p.animT * 12) * 1.6 : 0;
 
-  // Sombra.
-  ctx.fillStyle = "rgba(0,0,0,0.18)";
+  // Sombra (más tenue al estar sentado).
+  ctx.fillStyle = p.sitting ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.18)";
   ctx.beginPath();
   ctx.ellipse(cx, cy + 12, 11, 5, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Cuerpo + cabeza + rasgos (reutilizable en la vista previa).
-  drawAvatarBody(ctx, p, p.dir, cx, cy, bob);
+  drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob);
 
   // Etiqueta de nombre.
   ctx.font = "600 12px system-ui, sans-serif";
@@ -311,8 +313,21 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
   ctx.fillText(p.name, lx + 7, ly + 9);
 
   // Bocadillo de chat.
-  if (p.bubble && p.bubble.until > performance.now()) {
+  if (p.bubble && p.bubble.until > now) {
     drawBubble(ctx, cx, ly - 6, p.bubble.text);
+  }
+
+  // Emote flotante.
+  if (p.emote && p.emote.until > now) {
+    const age = now - p.emote.start;
+    const rise = Math.min(age / 900, 1) * 20;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - Math.max(0, age - 1600) / 900);
+    ctx.font = "22px serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(p.emote.emoji, cx, cy - 36 - rise);
+    ctx.restore();
   }
 }
 
@@ -379,9 +394,58 @@ export function drawAvatarBody(ctx, a, dir, cx, cy, bob = 0) {
   ctx.fill();
 
   drawHair(ctx, a, dir, cx, hy);
+  drawAccessory(ctx, a, dir, cx, hy);
 
   // Cara (sólo si no mira hacia arriba).
   if (dir !== "up") drawFace(ctx, a, dir, cx, hy + 1);
+}
+
+function drawAccessory(ctx, a, dir, cx, hy) {
+  switch (a.accessory) {
+    case "headphones":
+      // Diadema sobre la cabeza.
+      ctx.strokeStyle = "#2b2f36";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(cx, hy, 9, Math.PI * 1.08, Math.PI * 1.92);
+      ctx.stroke();
+      // Auriculares a los lados.
+      ctx.fillStyle = "#2b2f36";
+      ctx.beginPath(); ctx.arc(cx - 8.5, hy + 1, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 8.5, hy + 1, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#5fb0e5";
+      ctx.beginPath(); ctx.arc(cx - 8.5, hy + 1, 1.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 8.5, hy + 1, 1.3, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "hat":
+      // Gorro de lana con pompón.
+      ctx.fillStyle = "#c0392b";
+      ctx.beginPath();
+      ctx.arc(cx, hy - 1, 8, Math.PI, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(cx - 8, hy - 2, 16, 3);
+      ctx.fillStyle = "#ecf0f1";
+      ctx.fillRect(cx - 8, hy - 1, 16, 2.5);
+      ctx.beginPath(); ctx.arc(cx, hy - 9, 2.4, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "bow":
+      // Lazo sobre la cabeza.
+      ctx.fillStyle = "#e84393";
+      ctx.beginPath();
+      ctx.moveTo(cx, hy - 7);
+      ctx.lineTo(cx - 6, hy - 10);
+      ctx.lineTo(cx - 6, hy - 4);
+      ctx.closePath();
+      ctx.moveTo(cx, hy - 7);
+      ctx.lineTo(cx + 6, hy - 10);
+      ctx.lineTo(cx + 6, hy - 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, hy - 7, 1.8, 0, Math.PI * 2); ctx.fill();
+      break;
+    default:
+      break;
+  }
 }
 
 function drawHair(ctx, a, dir, hx, hy) {

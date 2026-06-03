@@ -27,11 +27,23 @@ multijugador. Cada pestaña es un jugador distinto.
 > Si despliegas el servidor en otra URL, define `VITE_SERVER_URL` al construir el
 > cliente (p. ej. `VITE_SERVER_URL=https://mi-servidor npm --prefix client run build`).
 
+## ✨ Funciones
+
+- 🧍 **Avatar personalizable**: piel, peinado, color de pelo, camiseta, gafas y
+  accesorios (cascos, gorro, lazo). Editable también dentro de la oficina.
+- 🪑 **Objetos interactivos**: siéntate en sillas y sofás con la tecla `E`.
+- 😀 **Emotes**: reacciones flotantes sobre tu avatar (teclas `1`-`6` o la barra).
+- 🎥 **Vídeo/voz por proximidad (WebRTC)**: al acercarte a alguien (≤ 4 casillas)
+  se abre automáticamente la videollamada; al alejarte se cierra.
+
 ## 🎮 Controles
 
 - **Moverte:** `WASD` o flechas `⬆️ ⬇️ ⬅️ ➡️` (también hay un D-pad táctil en pantalla).
+- **Sentarte/levantarte:** `E` cuando estés junto a una silla o sofá.
+- **Emotes:** teclas `1`-`6` o la barra inferior de emojis.
 - **Chatear:** escribe en la caja inferior y pulsa Enter; tu mensaje aparece como
   bocadillo sobre tu avatar durante 5 segundos.
+- **Voz/vídeo:** botón «🎙️ Activar voz/vídeo por proximidad» (arriba a la derecha).
 
 ## 🗺️ ¿Cómo está organizado?
 

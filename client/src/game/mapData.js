@@ -57,6 +57,21 @@ export const ZONES = [
   { x: 1, y: 13, w: 13, h: 4, name: "Equipo Técnico" },
 ];
 
+// Asientos interactivos: el jugador se sienta con la tecla E si está
+// en una casilla adyacente. `dir` es la orientación al sentarse.
+export const SEATS = [
+  { x: 4, y: 8, dir: "up" },    // silla gamer (streaming)
+  { x: 3, y: 16, dir: "up" },   // silla gamer (técnico)
+  { x: 13, y: 6, dir: "down" }, // taburetes del lounge
+  { x: 16, y: 6, dir: "down" },
+  { x: 2, y: 1, dir: "down" },  // sofá recepción
+  { x: 3, y: 1, dir: "down" },
+  { x: 4, y: 1, dir: "down" },
+  { x: 5, y: 1, dir: "down" },
+  { x: 19, y: 8, dir: "up" },   // sofá lounge
+  { x: 20, y: 8, dir: "up" },
+];
+
 // Pared divisoria horizontal con un hueco (puerta) para pasar.
 const DIVIDER_ROW = 12;
 const DOOR_COL = 6;

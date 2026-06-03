@@ -2,8 +2,10 @@ import { useState } from "react";
 import JoinScreen from "./components/JoinScreen.jsx";
 import Chat from "./components/Chat.jsx";
 import AvatarPanel from "./components/AvatarPanel.jsx";
+import ProximityVideo from "./components/ProximityVideo.jsx";
 import OfficeCanvas from "./game/OfficeCanvas.jsx";
 import { socket } from "./socket.js";
+import { EMOTES } from "./game/appearance.js";
 
 // Botón táctil que simula la pulsación de una tecla de dirección.
 function DPadButton({ code, children }) {
@@ -49,6 +51,7 @@ function EditModal({ initial, onSave, onClose }) {
 export default function App() {
   const [me, setMe] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [prompt, setPrompt] = useState("");
 
   if (!me) return <JoinScreen onJoin={setMe} />;
 
@@ -62,11 +65,23 @@ export default function App() {
 
   return (
     <div className="game-root">
-      <OfficeCanvas me={me} />
+      <OfficeCanvas me={me} onPrompt={setPrompt} />
 
       <div className="hud-top">
         <span className="badge">🏢 La Oficina de la IA</span>
         <button className="edit-btn" onClick={() => setEditing(true)}>✏️ Editar avatar</button>
+      </div>
+
+      <ProximityVideo />
+
+      {prompt && <div className="interact-prompt">{prompt}</div>}
+
+      <div className="emote-bar">
+        {EMOTES.map((emoji, i) => (
+          <button key={emoji} onClick={() => socket.emit("emote", { emoji })} title={`Tecla ${i + 1}`}>
+            {emoji}
+          </button>
+        ))}
       </div>
 
       <div className="dpad">

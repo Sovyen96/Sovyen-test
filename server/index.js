@@ -66,9 +66,11 @@ io.on("connection", (socket) => {
       hair: typeof a.hair === "string" ? a.hair : "short",
       hairColor: typeof a.hairColor === "string" ? a.hairColor : "#4a3526",
       glasses: !!a.glasses,
+      accessory: typeof a.accessory === "string" ? a.accessory : "none",
       tx: spawn.tx,
       ty: spawn.ty,
       dir: "down",
+      sitting: false,
     };
     players.set(socket.id, player);
 
@@ -79,13 +81,28 @@ io.on("connection", (socket) => {
     console.log(`  → ${name} se une (${players.size} en línea)`);
   });
 
-  socket.on("move", ({ tx, ty, dir } = {}) => {
+  socket.on("move", ({ tx, ty, dir, sitting } = {}) => {
     const p = players.get(socket.id);
     if (!p) return;
     if (Number.isFinite(tx)) p.tx = tx;
     if (Number.isFinite(ty)) p.ty = ty;
     if (typeof dir === "string") p.dir = dir;
-    socket.broadcast.emit("player-moved", { id: socket.id, tx: p.tx, ty: p.ty, dir: p.dir });
+    if (typeof sitting === "boolean") p.sitting = sitting;
+    socket.broadcast.emit("player-moved", {
+      id: socket.id, tx: p.tx, ty: p.ty, dir: p.dir, sitting: p.sitting,
+    });
+  });
+
+  socket.on("emote", ({ emoji } = {}) => {
+    const p = players.get(socket.id);
+    if (!p || !emoji) return;
+    io.emit("emote", { id: socket.id, emoji: String(emoji).slice(0, 8) });
+  });
+
+  // Señalización WebRTC para vídeo/voz por proximidad (relé puro).
+  socket.on("rtc-signal", ({ to, data } = {}) => {
+    if (!to) return;
+    io.to(to).emit("rtc-signal", { from: socket.id, data });
   });
 
   socket.on("update", (fields = {}) => {
@@ -94,7 +111,7 @@ io.on("connection", (socket) => {
     if (typeof fields.name === "string") {
       p.name = fields.name.slice(0, 16).trim() || p.name;
     }
-    for (const key of ["color", "skin", "hair", "hairColor"]) {
+    for (const key of ["color", "skin", "hair", "hairColor", "accessory"]) {
       if (typeof fields[key] === "string") p[key] = fields[key];
     }
     if ("glasses" in fields) p.glasses = !!fields.glasses;
@@ -106,6 +123,7 @@ io.on("connection", (socket) => {
       hair: p.hair,
       hairColor: p.hairColor,
       glasses: p.glasses,
+      accessory: p.accessory,
     });
   });
 
