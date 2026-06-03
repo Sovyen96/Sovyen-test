@@ -256,24 +256,30 @@ export default function OfficeCanvas({ me, onPrompt }) {
     raf = requestAnimationFrame(step);
 
     // ── Conexión ───────────────────────────────────────────────
-    if (!socket.connected) socket.connect();
-    socket.emit("join", {
-      name: me.name,
-      appearance: {
-        color: me.color,
-        skin: me.skin,
-        hair: me.hair,
-        hairColor: me.hairColor,
-        glasses: me.glasses,
-        accessory: me.accessory,
-      },
-    });
+    // Se (re)envía en cada 'connect', así si se cae la red y Socket.IO
+    // reconecta, el jugador vuelve a entrar solo (sin recargar).
+    const doJoin = () =>
+      socket.emit("join", {
+        name: me.name,
+        appearance: {
+          color: me.color,
+          skin: me.skin,
+          hair: me.hair,
+          hairColor: me.hairColor,
+          glasses: me.glasses,
+          accessory: me.accessory,
+        },
+      });
+    socket.on("connect", doJoin);
+    if (socket.connected) doJoin();
+    else socket.connect();
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("resize", resize);
+      socket.off("connect", doJoin);
       socket.off("init", onInit);
       socket.off("player-joined", onJoined);
       socket.off("player-moved", onMoved);

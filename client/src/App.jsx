@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import JoinScreen from "./components/JoinScreen.jsx";
 import Chat from "./components/Chat.jsx";
 import AvatarPanel from "./components/AvatarPanel.jsx";
@@ -6,6 +6,7 @@ import ProximityVideo from "./components/ProximityVideo.jsx";
 import OfficeCanvas from "./game/OfficeCanvas.jsx";
 import { socket } from "./socket.js";
 import { EMOTES } from "./game/appearance.js";
+import { saveProfile } from "./game/profile.js";
 
 // Botón táctil que simula la pulsación de una tecla de dirección.
 function DPadButton({ code, children }) {
@@ -52,12 +53,30 @@ export default function App() {
   const [me, setMe] = useState(null);
   const [editing, setEditing] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [online, setOnline] = useState(1);
+
+  // Mantiene el contador de gente en línea.
+  useEffect(() => {
+    if (!me) return;
+    const onInit = ({ players }) => setOnline(players.length);
+    const onJoined = () => setOnline((n) => n + 1);
+    const onLeft = () => setOnline((n) => Math.max(1, n - 1));
+    socket.on("init", onInit);
+    socket.on("player-joined", onJoined);
+    socket.on("player-left", onLeft);
+    return () => {
+      socket.off("init", onInit);
+      socket.off("player-joined", onJoined);
+      socket.off("player-left", onLeft);
+    };
+  }, [me]);
 
   if (!me) return <JoinScreen onJoin={setMe} />;
 
   const saveAppearance = (next) => {
     const updated = { ...me, ...next };
     setMe(updated);
+    saveProfile(updated);
     // Avisa al servidor; el resto (y nuestro propio avatar) se actualizan en vivo.
     socket.emit("update", next);
     setEditing(false);
@@ -68,7 +87,7 @@ export default function App() {
       <OfficeCanvas me={me} onPrompt={setPrompt} />
 
       <div className="hud-top">
-        <span className="badge">🏢 La Oficina de la IA</span>
+        <span className="badge">🏢 La Oficina de la IA · 🟢 {online} en línea</span>
         <button className="edit-btn" onClick={() => setEditing(true)}>✏️ Editar avatar</button>
       </div>
 

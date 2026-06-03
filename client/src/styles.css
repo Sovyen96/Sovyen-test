@@ -332,8 +332,8 @@ html, body, #root {
 .video-tile video {
   width: 100%; height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* efecto espejo */
 }
+.video-tile video.mirror { transform: scaleX(-1); } /* sólo la cámara propia */
 .video-label {
   position: absolute;
   bottom: 4px; left: 4px;
@@ -353,6 +353,7 @@ html, body, #root {
   cursor: pointer;
 }
 .rtc-controls button.off { background: rgba(231, 76, 60, 0.35); }
+.rtc-controls button.on { background: rgba(46, 204, 113, 0.4); }
 .rtc-controls button.leave { width: auto; padding: 0 12px; font-size: 13px; font-weight: 600; }
 .rtc-hint {
   margin: 0;

@@ -1,15 +1,21 @@
 import { useState } from "react";
 import AvatarPanel from "./AvatarPanel.jsx";
-import { randomAppearance } from "../game/appearance.js";
+import { randomAppearance, normalizeAppearance } from "../game/appearance.js";
+import { loadProfile, saveProfile } from "../game/profile.js";
 
 export default function JoinScreen({ onJoin }) {
-  const [name, setName] = useState("");
-  const [appearance, setAppearance] = useState(randomAppearance);
+  const saved = loadProfile();
+  const [name, setName] = useState(saved?.name || "");
+  const [appearance, setAppearance] = useState(() =>
+    saved ? normalizeAppearance(saved) : randomAppearance()
+  );
 
   const submit = (e) => {
     e.preventDefault();
     const clean = (name.trim() || "Invitado").slice(0, 16);
-    onJoin({ name: clean, ...appearance });
+    const profile = { name: clean, ...appearance };
+    saveProfile(profile);
+    onJoin(profile);
   };
 
   return (

@@ -46,6 +46,10 @@ para que el vídeo funcione entre redes distintas en reuniones reales.
 - 😀 **Emotes**: reacciones flotantes sobre tu avatar (teclas `1`-`6` o la barra).
 - 🎥 **Vídeo/voz por proximidad (WebRTC)**: al acercarte a alguien (≤ 4 casillas)
   se abre automáticamente la videollamada; al alejarte se cierra.
+- 🖥️ **Compartir pantalla**: presenta tu pantalla a quienes tengas cerca.
+- 🔄 **Reconexión automática**: si se cae la red, vuelves a entrar solo.
+- 💾 **Perfil recordado**: tu nombre y avatar se guardan en el navegador.
+- 🟢 **Contador de gente en línea** en la cabecera.
 
 ## 🎮 Controles
 
@@ -55,6 +59,7 @@ para que el vídeo funcione entre redes distintas en reuniones reales.
 - **Chatear:** escribe en la caja inferior y pulsa Enter; tu mensaje aparece como
   bocadillo sobre tu avatar durante 5 segundos.
 - **Voz/vídeo:** botón «🎙️ Activar voz/vídeo por proximidad» (arriba a la derecha).
+- **Compartir pantalla:** botón «🖥️» en los controles de vídeo.
 
 ## 🗺️ ¿Cómo está organizado?
 

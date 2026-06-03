@@ -25,11 +25,13 @@ export default function ProximityVideo() {
   const [remotes, setRemotes] = useState({}); // id -> MediaStream
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
+  const [sharing, setSharing] = useState(false);
 
   const localRef = useRef(null);
   const localStreamRef = useRef(null);
   const peersRef = useRef(new Map()); // id -> { pc, remoteSet, candidates }
   const iceRef = useRef(ICE_DEFAULT); // config ICE (STUN/TURN) del servidor
+  const screenStreamRef = useRef(null); // stream de pantalla compartida
 
   // Volcado del stream local al <video>.
   useEffect(() => {
@@ -69,6 +71,13 @@ export default function ProximityVideo() {
       localStreamRef.current
         .getTracks()
         .forEach((t) => pc.addTrack(t, localStreamRef.current));
+
+      // Si estamos compartiendo pantalla, el nuevo peer la recibe ya.
+      if (screenStreamRef.current) {
+        const st = screenStreamRef.current.getVideoTracks()[0];
+        const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
+        if (sender && st) sender.replaceTrack(st).catch(() => {});
+      }
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
@@ -179,6 +188,11 @@ export default function ProximityVideo() {
         localStreamRef.current.getTracks().forEach((t) => t.stop());
         localStreamRef.current = null;
       }
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((t) => t.stop());
+        screenStreamRef.current = null;
+      }
+      setSharing(false);
       setRemotes({});
     };
   }, [active]);
@@ -198,6 +212,40 @@ export default function ProximityVideo() {
     setCamOn(on);
   };
 
+  // Reemplaza la pista de vídeo saliente en todas las conexiones.
+  const replaceVideoTrack = (track) => {
+    peersRef.current.forEach(({ pc }) => {
+      const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
+      if (sender) sender.replaceTrack(track).catch(() => {});
+    });
+  };
+
+  const stopScreen = () => {
+    const screen = screenStreamRef.current;
+    if (screen) screen.getTracks().forEach((t) => t.stop());
+    screenStreamRef.current = null;
+    const cam = localStreamRef.current ? localStreamRef.current.getVideoTracks()[0] : null;
+    replaceVideoTrack(cam || null);
+    if (localRef.current) localRef.current.srcObject = localStreamRef.current;
+    setSharing(false);
+  };
+
+  const startScreen = async () => {
+    try {
+      const screen = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      screenStreamRef.current = screen;
+      const track = screen.getVideoTracks()[0];
+      replaceVideoTrack(track);
+      if (localRef.current) localRef.current.srcObject = screen;
+      track.onended = stopScreen; // botón "Dejar de compartir" del navegador
+      setSharing(true);
+    } catch {
+      /* el usuario canceló el selector de pantalla */
+    }
+  };
+
+  const toggleScreen = () => (sharing ? stopScreen() : startScreen());
+
   if (!active) {
     return (
       <div className="rtc-launch">
@@ -215,8 +263,8 @@ export default function ProximityVideo() {
     <div className="rtc-panel">
       <div className="rtc-grid">
         <div className="video-tile">
-          <video ref={localRef} autoPlay playsInline muted />
-          <span className="video-label">Tú</span>
+          <video ref={localRef} autoPlay playsInline muted className={sharing ? "" : "mirror"} />
+          <span className="video-label">{sharing ? "Tú (pantalla)" : "Tú"}</span>
         </div>
         {remoteIds.map((id) => (
           <VideoTile
@@ -234,6 +282,9 @@ export default function ProximityVideo() {
         </button>
         <button onClick={toggleCam} className={camOn ? "" : "off"}>
           {camOn ? "📷" : "🚫"}
+        </button>
+        <button onClick={toggleScreen} className={sharing ? "on" : ""} title="Compartir pantalla">
+          🖥️
         </button>
         <button onClick={() => setActive(false)} className="leave">Salir</button>
       </div>
