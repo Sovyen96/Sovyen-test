@@ -294,42 +294,8 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
   ctx.ellipse(cx, cy + 12, 11, 5, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Cuerpo (camiseta del color del jugador).
-  ctx.fillStyle = p.color;
-  roundRect(ctx, cx - 9, cy - 2 + bob, 18, 16, 6);
-  ctx.fill();
-
-  // Cabeza.
-  ctx.fillStyle = "#f1c9a5";
-  ctx.beginPath();
-  ctx.arc(cx, cy - 8 + bob, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Pelo según orientación.
-  ctx.fillStyle = "#4a3526";
-  ctx.beginPath();
-  if (p.dir === "down") {
-    ctx.arc(cx, cy - 10 + bob, 8, Math.PI, Math.PI * 2);
-  } else if (p.dir === "up") {
-    ctx.arc(cx, cy - 8 + bob, 8, 0, Math.PI * 2);
-  } else {
-    ctx.arc(cx, cy - 9 + bob, 8, Math.PI * 0.9, Math.PI * 2.1);
-  }
-  ctx.fill();
-
-  // Ojos (sólo si no mira hacia arriba).
-  if (p.dir !== "up") {
-    ctx.fillStyle = "#2b2b2b";
-    const ey = cy - 7 + bob;
-    if (p.dir === "left") {
-      ctx.beginPath(); ctx.arc(cx - 4, ey, 1.4, 0, Math.PI * 2); ctx.fill();
-    } else if (p.dir === "right") {
-      ctx.beginPath(); ctx.arc(cx + 4, ey, 1.4, 0, Math.PI * 2); ctx.fill();
-    } else {
-      ctx.beginPath(); ctx.arc(cx - 3, ey, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 3, ey, 1.4, 0, Math.PI * 2); ctx.fill();
-    }
-  }
+  // Cuerpo + cabeza + rasgos (reutilizable en la vista previa).
+  drawAvatarBody(ctx, p, p.dir, cx, cy, bob);
 
   // Etiqueta de nombre.
   ctx.font = "600 12px system-ui, sans-serif";
@@ -392,4 +358,97 @@ function drawBubble(ctx, cx, bottomY, text) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   lines.forEach((l, i) => ctx.fillText(l, cx, y + 6 + lineH / 2 + i * lineH));
+}
+
+// ── Cuerpo del avatar (compartido por el juego y la vista previa) ─
+// `a` aporta la apariencia: color (camiseta), skin, hair, hairColor, glasses.
+// (cx, cy) es el centro del tile; `bob` el balanceo al andar.
+export function drawAvatarBody(ctx, a, dir, cx, cy, bob = 0) {
+  const skin = a.skin || "#f1c9a5";
+
+  // Camiseta.
+  ctx.fillStyle = a.color || "#3498db";
+  roundRect(ctx, cx - 9, cy - 2 + bob, 18, 16, 6);
+  ctx.fill();
+
+  // Cabeza.
+  const hy = cy - 8 + bob;
+  ctx.fillStyle = skin;
+  ctx.beginPath();
+  ctx.arc(cx, hy, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  drawHair(ctx, a, dir, cx, hy);
+
+  // Cara (sólo si no mira hacia arriba).
+  if (dir !== "up") drawFace(ctx, a, dir, cx, hy + 1);
+}
+
+function drawHair(ctx, a, dir, hx, hy) {
+  const style = a.hair || "short";
+  if (style === "bald") return;
+  const color = a.hairColor || "#4a3526";
+  ctx.fillStyle = color;
+
+  if (style === "cap") {
+    ctx.beginPath();
+    ctx.arc(hx, hy, 8.5, Math.PI, Math.PI * 2);
+    ctx.fill();
+    // Visera según orientación.
+    if (dir === "left") ctx.fillRect(hx - 13, hy - 2, 8, 3);
+    else if (dir === "right") ctx.fillRect(hx + 5, hy - 2, 8, 3);
+    else ctx.fillRect(hx - 8, hy - 2, 16, 3);
+    return;
+  }
+
+  // Casquete de pelo (círculo completo si mira hacia arriba).
+  ctx.beginPath();
+  if (dir === "up") ctx.arc(hx, hy, 8.6, 0, Math.PI * 2);
+  else ctx.arc(hx, hy, 8.6, Math.PI * 0.95, Math.PI * 2.05);
+  ctx.fill();
+
+  if (style === "long") {
+    ctx.fillRect(hx - 8.6, hy - 1, 3, 13);
+    ctx.fillRect(hx + 5.6, hy - 1, 3, 13);
+  } else if (style === "bun") {
+    ctx.beginPath();
+    ctx.arc(hx, hy - 8.5, 3.6, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (style === "spiky") {
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(hx + i * 5 - 3, hy - 5);
+      ctx.lineTo(hx + i * 5, hy - 13);
+      ctx.lineTo(hx + i * 5 + 3, hy - 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+}
+
+function drawFace(ctx, a, dir, cx, ey) {
+  const eyes = dir === "left" ? [-4] : dir === "right" ? [4] : [-3, 3];
+
+  ctx.fillStyle = "#2b2b2b";
+  for (const dx of eyes) {
+    ctx.beginPath();
+    ctx.arc(cx + dx, ey, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (a.glasses) {
+    ctx.strokeStyle = "#2b2b2b";
+    ctx.lineWidth = 1.2;
+    for (const dx of eyes) {
+      ctx.beginPath();
+      ctx.arc(cx + dx, ey, 2.6, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    if (eyes.length === 2) {
+      ctx.beginPath();
+      ctx.moveTo(cx + eyes[0] + 2.6, ey);
+      ctx.lineTo(cx + eyes[1] - 2.6, ey);
+      ctx.stroke();
+    }
+  }
 }

@@ -1,25 +1,24 @@
 import { useState } from "react";
-
-const COLORS = [
-  "#e74c3c", "#3498db", "#2ecc71", "#9b59b6",
-  "#f39c12", "#1abc9c", "#e84393", "#34495e",
-];
+import AvatarPanel from "./AvatarPanel.jsx";
+import { randomAppearance } from "../game/appearance.js";
 
 export default function JoinScreen({ onJoin }) {
   const [name, setName] = useState("");
-  const [color, setColor] = useState(COLORS[1]);
+  const [appearance, setAppearance] = useState(randomAppearance);
 
   const submit = (e) => {
     e.preventDefault();
-    const clean = name.trim() || "Invitado";
-    onJoin({ name: clean.slice(0, 16), color });
+    const clean = (name.trim() || "Invitado").slice(0, 16);
+    onJoin({ name: clean, ...appearance });
   };
 
   return (
     <div className="join-screen">
-      <form className="join-card" onSubmit={submit}>
+      <form className="join-card wide" onSubmit={submit}>
         <h1>🏢 La Oficina de la IA</h1>
-        <p className="subtitle">Entra y muévete por la oficina virtual</p>
+        <p className="subtitle">Crea tu avatar y entra a la oficina virtual</p>
+
+        <AvatarPanel value={appearance} onChange={setAppearance} />
 
         <label>Tu nombre</label>
         <input
@@ -30,21 +29,12 @@ export default function JoinScreen({ onJoin }) {
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label>Color de tu avatar</label>
-        <div className="swatches">
-          {COLORS.map((c) => (
-            <button
-              type="button"
-              key={c}
-              className={"swatch" + (c === color ? " selected" : "")}
-              style={{ background: c }}
-              onClick={() => setColor(c)}
-              aria-label={`Color ${c}`}
-            />
-          ))}
+        <div className="join-actions">
+          <button type="button" className="ghost-btn" onClick={() => setAppearance(randomAppearance())}>
+            🎲 Aleatorio
+          </button>
+          <button type="submit" className="enter-btn">Entrar a la oficina</button>
         </div>
-
-        <button type="submit" className="enter-btn">Entrar a la oficina</button>
         <p className="hint">Muévete con WASD o las flechas ⬆️⬇️⬅️➡️</p>
       </form>
     </div>

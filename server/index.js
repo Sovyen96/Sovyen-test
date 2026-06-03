@@ -57,10 +57,15 @@ io.on("connection", (socket) => {
   socket.on("join", (payload = {}) => {
     const spawn = nextSpawn();
     const name = String(payload.name || "Invitado").slice(0, 16).trim() || "Invitado";
+    const a = payload.appearance || {};
     const player = {
       id: socket.id,
       name,
-      color: typeof payload.color === "string" ? payload.color : nextColor(),
+      color: typeof a.color === "string" ? a.color : nextColor(),
+      skin: typeof a.skin === "string" ? a.skin : "#f1c9a5",
+      hair: typeof a.hair === "string" ? a.hair : "short",
+      hairColor: typeof a.hairColor === "string" ? a.hairColor : "#4a3526",
+      glasses: !!a.glasses,
       tx: spawn.tx,
       ty: spawn.ty,
       dir: "down",
@@ -81,6 +86,27 @@ io.on("connection", (socket) => {
     if (Number.isFinite(ty)) p.ty = ty;
     if (typeof dir === "string") p.dir = dir;
     socket.broadcast.emit("player-moved", { id: socket.id, tx: p.tx, ty: p.ty, dir: p.dir });
+  });
+
+  socket.on("update", (fields = {}) => {
+    const p = players.get(socket.id);
+    if (!p) return;
+    if (typeof fields.name === "string") {
+      p.name = fields.name.slice(0, 16).trim() || p.name;
+    }
+    for (const key of ["color", "skin", "hair", "hairColor"]) {
+      if (typeof fields[key] === "string") p[key] = fields[key];
+    }
+    if ("glasses" in fields) p.glasses = !!fields.glasses;
+    io.emit("player-updated", {
+      id: socket.id,
+      name: p.name,
+      color: p.color,
+      skin: p.skin,
+      hair: p.hair,
+      hairColor: p.hairColor,
+      glasses: p.glasses,
+    });
   });
 
   socket.on("chat", ({ text } = {}) => {

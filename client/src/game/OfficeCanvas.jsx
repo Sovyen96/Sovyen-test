@@ -68,12 +68,18 @@ export default function OfficeCanvas({ me }) {
       const p = playersRef.current.get(id);
       if (p) p.bubble = { text, until: performance.now() + 5000 };
     };
+    // Cambios de apariencia/nombre (también aplican al propio avatar).
+    const onUpdated = ({ id, ...fields }) => {
+      const p = playersRef.current.get(id);
+      if (p) Object.assign(p, fields);
+    };
 
     socket.on("init", onInit);
     socket.on("player-joined", onJoined);
     socket.on("player-moved", onMoved);
     socket.on("player-left", onLeft);
     socket.on("chat", onChat);
+    socket.on("player-updated", onUpdated);
 
     // ── Teclado ────────────────────────────────────────────────
     const typing = () => {
@@ -188,7 +194,16 @@ export default function OfficeCanvas({ me }) {
 
     // ── Conexión ───────────────────────────────────────────────
     if (!socket.connected) socket.connect();
-    socket.emit("join", { name: me.name, color: me.color });
+    socket.emit("join", {
+      name: me.name,
+      appearance: {
+        color: me.color,
+        skin: me.skin,
+        hair: me.hair,
+        hairColor: me.hairColor,
+        glasses: me.glasses,
+      },
+    });
 
     return () => {
       cancelAnimationFrame(raf);
@@ -200,8 +215,9 @@ export default function OfficeCanvas({ me }) {
       socket.off("player-moved", onMoved);
       socket.off("player-left", onLeft);
       socket.off("chat", onChat);
+      socket.off("player-updated", onUpdated);
     };
-  }, [me.name, me.color]);
+  }, []);
 
   return <canvas ref={canvasRef} className="office-canvas" />;
 }
