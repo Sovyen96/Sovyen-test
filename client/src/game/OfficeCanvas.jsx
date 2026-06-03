@@ -93,6 +93,9 @@ export default function OfficeCanvas({ me, onPrompt }) {
       const p = playersRef.current.get(id);
       if (p) p.emote = { emoji, start: performance.now(), until: performance.now() + 2500 };
     };
+    const onFull = ({ max }) => {
+      window.alert(`La oficina está completa (máximo ${max} personas). Inténtalo en un rato.`);
+    };
     // Cambios de apariencia/nombre (también aplican al propio avatar).
     const onUpdated = ({ id, ...fields }) => {
       const p = playersRef.current.get(id);
@@ -105,6 +108,7 @@ export default function OfficeCanvas({ me, onPrompt }) {
     socket.on("player-left", onLeft);
     socket.on("chat", onChat);
     socket.on("emote", onEmote);
+    socket.on("full", onFull);
     socket.on("player-updated", onUpdated);
 
     // ── Teclado ────────────────────────────────────────────────
@@ -276,6 +280,7 @@ export default function OfficeCanvas({ me, onPrompt }) {
       socket.off("player-left", onLeft);
       socket.off("chat", onChat);
       socket.off("emote", onEmote);
+      socket.off("full", onFull);
       socket.off("player-updated", onUpdated);
     };
   }, []);

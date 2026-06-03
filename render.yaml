@@ -1,0 +1,23 @@
+# Despliegue en Render (https://render.com) como un único servicio web.
+# Soporta WebSockets (Socket.IO) en todos los planes.
+services:
+  - type: web
+    name: oficina-virtual
+    runtime: node
+    plan: free
+    buildCommand: npm --prefix server install && npm --prefix client install && npm --prefix client run build
+    startCommand: node server/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Aforo máximo de la oficina.
+      - key: MAX_PLAYERS
+        value: "12"
+      # (Opcional) Servidor TURN para que el vídeo funcione entre redes/NAT.
+      # - key: TURN_URL
+      #   value: turn:tu-servidor-turn:3478
+      # - key: TURN_USERNAME
+      #   value: usuario
+      # - key: TURN_CREDENTIAL
+      #   value: secreto

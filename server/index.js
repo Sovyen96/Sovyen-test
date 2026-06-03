@@ -4,11 +4,32 @@
 // El servidor trabaja siempre en coordenadas de tile (tx, ty).
 // ─────────────────────────────────────────────────────────────
 import http from "http";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3001;
+// Aforo máximo (la oficina está pensada para reuniones pequeñas).
+const MAX_PLAYERS = Number(process.env.MAX_PLAYERS || 12);
+
+// Configuración de servidores ICE para WebRTC. STUN siempre; TURN opcional
+// (recomendado para reuniones reales entre redes distintas) vía variables
+// de entorno, sin necesidad de recompilar el cliente.
+function rtcConfig() {
+  const iceServers = [{ urls: "stun:stun.l.google.com:19302" }];
+  if (process.env.TURN_URL) {
+    iceServers.push({
+      urls: process.env.TURN_URL,
+      username: process.env.TURN_USERNAME,
+      credential: process.env.TURN_CREDENTIAL,
+    });
+  }
+  return { iceServers };
+}
 
 // Paleta de colores de camiseta para los avatares.
 const COLORS = [
@@ -24,8 +45,20 @@ const SPAWNS = [
 
 const app = express();
 app.use(cors());
-app.get("/", (_req, res) => res.send("Office server OK"));
 app.get("/health", (_req, res) => res.json({ ok: true, players: players.size }));
+app.get("/rtc-config", (_req, res) => res.json(rtcConfig()));
+
+// En producción, este mismo servidor sirve el cliente ya compilado
+// (client/dist), de modo que toda la app vive en una única URL.
+const CLIENT_DIST = path.resolve(__dirname, "..", "client", "dist");
+if (fs.existsSync(CLIENT_DIST)) {
+  app.use(express.static(CLIENT_DIST));
+  // SPA fallback: cualquier ruta no-API devuelve index.html.
+  app.get("*", (_req, res) => res.sendFile(path.join(CLIENT_DIST, "index.html")));
+  console.log("📦 Sirviendo cliente compilado desde client/dist");
+} else {
+  app.get("/", (_req, res) => res.send("Office server OK (cliente no compilado)"));
+}
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
@@ -55,6 +88,10 @@ io.on("connection", (socket) => {
   console.log(`+ conexión ${socket.id}`);
 
   socket.on("join", (payload = {}) => {
+    if (players.size >= MAX_PLAYERS && !players.has(socket.id)) {
+      socket.emit("full", { max: MAX_PLAYERS });
+      return;
+    }
     const spawn = nextSpawn();
     const name = String(payload.name || "Invitado").slice(0, 16).trim() || "Invitado";
     const a = payload.appearance || {};

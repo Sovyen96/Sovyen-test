@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { socket } from "../socket.js";
+import { socket, SERVER_URL } from "../socket.js";
 import { gameState } from "../game/gameState.js";
 
 const RANGE = 4;          // distancia (en tiles) para abrir la llamada
-const ICE = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+const ICE_DEFAULT = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
 // Elemento <video> que vuelca un MediaStream.
 function VideoTile({ stream, muted, label }) {
@@ -29,6 +29,7 @@ export default function ProximityVideo() {
   const localRef = useRef(null);
   const localStreamRef = useRef(null);
   const peersRef = useRef(new Map()); // id -> { pc, remoteSet, candidates }
+  const iceRef = useRef(ICE_DEFAULT); // config ICE (STUN/TURN) del servidor
 
   // Volcado del stream local al <video>.
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function ProximityVideo() {
     };
 
     const createPeer = async (id, initiator) => {
-      const pc = new RTCPeerConnection(ICE);
+      const pc = new RTCPeerConnection(iceRef.current);
       const entry = { pc, remoteSet: false, candidates: [] };
       peers.set(id, entry);
 
@@ -139,8 +140,13 @@ export default function ProximityVideo() {
       }
     };
 
-    // Pide cámara y micrófono (con repliegue a sólo audio).
+    // Carga la config ICE (STUN/TURN) y luego pide cámara y micrófono.
     (async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/rtc-config`);
+        if (res.ok) iceRef.current = await res.json();
+      } catch { /* se usa la config STUN por defecto */ }
+
       try {
         let stream;
         try {

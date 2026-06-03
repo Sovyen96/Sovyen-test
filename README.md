@@ -24,8 +24,19 @@ npm run dev
 Abre **http://localhost:5173** en varias pestañas o dispositivos para probar el
 multijugador. Cada pestaña es un jugador distinto.
 
-> Si despliegas el servidor en otra URL, define `VITE_SERVER_URL` al construir el
-> cliente (p. ej. `VITE_SERVER_URL=https://mi-servidor npm --prefix client run build`).
+### Modo producción en local (una sola URL)
+
+```bash
+npm run build   # compila el cliente
+npm start       # el servidor sirve la app en http://localhost:3001
+```
+
+## 🚀 Publicar (salir de local)
+
+La app se despliega como **un único servicio** (el servidor sirve el cliente
+compilado y el tiempo real). Guía completa en **[DEPLOY.md](./DEPLOY.md)** —
+incluye Render (gratis, recomendado), Docker, Railway y cómo añadir un **TURN**
+para que el vídeo funcione entre redes distintas en reuniones reales.
 
 ## ✨ Funciones
 
