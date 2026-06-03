@@ -32,6 +32,8 @@ export default function ProximityVideo() {
   const peersRef = useRef(new Map()); // id -> { pc, remoteSet, candidates }
   const iceRef = useRef(ICE_DEFAULT); // config ICE (STUN/TURN) del servidor
   const screenStreamRef = useRef(null); // stream de pantalla compartida
+  const audioCtxRef = useRef(null);     // análisis de voz (indicador "hablando")
+  const speakIntervalRef = useRef(null);
 
   // Volcado del stream local al <video>.
   useEffect(() => {
@@ -149,6 +151,36 @@ export default function ProximityVideo() {
       }
     };
 
+    // Detecta cuándo el usuario habla (voz por encima de un umbral, con
+    // micro activo) y lo difunde para mostrar el aro verde en el avatar.
+    const setupSpeaking = (stream) => {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AC();
+        audioCtxRef.current = audioCtx;
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        audioCtx.createMediaStreamSource(stream).connect(analyser);
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        let speaking = false;
+        let lastLoud = 0;
+        speakIntervalRef.current = setInterval(() => {
+          analyser.getByteTimeDomainData(data);
+          let sum = 0;
+          for (const v of data) { const x = (v - 128) / 128; sum += x * x; }
+          const rms = Math.sqrt(sum / data.length);
+          const track = stream.getAudioTracks()[0];
+          const enabled = track && track.enabled;
+          if (rms > 0.05 && enabled) lastLoud = Date.now();
+          const sp = enabled && Date.now() - lastLoud < 600; // "hangover"
+          if (sp !== speaking) {
+            speaking = sp;
+            socket.emit("speaking", { on: sp });
+          }
+        }, 150);
+      } catch { /* WebAudio no disponible */ }
+    };
+
     // Carga la config ICE (STUN/TURN) y luego pide cámara y micrófono.
     (async () => {
       try {
@@ -170,6 +202,7 @@ export default function ProximityVideo() {
         }
         localStreamRef.current = stream;
         if (localRef.current) localRef.current.srcObject = stream;
+        setupSpeaking(stream);
       } catch {
         setError("No se pudo acceder a la cámara/micrófono.");
         setActive(false);
@@ -183,6 +216,9 @@ export default function ProximityVideo() {
       cancelled = true;
       clearInterval(interval);
       socket.off("rtc-signal", onSignal);
+      if (speakIntervalRef.current) clearInterval(speakIntervalRef.current);
+      if (audioCtxRef.current) { audioCtxRef.current.close().catch(() => {}); audioCtxRef.current = null; }
+      socket.emit("speaking", { on: false });
       for (const id of [...peers.keys()]) closePeer(id);
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((t) => t.stop());
@@ -203,6 +239,7 @@ export default function ProximityVideo() {
     const on = !micOn;
     s.getAudioTracks().forEach((t) => (t.enabled = on));
     setMicOn(on);
+    if (!on) socket.emit("speaking", { on: false });
   };
   const toggleCam = () => {
     const s = localStreamRef.current;

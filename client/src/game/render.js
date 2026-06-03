@@ -157,6 +157,28 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.fillStyle = "#4aa3df";
       ctx.fillRect(x + 8, y + 8, w - 16, h - 16);
       break;
+    case "whiteboard":
+      ctx.fillStyle = "#6b5a44";
+      roundRect(ctx, x + 2, y + 2, w - 4, h - 6, 4);
+      ctx.fill();
+      ctx.fillStyle = "#fbfbf7";
+      roundRect(ctx, x + 5, y + 4, w - 10, h - 12, 3);
+      ctx.fill();
+      // Garabatos de marcador.
+      ctx.strokeStyle = "#2e86de";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(x + 10, y + 12); ctx.lineTo(x + 22, y + 12);
+      ctx.moveTo(x + 10, y + 17); ctx.lineTo(x + w - 14, y + 17);
+      ctx.stroke();
+      ctx.strokeStyle = "#e74c3c";
+      ctx.beginPath();
+      ctx.moveTo(x + w - 26, y + 9); ctx.lineTo(x + w - 12, y + 21);
+      ctx.stroke();
+      // Bandeja inferior.
+      ctx.fillStyle = "#6b5a44";
+      ctx.fillRect(x + 6, y + h - 8, w - 12, 3);
+      break;
     case "desk":
       shadow(ctx, x, y, w, h);
       ctx.fillStyle = "#caa472";
@@ -295,6 +317,16 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
   ctx.beginPath();
   ctx.ellipse(cx, cy + 12, 11, 5, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  // Aro verde cuando la persona está hablando (micro activo + voz).
+  if (p.speaking) {
+    const pulse = 1 + Math.sin(now / 180) * 0.12;
+    ctx.strokeStyle = "rgba(46,204,113,0.95)";
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 11, 13 * pulse, 7 * pulse, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 
   // Cuerpo + cabeza + rasgos (reutilizable en la vista previa).
   drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob);

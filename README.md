@@ -47,6 +47,10 @@ para que el vídeo funcione entre redes distintas en reuniones reales.
 - 🎥 **Vídeo/voz por proximidad (WebRTC)**: al acercarte a alguien (≤ 4 casillas)
   se abre automáticamente la videollamada; al alejarte se cierra.
 - 🖥️ **Compartir pantalla**: presenta tu pantalla a quienes tengas cerca.
+- 🖌️ **Pizarra colaborativa**: dibujad juntos en tiempo real (botón «🖌️ Pizarra»
+  o tecla `F` junto a la pizarra de la oficina). Quien llega tarde ve lo ya dibujado.
+- 🗣️ **Indicador de "hablando"**: aro verde alrededor de quien tiene el micro
+  activo y está hablando.
 - 🔄 **Reconexión automática**: si se cae la red, vuelves a entrar solo.
 - 💾 **Perfil recordado**: tu nombre y avatar se guardan en el navegador.
 - 🟢 **Contador de gente en línea** en la cabecera.
@@ -55,6 +59,7 @@ para que el vídeo funcione entre redes distintas en reuniones reales.
 
 - **Moverte:** `WASD` o flechas `⬆️ ⬇️ ⬅️ ➡️` (también hay un D-pad táctil en pantalla).
 - **Sentarte/levantarte:** `E` cuando estés junto a una silla o sofá.
+- **Pizarra:** `F` junto a la pizarra (o el botón «🖌️ Pizarra» del HUD).
 - **Emotes:** teclas `1`-`6` o la barra inferior de emojis.
 - **Chatear:** escribe en la caja inferior y pulsa Enter; tu mensaje aparece como
   bocadillo sobre tu avatar durante 5 segundos.

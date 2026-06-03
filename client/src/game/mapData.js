@@ -21,6 +21,7 @@ export const FURNITURE = [
   { x: 12, y: 0, w: 3, h: 1, kind: "mondrian", solid: false },
   { x: 17, y: 1, w: 2, h: 1, kind: "easel", solid: true },
   { x: 22, y: 0, w: 2, h: 1, kind: "screen", solid: false },
+  { x: 23, y: 1, w: 3, h: 1, kind: "whiteboard", solid: true },
 
   // ── Sala de streaming (centro-izquierda) ──
   { x: 3, y: 6, w: 4, h: 1, kind: "desk", solid: true },
@@ -71,6 +72,18 @@ export const SEATS = [
   { x: 19, y: 8, dir: "up" },   // sofá lounge
   { x: 20, y: 8, dir: "up" },
 ];
+
+// Pizarra colaborativa: zona de la pared superior. Te acercas a una
+// casilla adyacente y la abres con la tecla F.
+export const BOARD = { x: 23, y: 1, w: 3, h: 1 };
+
+/** ¿Está el jugador junto a la pizarra (a una casilla)? */
+export function isNearBoard(tx, ty) {
+  for (let dx = 0; dx < BOARD.w; dx++) {
+    if (Math.abs(BOARD.x + dx - tx) + Math.abs(BOARD.y - ty) === 1) return true;
+  }
+  return false;
+}
 
 // Pared divisoria horizontal con un hueco (puerta) para pasar.
 const DIVIDER_ROW = 12;

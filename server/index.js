@@ -66,6 +66,10 @@ const io = new Server(server, { cors: { origin: "*" } });
 /** @type {Map<string, {id:string,name:string,color:string,tx:number,ty:number,dir:string}>} */
 const players = new Map();
 
+// Estado de la pizarra colaborativa: lista de trazos (se conserva para
+// que quien abra la pizarra más tarde vea lo ya dibujado).
+let board = [];
+
 let colorCursor = 0;
 let spawnCursor = 0;
 
@@ -140,6 +144,25 @@ io.on("connection", (socket) => {
   socket.on("rtc-signal", ({ to, data } = {}) => {
     if (!to) return;
     io.to(to).emit("rtc-signal", { from: socket.id, data });
+  });
+
+  // Indicador de "hablando" (micro activo con voz).
+  socket.on("speaking", ({ on } = {}) => {
+    io.emit("speaking", { id: socket.id, on: !!on });
+  });
+
+  // ── Pizarra colaborativa ───────────────────────────────────
+  // Al abrirla, el cliente pide el estado completo (para late joiners).
+  socket.on("wb-request", () => socket.emit("wb-state", { strokes: board }));
+  socket.on("wb-draw", ({ stroke } = {}) => {
+    if (!stroke) return;
+    board.push(stroke);
+    if (board.length > 4000) board = board.slice(-3000); // límite de memoria
+    socket.broadcast.emit("wb-draw", { stroke });
+  });
+  socket.on("wb-clear", () => {
+    board = [];
+    io.emit("wb-clear");
   });
 
   socket.on("update", (fields = {}) => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { socket } from "../socket.js";
 import {
-  TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked, SEATS,
+  TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked, SEATS, isNearBoard,
 } from "./mapData.js";
 import {
   drawFloor, drawZones, drawFurniture, drawCharacter,
@@ -24,13 +24,16 @@ const DELTA = {
  * Lienzo del juego. Renderiza la oficina y gestiona el movimiento
  * del jugador local y la interpolación de los jugadores remotos.
  */
-export default function OfficeCanvas({ me, onPrompt }) {
+export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
   const canvasRef = useRef(null);
   const blockedRef = useRef(buildBlocked());
   const playersRef = useRef(new Map());
   const keysRef = useRef(new Set());
   const meIdRef = useRef(null);
-  const actionRef = useRef(false); // tecla E pendiente de procesar
+  const actionRef = useRef(false);      // tecla E pendiente de procesar
+  const boardRef = useRef(false);       // tecla F pendiente de procesar
+  const openBoardRef = useRef(onOpenBoard);
+  openBoardRef.current = onOpenBoard;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,6 +99,10 @@ export default function OfficeCanvas({ me, onPrompt }) {
     const onFull = ({ max }) => {
       window.alert(`La oficina está completa (máximo ${max} personas). Inténtalo en un rato.`);
     };
+    const onSpeaking = ({ id, on }) => {
+      const p = playersRef.current.get(id);
+      if (p) p.speaking = on;
+    };
     // Cambios de apariencia/nombre (también aplican al propio avatar).
     const onUpdated = ({ id, ...fields }) => {
       const p = playersRef.current.get(id);
@@ -109,6 +116,7 @@ export default function OfficeCanvas({ me, onPrompt }) {
     socket.on("chat", onChat);
     socket.on("emote", onEmote);
     socket.on("full", onFull);
+    socket.on("speaking", onSpeaking);
     socket.on("player-updated", onUpdated);
 
     // ── Teclado ────────────────────────────────────────────────
@@ -123,6 +131,9 @@ export default function OfficeCanvas({ me, onPrompt }) {
         e.preventDefault();
       } else if (e.code === "KeyE") {
         actionRef.current = true;
+        e.preventDefault();
+      } else if (e.code === "KeyF") {
+        boardRef.current = true;
         e.preventDefault();
       } else if (/^Digit[1-6]$/.test(e.code)) {
         const emoji = EMOTES[Number(e.code.slice(5)) - 1];
@@ -158,6 +169,13 @@ export default function OfficeCanvas({ me, onPrompt }) {
       if (meP) {
         const targetX = meP.tx * TILE;
         const targetY = meP.ty * TILE;
+
+        // Abrir la pizarra con F si estamos junto a ella.
+        if (boardRef.current) {
+          if (isNearBoard(meP.tx, meP.ty)) openBoardRef.current?.();
+          boardRef.current = false;
+        }
+
         if (meP.px !== targetX || meP.py !== targetY) {
           // En tránsito hacia la casilla objetivo.
           meP.moving = true;
@@ -188,7 +206,6 @@ export default function OfficeCanvas({ me, onPrompt }) {
             meP.tx = seat.x; meP.ty = seat.y; meP.dir = seat.dir;
             meP.sitting = true; meP.sitT = performance.now();
             socket.emit("move", { tx: seat.x, ty: seat.y, dir: seat.dir, sitting: true });
-            setPrompt("");
           } else {
             // ¿Hay una tecla pulsada? Iniciar el siguiente paso.
             const dir = [...keysRef.current].pop();
@@ -205,9 +222,14 @@ export default function OfficeCanvas({ me, onPrompt }) {
                 socket.emit("move", { tx: meP.tx, ty: meP.ty, dir });
               }
             }
-            setPrompt(seat ? "Pulsa E para sentarte" : "");
           }
           actionRef.current = false;
+
+          // Aviso contextual con las acciones disponibles alrededor.
+          const parts = [];
+          if (!meP.sitting && seat) parts.push("E para sentarte");
+          if (isNearBoard(meP.tx, meP.ty)) parts.push("F para la pizarra");
+          setPrompt(parts.join("   ·   "));
         }
       }
 
@@ -287,6 +309,7 @@ export default function OfficeCanvas({ me, onPrompt }) {
       socket.off("chat", onChat);
       socket.off("emote", onEmote);
       socket.off("full", onFull);
+      socket.off("speaking", onSpeaking);
       socket.off("player-updated", onUpdated);
     };
   }, []);

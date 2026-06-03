@@ -3,6 +3,7 @@ import JoinScreen from "./components/JoinScreen.jsx";
 import Chat from "./components/Chat.jsx";
 import AvatarPanel from "./components/AvatarPanel.jsx";
 import ProximityVideo from "./components/ProximityVideo.jsx";
+import Whiteboard from "./components/Whiteboard.jsx";
 import OfficeCanvas from "./game/OfficeCanvas.jsx";
 import { socket } from "./socket.js";
 import { EMOTES } from "./game/appearance.js";
@@ -54,6 +55,7 @@ export default function App() {
   const [editing, setEditing] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [online, setOnline] = useState(1);
+  const [board, setBoard] = useState(false);
 
   // Mantiene el contador de gente en línea.
   useEffect(() => {
@@ -84,11 +86,12 @@ export default function App() {
 
   return (
     <div className="game-root">
-      <OfficeCanvas me={me} onPrompt={setPrompt} />
+      <OfficeCanvas me={me} onPrompt={setPrompt} onOpenBoard={() => setBoard(true)} />
 
       <div className="hud-top">
         <span className="badge">🏢 La Oficina de la IA · 🟢 {online} en línea</span>
         <button className="edit-btn" onClick={() => setEditing(true)}>✏️ Editar avatar</button>
+        <button className="edit-btn" onClick={() => setBoard(true)}>🖌️ Pizarra</button>
       </div>
 
       <ProximityVideo />
@@ -113,6 +116,8 @@ export default function App() {
       </div>
 
       <Chat />
+
+      <Whiteboard open={board} onClose={() => setBoard(false)} />
 
       {editing && (
         <EditModal

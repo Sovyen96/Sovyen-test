@@ -362,6 +362,73 @@ html, body, #root {
   color: #9aa3b2;
 }
 
+/* ── Pizarra colaborativa ────────────────────────────────────── */
+.wb-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: center;
+  z-index: 30;
+}
+.wb-card {
+  width: min(900px, 94vw);
+  height: min(640px, 88vh);
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.wb-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.wb-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.wb-color {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.wb-color.selected { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); }
+.wb-size {
+  width: 30px; height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.wb-size.selected { background: #3498db; }
+.wb-size span { background: #fff; border-radius: 50%; display: block; }
+.wb-btn {
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8e8ec;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.wb-btn.selected { background: #3498db; border-color: #3498db; }
+.wb-btn.close { background: rgba(231, 76, 60, 0.3); }
+.wb-canvas {
+  flex: 1;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  cursor: crosshair;
+  touch-action: none;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .dpad { opacity: 0.4; }
   .dpad:hover { opacity: 1; }
