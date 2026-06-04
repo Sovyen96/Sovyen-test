@@ -4,12 +4,14 @@ import {
   TILE, COLS, ROWS, MAP_W, MAP_H, buildBlocked, SEATS, isNearBoard,
 } from "./mapData.js";
 import {
-  drawFloor, drawRugs, drawZones, drawFurniture, drawCharacter,
+  drawFloor, drawRugs, drawZoneLabels, drawFurniture,
+  drawCharacterSprite, drawCharacterLabel,
 } from "./render.js";
 import { EMOTES } from "./appearance.js";
 import { gameState } from "./gameState.js";
 
 const SPEED = 5.5 * TILE; // píxeles por segundo
+const PIXEL = 3;          // factor de pixelado (estética GBA)
 const DIRS = {
   ArrowUp: "up", KeyW: "up",
   ArrowDown: "down", KeyS: "down",
@@ -34,6 +36,8 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
   const boardRef = useRef(false);       // tecla F pendiente de procesar
   const openBoardRef = useRef(onOpenBoard);
   openBoardRef.current = onOpenBoard;
+  const bufFullRef = useRef(null);  // mundo a resolución completa
+  const bufSmallRef = useRef(null); // mundo reducido (para pixelar)
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -260,18 +264,45 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
       cam.x = MAP_W <= viewW ? (MAP_W - viewW) / 2 : Math.max(0, Math.min(cam.x, MAP_W - viewW));
       cam.y = MAP_H <= viewH ? (MAP_H - viewH) / 2 : Math.max(0, Math.min(cam.y, MAP_H - viewH));
 
-      // Render.
-      ctx.fillStyle = "#cdbfa6";
-      ctx.fillRect(0, 0, viewW, viewH);
-      drawFloor(ctx, cam);
-      drawRugs(ctx, cam);
-      drawZones(ctx, cam);
-      drawFurniture(ctx, cam);
-
-      // Dibujar avatares ordenados por Y (profundidad).
       const ordered = [...playersRef.current.values()].sort((a, b) => a.py - b.py);
+
+      // ── Capa "mundo" a resolución completa (se pixelará) ──
+      if (!bufFullRef.current) bufFullRef.current = document.createElement("canvas");
+      if (!bufSmallRef.current) bufSmallRef.current = document.createElement("canvas");
+      const bufFull = bufFullRef.current;
+      const bufSmall = bufSmallRef.current;
+      const sw = Math.max(1, Math.ceil(viewW / PIXEL));
+      const sh = Math.max(1, Math.ceil(viewH / PIXEL));
+      if (bufFull.width !== viewW || bufFull.height !== viewH) {
+        bufFull.width = viewW; bufFull.height = viewH;
+      }
+      if (bufSmall.width !== sw || bufSmall.height !== sh) {
+        bufSmall.width = sw; bufSmall.height = sh;
+      }
+      const fctx = bufFull.getContext("2d");
+      fctx.setTransform(1, 0, 0, 1, 0, 0);
+      fctx.fillStyle = "#cdbfa6";
+      fctx.fillRect(0, 0, viewW, viewH);
+      drawFloor(fctx, cam);
+      drawRugs(fctx, cam);
+      drawFurniture(fctx, cam);
+      for (const p of ordered) drawCharacterSprite(fctx, p, cam);
+
+      // Reducir (suaviza) y ampliar sin interpolar → píxeles gordos GBA.
+      const sctx = bufSmall.getContext("2d");
+      sctx.imageSmoothingEnabled = true;
+      sctx.clearRect(0, 0, sw, sh);
+      sctx.drawImage(bufFull, 0, 0, viewW, viewH, 0, 0, sw, sh);
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, viewW, viewH);
+      ctx.drawImage(bufSmall, 0, 0, sw, sh, 0, 0, sw * PIXEL, sh * PIXEL);
+
+      // ── Capa de texto nítida por encima ──
+      ctx.imageSmoothingEnabled = true;
+      drawZoneLabels(ctx, cam);
       for (const p of ordered) {
-        drawCharacter(ctx, p, cam, { isLocal: p.id === meIdRef.current });
+        drawCharacterLabel(ctx, p, cam, { isLocal: p.id === meIdRef.current });
       }
 
       raf = requestAnimationFrame(step);

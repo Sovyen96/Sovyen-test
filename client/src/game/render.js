@@ -15,48 +15,21 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// ── Suelo y paredes ────────────────────────────────────────────
-// Pequeño motivo decorativo (damasco) en cada baldosa del suelo.
-function drawDamask(ctx, cx, cy, color) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.fillStyle = color;
-  for (let k = 0; k < 4; k++) {
-    ctx.beginPath();
-    ctx.ellipse(0, -8, 2, 4.2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.rotate(Math.PI / 2);
-  }
-  // Rombo central.
-  ctx.beginPath();
-  ctx.moveTo(0, -3.5); ctx.lineTo(3.5, 0); ctx.lineTo(0, 3.5); ctx.lineTo(-3.5, 0);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-}
+// ── Suelo y paredes (estilo GBA: dithering en bloques de píxel) ──
+const PX = 3; // tamaño del "píxel de arte" para el dithering
 
-// Baldosa de parquet en espiga para el borde de la sala.
-function drawParquet(ctx, px, py, x, y) {
-  ctx.fillStyle = "#b89a68";
-  ctx.fillRect(px, py, TILE, TILE);
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(px, py, TILE, TILE);
-  ctx.clip();
-  ctx.strokeStyle = "#9a7d4c";
-  ctx.lineWidth = 2;
-  const up = (x + y) % 2 === 0;
-  for (let i = -TILE; i < TILE * 2; i += 9) {
-    ctx.beginPath();
-    if (up) { ctx.moveTo(px + i, py); ctx.lineTo(px + i + TILE, py + TILE); }
-    else { ctx.moveTo(px + i, py + TILE); ctx.lineTo(px + i + TILE, py); }
-    ctx.stroke();
+// Patrón de puntos determinista por celda (textura tipo 16-bit).
+function dither(ctx, px, py, x, y, color, density) {
+  ctx.fillStyle = color;
+  let seed = (x * 374761393 + y * 668265263) >>> 0;
+  const n = Math.floor(TILE / PX);
+  for (let i = 0; i < density; i++) {
+    seed = (seed * 1103515245 + 12345) >>> 0;
+    const cxp = (seed >>> 16) % n;
+    seed = (seed * 1103515245 + 12345) >>> 0;
+    const cyp = (seed >>> 16) % n;
+    ctx.fillRect(px + cxp * PX, py + cyp * PX, PX, PX);
   }
-  ctx.restore();
-  ctx.fillStyle = "rgba(255,240,210,0.18)";
-  ctx.fillRect(px, py, TILE, 2);
-  ctx.fillStyle = "rgba(70,50,25,0.18)";
-  ctx.fillRect(px, py + TILE - 2, TILE, 2);
 }
 
 export function drawFloor(ctx, cam) {
@@ -66,28 +39,25 @@ export function drawFloor(ctx, cam) {
       const py = y * TILE - cam.y;
       const wall = x === 0 || y === 0 || x === COLS - 1 || y === ROWS - 1;
       if (wall) {
-        drawParquet(ctx, px, py, x, y);
+        // Borde tipo "muro" empedrado retro.
+        ctx.fillStyle = "#7c5a3a";
+        ctx.fillRect(px, py, TILE, TILE);
+        ctx.fillStyle = "#9a7548";
+        ctx.fillRect(px, py, TILE, PX);
+        dither(ctx, px, py, x, y, "#5f4528", 8);
+        dither(ctx, px, py, x + 7, y + 3, "#8c6843", 6);
       } else {
         const a = (x + y) % 2 === 0;
-        ctx.fillStyle = a ? "#efe7d3" : "#e8dfc8";
+        ctx.fillStyle = a ? "#dac9a6" : "#d3c19c";
         ctx.fillRect(px, py, TILE, TILE);
-        drawDamask(ctx, px + TILE / 2, py + TILE / 2, a ? "#e4d8bd" : "#ded2b6");
-        ctx.strokeStyle = "rgba(150,135,105,0.16)";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(px + 0.5, py + 0.5, TILE, TILE);
+        dither(ctx, px, py, x, y, a ? "#e7dabd" : "#e0d3b4", 7);
+        dither(ctx, px, py, x + 5, y + 9, "#c6b48c", 5);
+        ctx.fillStyle = "rgba(150,130,95,0.22)"; // junta
+        ctx.fillRect(px, py, TILE, 1);
+        ctx.fillRect(px, py, 1, TILE);
       }
     }
   }
-
-  // Rodapié: línea de sombra donde la sala toca el parquet.
-  ctx.strokeStyle = "rgba(60,42,24,0.28)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(
-    TILE - cam.x + 1,
-    TILE - cam.y + 1,
-    (COLS - 2) * TILE - 2,
-    (ROWS - 2) * TILE - 2,
-  );
 
   // Pared divisoria de madera con puerta.
   for (let x = 1; x < COLS - 1; x++) {
@@ -96,15 +66,11 @@ export function drawFloor(ctx, cam) {
     const py = DIVIDER.row * TILE - cam.y;
     ctx.fillStyle = "#a8885a";
     ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "rgba(255,240,210,0.22)";
-    ctx.fillRect(px, py, TILE, 3);
-    ctx.strokeStyle = "rgba(70,50,25,0.35)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(px + TILE / 2, py + 3); ctx.lineTo(px + TILE / 2, py + TILE);
-    ctx.stroke();
-    ctx.fillStyle = "rgba(50,35,18,0.4)";
-    ctx.fillRect(px, py + TILE - 3, TILE, 3);
+    ctx.fillStyle = "#c4a06a";
+    ctx.fillRect(px, py, TILE, PX);
+    dither(ctx, px, py, x, DIVIDER.row * 2, "#8a6a3e", 6);
+    ctx.fillStyle = "#5a3f22";
+    ctx.fillRect(px, py + TILE - PX, TILE, PX);
   }
 }
 
@@ -133,25 +99,14 @@ export function drawRugs(ctx, cam) {
   });
 }
 
-// ── Zonas con etiqueta ─────────────────────────────────────────
-export function drawZones(ctx, cam) {
+// ── Etiquetas de zona (capa de texto, nítida sobre el pixelado) ─
+export function drawZoneLabels(ctx, cam) {
   for (const z of ZONES) {
     const px = z.x * TILE - cam.x;
     const py = z.y * TILE - cam.y;
     const w = z.w * TILE;
-    const h = z.h * TILE;
-    ctx.save();
-    ctx.fillStyle = "rgba(80,120,200,0.05)";
-    roundRect(ctx, px + 2, py + 2, w - 4, h - 4, 10);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(80,120,200,0.18)";
-    ctx.setLineDash([6, 6]);
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Etiqueta tipo "chip".
     ctx.font = "600 13px system-ui, sans-serif";
+    ctx.textAlign = "left";
     const tw = ctx.measureText(z.name).width;
     const lx = px + w / 2 - tw / 2 - 10;
     const ly = py + 6;
@@ -161,7 +116,6 @@ export function drawZones(ctx, cam) {
     ctx.fillStyle = "#fff";
     ctx.textBaseline = "middle";
     ctx.fillText(z.name, lx + 10, ly + 12);
-    ctx.restore();
   }
 }
 
@@ -442,7 +396,8 @@ function drawMondrian(ctx, x, y, w, h) {
 }
 
 // ── Avatar (personaje) ─────────────────────────────────────────
-export function drawCharacter(ctx, p, cam, opts = {}) {
+// Parte "mundo" del personaje (se dibuja en la capa pixelada).
+export function drawCharacterSprite(ctx, p, cam) {
   const now = performance.now();
   const cx = p.px - cam.x + TILE / 2;
   const cy = p.py - cam.y + TILE / 2;
@@ -465,12 +420,18 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
     ctx.stroke();
   }
 
-  // Cuerpo + cabeza + rasgos (reutilizable en la vista previa).
   const frame = p.moving && !p.sitting ? Math.floor(p.animT * 8) % 2 : 0;
   drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob, frame);
+}
 
-  // Etiqueta de nombre.
+// Parte "texto" del personaje (nombre, chat, emote) en la capa nítida.
+export function drawCharacterLabel(ctx, p, cam, opts = {}) {
+  const now = performance.now();
+  const cx = p.px - cam.x + TILE / 2;
+  const cy = p.py - cam.y + TILE / 2;
+
   ctx.font = "600 12px system-ui, sans-serif";
+  ctx.textAlign = "left";
   const tw = ctx.measureText(p.name).width;
   const lx = cx - tw / 2 - 7;
   const ly = cy - 30;
@@ -479,15 +440,12 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
   ctx.fill();
   ctx.fillStyle = "#fff";
   ctx.textBaseline = "middle";
-  ctx.textAlign = "left";
   ctx.fillText(p.name, lx + 7, ly + 9);
 
-  // Bocadillo de chat.
   if (p.bubble && p.bubble.until > now) {
     drawBubble(ctx, cx, ly - 6, p.bubble.text);
   }
 
-  // Emote flotante.
   if (p.emote && p.emote.until > now) {
     const age = now - p.emote.start;
     const rise = Math.min(age / 900, 1) * 20;
