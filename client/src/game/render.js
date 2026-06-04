@@ -16,61 +16,95 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 // ── Suelo y paredes ────────────────────────────────────────────
+// Pequeño motivo decorativo (damasco) en cada baldosa del suelo.
+function drawDamask(ctx, cx, cy, color) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = color;
+  for (let k = 0; k < 4; k++) {
+    ctx.beginPath();
+    ctx.ellipse(0, -8, 2, 4.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.rotate(Math.PI / 2);
+  }
+  // Rombo central.
+  ctx.beginPath();
+  ctx.moveTo(0, -3.5); ctx.lineTo(3.5, 0); ctx.lineTo(0, 3.5); ctx.lineTo(-3.5, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// Baldosa de parquet en espiga para el borde de la sala.
+function drawParquet(ctx, px, py, x, y) {
+  ctx.fillStyle = "#b89a68";
+  ctx.fillRect(px, py, TILE, TILE);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(px, py, TILE, TILE);
+  ctx.clip();
+  ctx.strokeStyle = "#9a7d4c";
+  ctx.lineWidth = 2;
+  const up = (x + y) % 2 === 0;
+  for (let i = -TILE; i < TILE * 2; i += 9) {
+    ctx.beginPath();
+    if (up) { ctx.moveTo(px + i, py); ctx.lineTo(px + i + TILE, py + TILE); }
+    else { ctx.moveTo(px + i, py + TILE); ctx.lineTo(px + i + TILE, py); }
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.fillStyle = "rgba(255,240,210,0.18)";
+  ctx.fillRect(px, py, TILE, 2);
+  ctx.fillStyle = "rgba(70,50,25,0.18)";
+  ctx.fillRect(px, py + TILE - 2, TILE, 2);
+}
+
 export function drawFloor(ctx, cam) {
-  // Suelo con patrón sutil de baldosas.
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       const px = x * TILE - cam.x;
       const py = y * TILE - cam.y;
       const wall = x === 0 || y === 0 || x === COLS - 1 || y === ROWS - 1;
       if (wall) {
-        ctx.fillStyle = "#b9a98f";
-        ctx.fillRect(px, py, TILE, TILE);
-        ctx.fillStyle = "#a8987d";
-        ctx.fillRect(px, py, TILE, 4);
+        drawParquet(ctx, px, py, x, y);
       } else {
-        ctx.fillStyle = (x + y) % 2 === 0 ? "#f3efe7" : "#ece7dc";
+        const a = (x + y) % 2 === 0;
+        ctx.fillStyle = a ? "#efe7d3" : "#e8dfc8";
         ctx.fillRect(px, py, TILE, TILE);
+        drawDamask(ctx, px + TILE / 2, py + TILE / 2, a ? "#e4d8bd" : "#ded2b6");
+        ctx.strokeStyle = "rgba(150,135,105,0.16)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 0.5, py + 0.5, TILE, TILE);
       }
     }
   }
 
-  // Rejilla sutil de juntas del suelo.
-  ctx.strokeStyle = "rgba(120,110,90,0.07)";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let x = 1; x < COLS; x++) {
-    const px = x * TILE - cam.x;
-    ctx.moveTo(px, TILE - cam.y);
-    ctx.lineTo(px, (ROWS - 1) * TILE - cam.y);
-  }
-  for (let y = 1; y < ROWS; y++) {
-    const py = y * TILE - cam.y;
-    ctx.moveTo(TILE - cam.x, py);
-    ctx.lineTo((COLS - 1) * TILE - cam.x, py);
-  }
-  ctx.stroke();
-
-  // Rodapié: borde interior suave junto a las paredes.
-  ctx.strokeStyle = "rgba(0,0,0,0.10)";
-  ctx.lineWidth = 3;
+  // Rodapié: línea de sombra donde la sala toca el parquet.
+  ctx.strokeStyle = "rgba(60,42,24,0.28)";
+  ctx.lineWidth = 2;
   ctx.strokeRect(
-    TILE - cam.x + 1.5,
-    TILE - cam.y + 1.5,
-    (COLS - 2) * TILE - 3,
-    (ROWS - 2) * TILE - 3,
+    TILE - cam.x + 1,
+    TILE - cam.y + 1,
+    (COLS - 2) * TILE - 2,
+    (ROWS - 2) * TILE - 2,
   );
 
-  // Pared divisoria con puerta.
-  ctx.fillStyle = "#b9a98f";
+  // Pared divisoria de madera con puerta.
   for (let x = 1; x < COLS - 1; x++) {
     if (x === DIVIDER.door || x === DIVIDER.door + 1) continue;
     const px = x * TILE - cam.x;
     const py = DIVIDER.row * TILE - cam.y;
+    ctx.fillStyle = "#a8885a";
     ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "#a8987d";
-    ctx.fillRect(px, py, TILE, 4);
-    ctx.fillStyle = "#b9a98f";
+    ctx.fillStyle = "rgba(255,240,210,0.22)";
+    ctx.fillRect(px, py, TILE, 3);
+    ctx.strokeStyle = "rgba(70,50,25,0.35)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px + TILE / 2, py + 3); ctx.lineTo(px + TILE / 2, py + TILE);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(50,35,18,0.4)";
+    ctx.fillRect(px, py + TILE - 3, TILE, 3);
   }
 }
 
@@ -153,24 +187,32 @@ function drawItem(ctx, kind, x, y, w, h) {
   switch (kind) {
     case "sofa": {
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#3a4150";
       roundRect(ctx, x + 2, y + 4, w - 4, h - 6, 8);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#4a5263";
       for (let i = 0; i < Math.round(w / TILE); i++) {
         roundRect(ctx, x + 6 + i * TILE, y + 8, TILE - 10, h - 14, 6);
         ctx.fill();
+        ctx.stroke();
       }
       break;
     }
     case "cooler":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       ctx.fillStyle = "#dfe6ec";
       roundRect(ctx, x + 8, y + 12, w - 16, h - 14, 4);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#5fb0e5";
       roundRect(ctx, x + 10, y + 2, w - 20, 14, 6);
       ctx.fill();
+      ctx.stroke();
       break;
     case "lamp":
       shadow(ctx, x, y, w, h);
@@ -202,16 +244,24 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.fillRect(x + 22, y + h - 22, 6, 14);
       break;
     case "screen":
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       ctx.fillStyle = "#2c3440";
       roundRect(ctx, x + 4, y + 4, w - 8, h - 8, 4);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#4aa3df";
       ctx.fillRect(x + 8, y + 8, w - 16, h - 16);
+      ctx.fillStyle = "rgba(255,255,255,0.22)";
+      ctx.fillRect(x + 8, y + 8, w - 16, 2);
       break;
     case "whiteboard":
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.8;
       ctx.fillStyle = "#6b5a44";
       roundRect(ctx, x + 2, y + 2, w - 4, h - 6, 4);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#fbfbf7";
       roundRect(ctx, x + 5, y + 4, w - 10, h - 12, 3);
       ctx.fill();
@@ -232,36 +282,51 @@ function drawItem(ctx, kind, x, y, w, h) {
       break;
     case "desk":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#caa472";
       roundRect(ctx, x + 2, y + 4, w - 4, h - 8, 5);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#b8915f";
       ctx.fillRect(x + 2, y + h - 8, w - 4, 4);
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      ctx.fillRect(x + 4, y + 6, w - 8, 2);
       break;
     case "monitors":
-      ctx.fillStyle = "#222a33";
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       for (let i = 0; i < Math.round(w / TILE); i++) {
+        ctx.fillStyle = "#222a33";
         roundRect(ctx, x + 6 + i * TILE, y + 6, TILE - 12, h - 14, 3);
         ctx.fill();
+        ctx.stroke();
         ctx.fillStyle = "#3fa7e0";
         ctx.fillRect(x + 9 + i * TILE, y + 9, TILE - 18, h - 22);
-        ctx.fillStyle = "#222a33";
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.fillRect(x + 9 + i * TILE, y + 9, TILE - 18, 2);
       }
       break;
     case "gamerchair":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#2b2f36";
       roundRect(ctx, x + 8, y + 6, w - 16, h - 10, 8);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#e0392b";
       ctx.fillRect(x + w / 2 - 3, y + 10, 6, h - 18);
       break;
     case "eggchair":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#c69a6b";
       ctx.beginPath();
       ctx.ellipse(x + w / 2, y + h / 2, w / 2 - 4, h / 2 - 4, 0, 0, Math.PI * 2);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#f0e2cf";
       ctx.beginPath();
       ctx.ellipse(x + w / 2, y + h / 2 + 6, w / 2 - 12, h / 2 - 12, 0, 0, Math.PI * 2);
@@ -269,27 +334,37 @@ function drawItem(ctx, kind, x, y, w, h) {
       break;
     case "roundtable":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#d8d2c4";
       ctx.beginPath();
       ctx.ellipse(x + w / 2, y + h / 2, w / 2 - 4, h / 2 - 4, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#bdb6a5";
-      ctx.lineWidth = 2;
       ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
+      ctx.beginPath();
+      ctx.ellipse(x + w / 2 - 4, y + h / 2 - 4, w / 2 - 12, h / 2 - 12, 0, 0, Math.PI * 1.2);
+      ctx.fill();
       break;
     case "stool":
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       ctx.fillStyle = "#8a6f4f";
       ctx.beginPath();
       ctx.arc(x + w / 2, y + h / 2, w / 2 - 8, 0, Math.PI * 2);
       ctx.fill();
+      ctx.stroke();
       break;
     case "cabinet":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#d9a86a";
       roundRect(ctx, x + 4, y + 4, w - 8, h - 8, 4);
       ctx.fill();
-      ctx.strokeStyle = "#b6884e";
-      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.strokeStyle = "#9c6f3d";
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(x + w / 2, y + 6);
       ctx.lineTo(x + w / 2, y + h - 6);
@@ -297,12 +372,20 @@ function drawItem(ctx, kind, x, y, w, h) {
       break;
     case "plant":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       ctx.fillStyle = "#c97f49";
       roundRect(ctx, x + w / 2 - 8, y + h - 16, 16, 12, 3);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#3f9d52";
       ctx.beginPath();
       ctx.arc(x + w / 2, y + h / 2 - 4, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#54bd68";
+      ctx.beginPath();
+      ctx.arc(x + w / 2 - 4, y + h / 2 - 8, 5, 0, Math.PI * 2);
       ctx.fill();
       break;
     case "deer":
@@ -321,9 +404,12 @@ function drawItem(ctx, kind, x, y, w, h) {
       break;
     case "tower":
       shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.6;
       ctx.fillStyle = "#3a3f47";
       roundRect(ctx, x + 10, y + 4, w - 20, h - 8, 3);
       ctx.fill();
+      ctx.stroke();
       ctx.fillStyle = "#5ad17a";
       ctx.fillRect(x + 13, y + 8, 4, 4);
       break;
@@ -380,7 +466,8 @@ export function drawCharacter(ctx, p, cam, opts = {}) {
   }
 
   // Cuerpo + cabeza + rasgos (reutilizable en la vista previa).
-  drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob);
+  const frame = p.moving && !p.sitting ? Math.floor(p.animT * 8) % 2 : 0;
+  drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob, frame);
 
   // Etiqueta de nombre.
   ctx.font = "600 12px system-ui, sans-serif";
@@ -459,22 +546,56 @@ function drawBubble(ctx, cx, bottomY, text) {
 }
 
 // ── Cuerpo del avatar (compartido por el juego y la vista previa) ─
-// `a` aporta la apariencia: color (camiseta), skin, hair, hairColor, glasses.
-// (cx, cy) es el centro del tile; `bob` el balanceo al andar.
-export function drawAvatarBody(ctx, a, dir, cx, cy, bob = 0) {
+// `a` aporta la apariencia: color (camiseta), skin, hair, hairColor,
+// glasses, accessory. (cx, cy) es el centro del tile; `bob` el balanceo;
+// `frame` (0/1) alterna las piernas al andar. Estilo RPG: contorno
+// oscuro + sombreado de dos tonos, como un sprite de Pokémon.
+const OUTLINE = "#241a1c";
+
+export function drawAvatarBody(ctx, a, dir, cx, cy, bob = 0, frame = 0) {
   const skin = a.skin || "#f1c9a5";
+  const shirt = a.color || "#3498db";
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.strokeStyle = OUTLINE;
 
-  // Camiseta.
-  ctx.fillStyle = a.color || "#3498db";
-  roundRect(ctx, cx - 9, cy - 2 + bob, 18, 16, 6);
+  // Piernas / pies (alternan al andar).
+  const footY = cy + 11 + bob * 0.3;
+  const la = frame ? 2 : 0;
+  const ra = frame ? 0 : 2;
+  ctx.fillStyle = "#39291f";
+  ctx.lineWidth = 1.5;
+  roundRect(ctx, cx - 6, footY - la, 5, 6, 2); ctx.fill(); ctx.stroke();
+  roundRect(ctx, cx + 1, footY - ra, 5, 6, 2); ctx.fill(); ctx.stroke();
+
+  // Cuerpo (camiseta) con contorno y sombreado de dos tonos.
+  const bodyTop = cy - 2 + bob;
+  ctx.lineWidth = 2;
+  roundRect(ctx, cx - 8, bodyTop, 16, 15, 5);
+  ctx.fillStyle = shirt;
   ctx.fill();
+  ctx.save();
+  ctx.clip();
+  ctx.fillStyle = "rgba(0,0,0,0.20)";   // sombra inferior
+  ctx.fillRect(cx - 8, bodyTop + 9, 16, 8);
+  ctx.fillStyle = "rgba(255,255,255,0.16)"; // brillo superior
+  ctx.fillRect(cx - 8, bodyTop, 16, 4);
+  ctx.restore();
+  ctx.stroke();
 
-  // Cabeza.
-  const hy = cy - 8 + bob;
-  ctx.fillStyle = skin;
+  // Cabeza con contorno y un toque de sombra lateral.
+  const hy = cy - 9 + bob;
   ctx.beginPath();
-  ctx.arc(cx, hy, 8, 0, Math.PI * 2);
+  ctx.arc(cx, hy, 8.5, 0, Math.PI * 2);
+  ctx.fillStyle = skin;
   ctx.fill();
+  ctx.save();
+  ctx.clip();
+  ctx.fillStyle = "rgba(0,0,0,0.12)";
+  ctx.fillRect(cx - 8.5, hy + 3, 17, 6);
+  ctx.restore();
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   drawHair(ctx, a, dir, cx, hy);
   drawAccessory(ctx, a, dir, cx, hy);
@@ -502,28 +623,35 @@ function drawAccessory(ctx, a, dir, cx, hy) {
       break;
     case "hat":
       // Gorro de lana con pompón.
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.5;
       ctx.fillStyle = "#c0392b";
       ctx.beginPath();
-      ctx.arc(cx, hy - 1, 8, Math.PI, Math.PI * 2);
+      ctx.arc(cx, hy - 1, 8.4, Math.PI, Math.PI * 2);
       ctx.fill();
-      ctx.fillRect(cx - 8, hy - 2, 16, 3);
+      ctx.stroke();
+      ctx.beginPath(); ctx.rect(cx - 8.4, hy - 2, 16.8, 3.2); ctx.fillStyle = "#ecf0f1"; ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#ecf0f1";
-      ctx.fillRect(cx - 8, hy - 1, 16, 2.5);
-      ctx.beginPath(); ctx.arc(cx, hy - 9, 2.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, hy - 9.5, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       break;
     case "bow":
       // Lazo sobre la cabeza.
+      ctx.strokeStyle = OUTLINE;
+      ctx.lineWidth = 1.2;
       ctx.fillStyle = "#e84393";
       ctx.beginPath();
       ctx.moveTo(cx, hy - 7);
       ctx.lineTo(cx - 6, hy - 10);
       ctx.lineTo(cx - 6, hy - 4);
       ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.beginPath();
       ctx.moveTo(cx, hy - 7);
       ctx.lineTo(cx + 6, hy - 10);
       ctx.lineTo(cx + 6, hy - 4);
       ctx.closePath();
-      ctx.fill();
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#c2185b";
       ctx.beginPath(); ctx.arc(cx, hy - 7, 1.8, 0, Math.PI * 2); ctx.fill();
       break;
     default:
@@ -536,65 +664,90 @@ function drawHair(ctx, a, dir, hx, hy) {
   if (style === "bald") return;
   const color = a.hairColor || "#4a3526";
   ctx.fillStyle = color;
+  ctx.strokeStyle = OUTLINE;
+  ctx.lineWidth = 1.5;
 
   if (style === "cap") {
     ctx.beginPath();
-    ctx.arc(hx, hy, 8.5, Math.PI, Math.PI * 2);
+    ctx.arc(hx, hy, 8.7, Math.PI, Math.PI * 2);
     ctx.fill();
+    ctx.stroke();
     // Visera según orientación.
-    if (dir === "left") ctx.fillRect(hx - 13, hy - 2, 8, 3);
-    else if (dir === "right") ctx.fillRect(hx + 5, hy - 2, 8, 3);
-    else ctx.fillRect(hx - 8, hy - 2, 16, 3);
+    ctx.beginPath();
+    if (dir === "left") ctx.rect(hx - 13, hy - 2, 8, 3);
+    else if (dir === "right") ctx.rect(hx + 5, hy - 2, 8, 3);
+    else ctx.rect(hx - 8, hy - 2, 16, 3);
+    ctx.fill();
+    ctx.stroke();
     return;
   }
 
   // Casquete de pelo (círculo completo si mira hacia arriba).
   ctx.beginPath();
-  if (dir === "up") ctx.arc(hx, hy, 8.6, 0, Math.PI * 2);
-  else ctx.arc(hx, hy, 8.6, Math.PI * 0.95, Math.PI * 2.05);
+  if (dir === "up") ctx.arc(hx, hy, 8.7, 0, Math.PI * 2);
+  else ctx.arc(hx, hy, 8.7, Math.PI * 0.92, Math.PI * 2.08);
   ctx.fill();
+  ctx.stroke();
+  // Brillo del pelo.
+  ctx.save();
+  ctx.beginPath(); ctx.arc(hx, hy, 8.7, 0, Math.PI * 2); ctx.clip();
+  ctx.fillStyle = "rgba(255,255,255,0.14)";
+  ctx.fillRect(hx - 7, hy - 9, 14, 3);
+  ctx.restore();
 
   if (style === "long") {
-    ctx.fillRect(hx - 8.6, hy - 1, 3, 13);
-    ctx.fillRect(hx + 5.6, hy - 1, 3, 13);
+    ctx.fillStyle = color;
+    roundRect(ctx, hx - 9, hy - 1, 3.5, 14, 1.5); ctx.fill(); ctx.stroke();
+    roundRect(ctx, hx + 5.5, hy - 1, 3.5, 14, 1.5); ctx.fill(); ctx.stroke();
   } else if (style === "bun") {
-    ctx.beginPath();
-    ctx.arc(hx, hy - 8.5, 3.6, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(hx, hy - 9, 3.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   } else if (style === "spiky") {
+    ctx.fillStyle = color;
     for (let i = -1; i <= 1; i++) {
       ctx.beginPath();
-      ctx.moveTo(hx + i * 5 - 3, hy - 5);
+      ctx.moveTo(hx + i * 5 - 3.2, hy - 4);
       ctx.lineTo(hx + i * 5, hy - 13);
-      ctx.lineTo(hx + i * 5 + 3, hy - 5);
+      ctx.lineTo(hx + i * 5 + 3.2, hy - 4);
       ctx.closePath();
       ctx.fill();
+      ctx.stroke();
     }
   }
 }
 
 function drawFace(ctx, a, dir, cx, ey) {
-  const eyes = dir === "left" ? [-4] : dir === "right" ? [4] : [-3, 3];
+  const eyes = dir === "left" ? [-3.5] : dir === "right" ? [3.5] : [-3.2, 3.2];
+  const look = dir === "left" ? -0.8 : dir === "right" ? 0.8 : 0;
 
-  ctx.fillStyle = "#2b2b2b";
   for (const dx of eyes) {
+    // Blanco del ojo con contorno.
     ctx.beginPath();
-    ctx.arc(cx + dx, ey, 1.4, 0, Math.PI * 2);
+    ctx.ellipse(cx + dx, ey, 2.2, 2.6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.strokeStyle = OUTLINE;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Pupila.
+    ctx.beginPath();
+    ctx.arc(cx + dx + look, ey + 0.4, 1.2, 0, Math.PI * 2);
+    ctx.fillStyle = "#231a1c";
     ctx.fill();
   }
 
   if (a.glasses) {
-    ctx.strokeStyle = "#2b2b2b";
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "#231a1c";
+    ctx.lineWidth = 1.4;
     for (const dx of eyes) {
       ctx.beginPath();
-      ctx.arc(cx + dx, ey, 2.6, 0, Math.PI * 2);
+      ctx.arc(cx + dx, ey, 3, 0, Math.PI * 2);
       ctx.stroke();
     }
     if (eyes.length === 2) {
       ctx.beginPath();
-      ctx.moveTo(cx + eyes[0] + 2.6, ey);
-      ctx.lineTo(cx + eyes[1] - 2.6, ey);
+      ctx.moveTo(cx + eyes[0] + 3, ey);
+      ctx.lineTo(cx + eyes[1] - 3, ey);
       ctx.stroke();
     }
   }
