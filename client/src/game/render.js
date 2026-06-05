@@ -2,7 +2,7 @@
 // Dibujo de la oficina sobre canvas (estilo top-down pixel-art
 // simplificado). Todo se dibuja relativo a la cámara `cam` (px).
 // ─────────────────────────────────────────────────────────────
-import { TILE, COLS, ROWS, FURNITURE, ZONES, DIVIDER } from "./mapData.js";
+import { TILE, COLS, ROWS, FURNITURE, ZONES, DIVIDER, zoneOf } from "./mapData.js";
 
 function roundRect(ctx, x, y, w, h, r) {
   const rr = Math.min(r, w / 2, h / 2);
@@ -32,6 +32,51 @@ function dither(ctx, px, py, x, y, color, density) {
   }
 }
 
+// Suelos por sala (cada zona tiene su propia textura con dithering).
+function tanTile(ctx, px, py, x, y) {
+  const a = (x + y) % 2 === 0;
+  ctx.fillStyle = a ? "#dac9a6" : "#d3c19c";
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, a ? "#e7dabd" : "#e0d3b4", 6);
+  dither(ctx, px, py, x + 5, y + 9, "#c6b48c", 4);
+  ctx.fillStyle = "rgba(150,130,95,0.18)";
+  ctx.fillRect(px, py, TILE, 1);
+  ctx.fillRect(px, py, 1, TILE);
+}
+
+// Moqueta: textura "afelpada" (dithering denso).
+function carpetTile(ctx, px, py, x, y, base, alt, light, dark) {
+  ctx.fillStyle = (x + y) % 2 === 0 ? base : alt;
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, light, 11);
+  dither(ctx, px, py, x + 4, y + 6, dark, 9);
+}
+
+// Baldosa: junta marcada en rejilla (recepción).
+function tileFloor(ctx, px, py, x, y, base, alt, seam) {
+  ctx.fillStyle = (x + y) % 2 === 0 ? base : alt;
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, "#f3ecdd", 3);
+  ctx.fillStyle = seam;
+  ctx.fillRect(px, py, TILE, 2);
+  ctx.fillRect(px, py, 2, TILE);
+}
+
+// Suelo técnico: paneles con tornillos en las esquinas.
+function techFloor(ctx, px, py, x, y) {
+  ctx.fillStyle = (x + y) % 2 === 0 ? "#8a909b" : "#838995";
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, "#9aa0aa", 5);
+  ctx.fillStyle = "rgba(40,48,60,0.45)"; // juntas de panel
+  ctx.fillRect(px, py, TILE, 2);
+  ctx.fillRect(px, py, 2, TILE);
+  ctx.fillStyle = "#5e6470"; // tornillos
+  ctx.fillRect(px + 3, py + 3, 2, 2);
+  ctx.fillRect(px + TILE - 5, py + 3, 2, 2);
+  ctx.fillRect(px + 3, py + TILE - 5, 2, 2);
+  ctx.fillRect(px + TILE - 5, py + TILE - 5, 2, 2);
+}
+
 export function drawFloor(ctx, cam) {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
@@ -47,14 +92,22 @@ export function drawFloor(ctx, cam) {
         dither(ctx, px, py, x, y, "#5f4528", 8);
         dither(ctx, px, py, x + 7, y + 3, "#8c6843", 6);
       } else {
-        const a = (x + y) % 2 === 0;
-        ctx.fillStyle = a ? "#dac9a6" : "#d3c19c";
-        ctx.fillRect(px, py, TILE, TILE);
-        dither(ctx, px, py, x, y, a ? "#e7dabd" : "#e0d3b4", 7);
-        dither(ctx, px, py, x + 5, y + 9, "#c6b48c", 5);
-        ctx.fillStyle = "rgba(150,130,95,0.22)"; // junta
-        ctx.fillRect(px, py, TILE, 1);
-        ctx.fillRect(px, py, 1, TILE);
+        switch (zoneOf(x, y)) {
+          case 0: // Recepción → baldosa clara
+            tileFloor(ctx, px, py, x, y, "#e7ddc6", "#ded3b8", "rgba(150,130,95,0.30)");
+            break;
+          case 1: // Sala de Streaming → moqueta gris-azulada
+            carpetTile(ctx, px, py, x, y, "#6f7a89", "#697585", "#7d8794", "#5d6878");
+            break;
+          case 2: // Lounge → moqueta verde
+            carpetTile(ctx, px, py, x, y, "#6fae84", "#67a67c", "#80bf95", "#5a9670");
+            break;
+          case 3: // Equipo Técnico → suelo técnico de paneles
+            techFloor(ctx, px, py, x, y);
+            break;
+          default:
+            tanTile(ctx, px, py, x, y);
+        }
       }
     }
   }
@@ -74,28 +127,20 @@ export function drawFloor(ctx, cam) {
   }
 }
 
-// ── Alfombras de las salas de reunión ──────────────────────────
-// Refuerzan visualmente cada sala (donde el audio es de grupo).
-const RUGS = ["#caa37a", "#5a86b0", "#5aa982", "#8a6fb0"];
-
+// ── Umbral de las salas de reunión ─────────────────────────────
+// Cada sala ya tiene su propio suelo (ver drawFloor); aquí sólo se
+// remarca su borde para señalar el espacio (donde el audio es de grupo).
 export function drawRugs(ctx, cam) {
-  ZONES.forEach((z, i) => {
-    const px = (z.x + 0.5) * TILE - cam.x;
-    const py = (z.y + 0.5) * TILE - cam.y;
-    const w = (z.w - 1) * TILE;
-    const h = (z.h - 1) * TILE;
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = RUGS[i % RUGS.length];
-    roundRect(ctx, px, py, w, h, 14);
-    ctx.fill();
-    // Borde interior de la alfombra.
-    ctx.globalAlpha = 0.7;
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+  ZONES.forEach((z) => {
+    const px = z.x * TILE - cam.x;
+    const py = z.y * TILE - cam.y;
+    const w = z.w * TILE;
+    const h = z.h * TILE;
+    ctx.strokeStyle = "rgba(40,30,20,0.30)";
     ctx.lineWidth = 2;
-    roundRect(ctx, px + 6, py + 6, w - 12, h - 12, 10);
-    ctx.stroke();
-    ctx.restore();
+    ctx.strokeRect(px + 1, py + 1, w - 2, h - 2);
+    ctx.strokeStyle = "rgba(255,255,255,0.18)";
+    ctx.strokeRect(px + 3, py + 3, w - 6, h - 6);
   });
 }
 
