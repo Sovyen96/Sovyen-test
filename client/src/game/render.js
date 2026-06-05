@@ -77,20 +77,96 @@ function techFloor(ctx, px, py, x, y) {
   ctx.fillRect(px + TILE - 5, py + TILE - 5, 2, 2);
 }
 
+function hash(x, y) {
+  let h = (x * 374761393 + y * 668265263) >>> 0;
+  h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
+  return h >>> 0;
+}
+
+// Césped vivo con textura de briznas (base de "ruta" estilo GBA).
+function grassTile(ctx, px, py, x, y) {
+  const a = (x + y) % 2 === 0;
+  ctx.fillStyle = a ? "#7ec850" : "#77c247";
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, "#8ed85f", 7);
+  dither(ctx, px, py, x + 3, y + 5, "#5fa838", 6);
+  // Briznas (pequeñas uves oscuras).
+  ctx.fillStyle = "#5aa336";
+  const h = hash(x, y);
+  for (let i = 0; i < 3; i++) {
+    const gx = px + ((h >>> (i * 5)) % (TILE - 6)) + 2;
+    const gy = py + ((h >>> (i * 5 + 3)) % (TILE - 8)) + 4;
+    ctx.fillRect(gx, gy, 1, 3);
+    ctx.fillRect(gx + 2, gy + 1, 1, 2);
+  }
+}
+
+// Parterre de flores (rosa / naranja / azul), como en la ruta.
+const FLOWER_COLS = ["#ec7fb0", "#f2a73a", "#5aa6e8"];
+function flower(ctx, cx, cy, col) {
+  ctx.fillStyle = col;
+  ctx.fillRect(cx - 1, cy - 3, 2, 2);
+  ctx.fillRect(cx - 3, cy - 1, 2, 2);
+  ctx.fillRect(cx + 1, cy - 1, 2, 2);
+  ctx.fillRect(cx - 1, cy + 1, 2, 2);
+  ctx.fillStyle = "#ffe06a";
+  ctx.fillRect(cx - 1, cy - 1, 2, 2);
+}
+function flowersOnGrass(ctx, px, py, x, y) {
+  const h = hash(x * 7 + 1, y * 13 + 3);
+  if (h % 100 < 30) {
+    const col = FLOWER_COLS[h % 3];
+    flower(ctx, px + 10, py + 12, col);
+    flower(ctx, px + 22, py + 22, col);
+    if (h % 2) flower(ctx, px + 24, py + 9, col);
+  }
+}
+
+// Acantilado con relieve: borde de tierra arriba y cara rocosa rayada.
+function drawCliff(ctx, px, py) {
+  ctx.fillStyle = "#a06a3c";
+  ctx.fillRect(px, py, TILE, TILE);
+  ctx.fillStyle = "#8a5a30"; // estrías verticales
+  for (let i = 4; i < TILE; i += 7) ctx.fillRect(px + i, py + 6, 2, TILE - 6);
+  ctx.fillStyle = "#c69256"; // borde de tierra superior
+  ctx.fillRect(px, py, TILE, 6);
+  ctx.fillStyle = "#d8a968";
+  ctx.fillRect(px, py, TILE, 2);
+  ctx.fillStyle = "rgba(0,0,0,0.30)"; // sombra inferior
+  ctx.fillRect(px, py + TILE - 3, TILE, 3);
+}
+
+// Copa de árbol (la línea superior del mapa es un bosque).
+function treeTile(ctx, px, py, x, y) {
+  ctx.fillStyle = "#2c6e34";
+  ctx.beginPath();
+  ctx.arc(px + TILE / 2, py + TILE / 2 + 2, TILE * 0.72, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#3f9a45"; // luces
+  const h = hash(x, y);
+  for (let i = 0; i < 5; i++) {
+    const gx = px + (h >>> (i * 4)) % (TILE - 6) + 2;
+    const gy = py + (h >>> (i * 4 + 2)) % (TILE - 10) + 2;
+    ctx.fillRect(gx, gy, 4, 4);
+  }
+  ctx.fillStyle = "#1c4a20"; // sombra/contorno inferior
+  ctx.fillRect(px - 2, py + TILE - 2, TILE + 4, 4);
+}
+
 export function drawFloor(ctx, cam) {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       const px = x * TILE - cam.x;
       const py = y * TILE - cam.y;
-      const wall = x === 0 || y === 0 || x === COLS - 1 || y === ROWS - 1;
-      if (wall) {
-        // Borde tipo "muro" empedrado retro.
-        ctx.fillStyle = "#7c5a3a";
-        ctx.fillRect(px, py, TILE, TILE);
-        ctx.fillStyle = "#9a7548";
-        ctx.fillRect(px, py, TILE, PX);
-        dither(ctx, px, py, x, y, "#5f4528", 8);
-        dither(ctx, px, py, x + 7, y + 3, "#8c6843", 6);
+      const border = x === 0 || y === 0 || x === COLS - 1 || y === ROWS - 1;
+      if (border) {
+        if (y === 0) {
+          // El borde superior es una línea de árboles (bosque).
+          grassTile(ctx, px, py, x, y);
+          treeTile(ctx, px, py, x, y);
+        } else {
+          drawCliff(ctx, px, py);
+        }
       } else {
         switch (zoneOf(x, y)) {
           case 0: // Recepción → baldosa clara
@@ -105,25 +181,30 @@ export function drawFloor(ctx, cam) {
           case 3: // Equipo Técnico → suelo técnico de paneles
             techFloor(ctx, px, py, x, y);
             break;
-          default:
-            tanTile(ctx, px, py, x, y);
+          default: // Pasillos/exterior → césped con flores
+            grassTile(ctx, px, py, x, y);
+            flowersOnGrass(ctx, px, py, x, y);
         }
       }
     }
   }
 
-  // Pared divisoria de madera con puerta.
+  // Muro divisorio interno como acantilado, con un hueco (escalera).
   for (let x = 1; x < COLS - 1; x++) {
     if (x === DIVIDER.door || x === DIVIDER.door + 1) continue;
-    const px = x * TILE - cam.x;
+    drawCliff(ctx, x * TILE - cam.x, DIVIDER.row * TILE - cam.y);
+  }
+  // Escalera en el hueco.
+  for (let d = 0; d < 2; d++) {
+    const px = (DIVIDER.door + d) * TILE - cam.x;
     const py = DIVIDER.row * TILE - cam.y;
-    ctx.fillStyle = "#a8885a";
+    ctx.fillStyle = "#b9bcc2";
     ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "#c4a06a";
-    ctx.fillRect(px, py, TILE, PX);
-    dither(ctx, px, py, x, DIVIDER.row * 2, "#8a6a3e", 6);
-    ctx.fillStyle = "#5a3f22";
-    ctx.fillRect(px, py + TILE - PX, TILE, PX);
+    ctx.fillStyle = "#8d9097";
+    ctx.fillRect(px, py + 6, TILE, 3);
+    ctx.fillRect(px, py + TILE - 9, TILE, 3);
+    ctx.fillStyle = "#d7d9dd";
+    ctx.fillRect(px, py, TILE, 3);
   }
 }
 
