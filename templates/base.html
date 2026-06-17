@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Asesor Deportivo ⚽{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <a href="{{ url_for('index') }}" class="logo">⚽ Asesor Deportivo</a>
+    <span class="tagline">Análisis de partidos y probabilidad de victoria</span>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    Modelo estadístico Poisson + Dixon-Coles · Datos: football-data.org ·
+    Estimaciones, no garantías. Juega con responsabilidad.
+  </footer>
+</body>
+</html>

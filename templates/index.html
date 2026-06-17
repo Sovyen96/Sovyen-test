@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card hero">
+  <h1>Analiza un partido en segundos</h1>
+  <p>Elige la competición y los dos equipos. El asesor calcula la probabilidad
+     de victoria de cada equipo y genera un informe exhaustivo con marcadores
+     probables, goles esperados, forma reciente y cara a cara.</p>
+</section>
+
+{% if not has_key %}
+<div class="alert warn">
+  <strong>Falta la API key.</strong> Regístrate gratis en
+  <a href="https://www.football-data.org/client/register" target="_blank" rel="noopener">football-data.org</a>
+  y arranca la app con <code>export FOOTBALL_DATA_API_KEY="tu_clave"</code>.
+</div>
+{% endif %}
+
+{% if error %}
+<div class="alert error">{{ error }}</div>
+{% endif %}
+
+<form class="card form" method="post" action="{{ url_for('analyze') }}">
+  <label for="competition">Competición</label>
+  <select id="competition" name="competition" required onchange="loadTeams()">
+    <option value="" disabled selected>— Selecciona una liga —</option>
+    {% for code, name in competitions.items() %}
+      <option value="{{ code }}">{{ name }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="row">
+    <div class="col">
+      <label for="home_team">Equipo local 🏠</label>
+      <input list="teamlist" id="home_team" name="home_team" placeholder="Ej: FC Barcelona" autocomplete="off" required>
+    </div>
+    <div class="col vs">vs</div>
+    <div class="col">
+      <label for="away_team">Equipo visitante ✈️</label>
+      <input list="teamlist" id="away_team" name="away_team" placeholder="Ej: Real Madrid" autocomplete="off" required>
+    </div>
+  </div>
+  <datalist id="teamlist"></datalist>
+
+  <button type="submit" class="btn primary">Analizar partido</button>
+  <p class="hint" id="teamhint"></p>
+</form>
+
+<script>
+async function loadTeams() {
+  const comp = document.getElementById('competition').value;
+  const hint = document.getElementById('teamhint');
+  const list = document.getElementById('teamlist');
+  if (!comp) return;
+  hint.textContent = 'Cargando equipos…';
+  list.innerHTML = '';
+  try {
+    const res = await fetch('/teams?competition=' + encodeURIComponent(comp));
+    const data = await res.json();
+    if (data.error) { hint.textContent = data.error; return; }
+    data.teams.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t;
+      list.appendChild(o);
+    });
+    hint.textContent = data.teams.length + ' equipos disponibles. Empieza a escribir para autocompletar.';
+  } catch (e) {
+    hint.textContent = 'No se pudieron cargar los equipos (revisa la API key / conexión).';
+  }
+}
+</script>
+{% endblock %}

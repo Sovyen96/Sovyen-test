@@ -1,17 +1,17 @@
 # requirements.txt
 # ─────────────────────────────────────────────────────────────
-# Marketing ETL — dependencias de Python
+# Asesor Deportivo (app web de fútbol) — dependencias de Python
 # Probado con Python 3.11+
 # ─────────────────────────────────────────────────────────────
 
-# HTTP & Meta Graph API
+# App web
+Flask>=3.0.0
+
+# Cliente HTTP para football-data.org
 requests>=2.31.0
-
-# PostgreSQL
-psycopg2-binary>=2.9.9       # O psycopg2 (sin -binary) en producción Linux
-
-# Google Ads API (incluye oauth2 y grpc internamente)
-google-ads>=24.0.0
 
 # Variables de entorno desde archivo .env (desarrollo)
 python-dotenv>=1.0.0
+
+# El motor de probabilidad (Poisson + Dixon-Coles) usa solo la librería
+# estándar (math), así que no requiere numpy ni scipy.

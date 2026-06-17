@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{{ a.home_team }} vs {{ a.away_team }} · Asesor Deportivo{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('index') }}" class="back">← Nuevo análisis</a>
+
+<section class="card matchhead">
+  <div class="comp">{{ a.competition }}</div>
+  <div class="teams">
+    <span class="team home">{{ a.home_team }}</span>
+    <span class="sep">vs</span>
+    <span class="team away">{{ a.away_team }}</span>
+  </div>
+  {% if a.low_data_warning %}
+  <div class="alert warn small">Pocos partidos jugados esta temporada: tómalo con cautela.</div>
+  {% endif %}
+</section>
+
+<section class="card verdict-card">
+  <h2>Veredicto</h2>
+  <p class="verdict-label">{{ verdict.label }}</p>
+  <p class="verdict-prob">{{ pct(verdict.probability) }}</p>
+  <p class="verdict-conf">Confianza: <strong>{{ verdict.confidence }}</strong></p>
+</section>
+
+<section class="card">
+  <h2>Probabilidad 1X2</h2>
+  <div class="bars">
+    <div class="barrow">
+      <span class="barlabel">Gana {{ a.home_team }}</span>
+      <div class="bar"><div class="fill home" style="width: {{ (p.home_win*100)|round(1) }}%"></div></div>
+      <span class="barval">{{ pct(p.home_win) }}</span>
+    </div>
+    <div class="barrow">
+      <span class="barlabel">Empate</span>
+      <div class="bar"><div class="fill draw" style="width: {{ (p.draw*100)|round(1) }}%"></div></div>
+      <span class="barval">{{ pct(p.draw) }}</span>
+    </div>
+    <div class="barrow">
+      <span class="barlabel">Gana {{ a.away_team }}</span>
+      <div class="bar"><div class="fill away" style="width: {{ (p.away_win*100)|round(1) }}%"></div></div>
+      <span class="barval">{{ pct(p.away_win) }}</span>
+    </div>
+  </div>
+  <table class="mini">
+    <tr><th></th><th>1</th><th>X</th><th>2</th></tr>
+    <tr><td>Cuota justa</td><td>{{ odds.home }}</td><td>{{ odds.draw }}</td><td>{{ odds.away }}</td></tr>
+  </table>
+</section>
+
+<div class="grid2">
+  <section class="card">
+    <h2>Goles esperados</h2>
+    <ul class="stats">
+      <li><span>{{ a.home_team }}</span><strong>{{ '%.2f'|format(p.lambda_home) }}</strong></li>
+      <li><span>{{ a.away_team }}</span><strong>{{ '%.2f'|format(p.lambda_away) }}</strong></li>
+      <li><span>Total del partido</span><strong>{{ '%.2f'|format(p.expected_total_goals) }}</strong></li>
+      <li><span>Marcador más probable</span><strong>{{ p.most_likely_score[0] }}-{{ p.most_likely_score[1] }}</strong></li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Marcadores más probables</h2>
+    <ul class="stats">
+      {% for sc, prob in p.top_scorelines %}
+      <li><span>{{ sc }}</span><strong>{{ pct(prob) }}</strong></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Mercados de goles</h2>
+  <div class="grid3">
+    <div class="mkt"><span>Over 2.5</span><strong>{{ pct(p.over_2_5) }}</strong></div>
+    <div class="mkt"><span>Under 2.5</span><strong>{{ pct(p.under_2_5) }}</strong></div>
+    <div class="mkt"><span>Over 1.5</span><strong>{{ pct(p.over_1_5) }}</strong></div>
+    <div class="mkt"><span>Over 3.5</span><strong>{{ pct(p.over_3_5) }}</strong></div>
+    <div class="mkt"><span>Ambos marcan: Sí</span><strong>{{ pct(p.btts_yes) }}</strong></div>
+    <div class="mkt"><span>Ambos marcan: No</span><strong>{{ pct(p.btts_no) }}</strong></div>
+    <div class="mkt"><span>Doble opp. 1X</span><strong>{{ pct(p.home_or_draw) }}</strong></div>
+    <div class="mkt"><span>Doble opp. X2</span><strong>{{ pct(p.away_or_draw) }}</strong></div>
+    <div class="mkt"><span>Doble opp. 12</span><strong>{{ pct(p.home_or_away) }}</strong></div>
+  </div>
+</section>
+
+<div class="grid2">
+  <section class="card">
+    <h2>Forma reciente</h2>
+    <div class="formteam">
+      <div class="formname">{{ a.home_form.name }}</div>
+      <div class="formline">{{ a.home_form.form_string }}</div>
+      <div class="formstats">{{ a.home_form.points }} pts en {{ a.home_form.matches_played }} ·
+        {{ '%.2f'|format(a.home_form.ppg) }} pts/partido · GF {{ a.home_form.goals_for }} / GC {{ a.home_form.goals_against }}</div>
+    </div>
+    <div class="formteam">
+      <div class="formname">{{ a.away_form.name }}</div>
+      <div class="formline">{{ a.away_form.form_string }}</div>
+      <div class="formstats">{{ a.away_form.points }} pts en {{ a.away_form.matches_played }} ·
+        {{ '%.2f'|format(a.away_form.ppg) }} pts/partido · GF {{ a.away_form.goals_for }} / GC {{ a.away_form.goals_against }}</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Cara a cara</h2>
+    {% if a.head_to_head %}
+    <ul class="h2h">
+      {% for m in a.head_to_head %}
+      <li><span class="date">{{ m.date }}</span> {{ m.home }} <strong>{{ m.home_goals }}-{{ m.away_goals }}</strong> {{ m.away }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Sin enfrentamientos directos en los datos de esta temporada.</p>
+    {% endif %}
+  </section>
+</div>
+
+<form method="post" action="{{ url_for('download') }}" class="download">
+  <input type="hidden" name="competition" value="{{ competition_code }}">
+  <input type="hidden" name="home_team" value="{{ a.home_team }}">
+  <input type="hidden" name="away_team" value="{{ a.away_team }}">
+  <button type="submit" class="btn ghost">⬇ Descargar informe (Markdown)</button>
+</form>
+
+{% endblock %}
