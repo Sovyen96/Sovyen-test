@@ -11,7 +11,7 @@ import { EMOTES } from "./appearance.js";
 import { gameState } from "./gameState.js";
 
 const SPEED = 5.5 * TILE; // píxeles por segundo
-const PIXEL = 3;          // factor de pixelado (estética GBA)
+const PIXEL = 4;          // factor de pixelado (estética GBA, más chunky)
 const DIRS = {
   ArrowUp: "up", KeyW: "up",
   ArrowDown: "down", KeyS: "down",
