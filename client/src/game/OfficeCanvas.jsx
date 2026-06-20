@@ -286,9 +286,8 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
       drawFloor(fctx, cam);
       drawRugs(fctx, cam);
       drawFurniture(fctx, cam);
-      for (const p of ordered) drawCharacterSprite(fctx, p, cam);
 
-      // Reducir (suaviza) y ampliar sin interpolar → píxeles gordos GBA.
+      // Reducir y ampliar sin interpolar → píxeles gordos GBA (sólo el fondo).
       const sctx = bufSmall.getContext("2d");
       sctx.imageSmoothingEnabled = false; // nearest → píxeles nítidos (GBA)
       sctx.clearRect(0, 0, sw, sh);
@@ -297,6 +296,9 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, viewW, viewH);
       ctx.drawImage(bufSmall, 0, 0, sw, sh, 0, 0, sw * PIXEL, sh * PIXEL);
+
+      // ── Personajes: sprites pixel-art nítidos sobre el fondo ──
+      for (const p of ordered) drawCharacterSprite(ctx, p, cam, PIXEL);
 
       // ── Capa de texto nítida por encima ──
       ctx.imageSmoothingEnabled = true;

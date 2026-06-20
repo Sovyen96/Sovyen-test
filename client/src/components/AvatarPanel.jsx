@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   SKIN_TONES, HAIR_COLORS, SHIRT_COLORS, HAIR_STYLES, ACCESSORIES,
 } from "../game/appearance.js";
-import { drawAvatarBody } from "../game/render.js";
+import { drawTrainer } from "../game/sprites.js";
 
 // Vista previa del avatar; al hacer clic gira para verlo desde otro ángulo.
 function AvatarPreview({ appearance }) {
@@ -21,14 +21,12 @@ function AvatarPreview({ appearance }) {
     // Suelo sutil.
     ctx.fillStyle = "rgba(0,0,0,0.18)";
     ctx.beginPath();
-    ctx.ellipse(65, 96, 26, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(65, 100, 24, 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.save();
-    ctx.translate(65, 78);
-    ctx.scale(3, 3);
-    drawAvatarBody(ctx, appearance, dir, 0, 0, 0);
-    ctx.restore();
+    // Sprite pixel-art (mismo render que el juego).
+    ctx.imageSmoothingEnabled = false;
+    drawTrainer(ctx, appearance, dir, 0, 65, 92, 5);
   }, [appearance, dir]);
 
   const dirs = ["down", "left", "up", "right"];

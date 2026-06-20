@@ -3,6 +3,7 @@
 // simplificado). Todo se dibuja relativo a la cámara `cam` (px).
 // ─────────────────────────────────────────────────────────────
 import { TILE, COLS, ROWS, FURNITURE, ZONES, DIVIDER } from "./mapData.js";
+import { drawTrainer } from "./sprites.js";
 
 function roundRect(ctx, x, y, w, h, r) {
   const rr = Math.min(r, w / 2, h / 2);
@@ -414,7 +415,7 @@ function drawMondrian(ctx, x, y, w, h) {
 
 // ── Avatar (personaje) ─────────────────────────────────────────
 // Parte "mundo" del personaje (se dibuja en la capa pixelada).
-export function drawCharacterSprite(ctx, p, cam) {
+export function drawCharacterSprite(ctx, p, cam, px = 3) {
   const now = performance.now();
   const cx = p.px - cam.x + TILE / 2;
   const cy = p.py - cam.y + TILE / 2;
@@ -438,7 +439,7 @@ export function drawCharacterSprite(ctx, p, cam) {
   }
 
   const frame = p.moving && !p.sitting ? Math.floor(p.animT * 8) % 2 : 0;
-  drawAvatarBody(ctx, p, p.dir, cx, cy + sit, bob, frame);
+  drawTrainer(ctx, p, p.dir, frame, cx, cy + sit + bob, px);
 }
 
 // Parte "texto" del personaje (nombre, chat, emote) en la capa nítida.
