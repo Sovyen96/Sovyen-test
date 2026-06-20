@@ -153,6 +153,26 @@ function treeTile(ctx, px, py, x, y) {
   ctx.fillRect(px - 2, py + TILE - 2, TILE + 4, 4);
 }
 
+// Sendero de tierra (conecta el corredor central con la escalera).
+function isPath(x, y) {
+  const onH = y === 10;
+  const onV = (x === DIVIDER.door || x === DIVIDER.door + 1) && y >= 9 && y <= 11;
+  return onH || onV;
+}
+function pathTile(ctx, px, py, x, y) {
+  const a = (x + y) % 2 === 0;
+  ctx.fillStyle = a ? "#cdab74" : "#c6a26a";
+  ctx.fillRect(px, py, TILE, TILE);
+  dither(ctx, px, py, x, y, "#d8b97f", 6);
+  dither(ctx, px, py, x + 4, y + 7, "#b58e54", 6);
+  // Guijarros ocasionales.
+  const h = hash(x * 3, y * 5);
+  if (h % 3 === 0) {
+    ctx.fillStyle = "#9c7a45";
+    ctx.fillRect(px + (h % (TILE - 6)) + 2, py + ((h >>> 8) % (TILE - 6)) + 2, 3, 2);
+  }
+}
+
 export function drawFloor(ctx, cam) {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
@@ -181,9 +201,13 @@ export function drawFloor(ctx, cam) {
           case 3: // Equipo Técnico → suelo técnico de paneles
             techFloor(ctx, px, py, x, y);
             break;
-          default: // Pasillos/exterior → césped con flores
-            grassTile(ctx, px, py, x, y);
-            flowersOnGrass(ctx, px, py, x, y);
+          default: // Pasillos/exterior → césped con flores (o sendero)
+            if (isPath(x, y)) {
+              pathTile(ctx, px, py, x, y);
+            } else {
+              grassTile(ctx, px, py, x, y);
+              flowersOnGrass(ctx, px, py, x, y);
+            }
         }
       }
     }
