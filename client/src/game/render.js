@@ -2,7 +2,7 @@
 // Dibujo de la oficina sobre canvas (estilo top-down pixel-art
 // simplificado). Todo se dibuja relativo a la cámara `cam` (px).
 // ─────────────────────────────────────────────────────────────
-import { TILE, COLS, ROWS, FURNITURE, ZONES, DIVIDER, zoneOf } from "./mapData.js";
+import { TILE, COLS, ROWS, FURNITURE, ZONES, DIVIDER } from "./mapData.js";
 
 function roundRect(ctx, x, y, w, h, r) {
   const rr = Math.min(r, w / 2, h / 2);
@@ -32,145 +32,32 @@ function dither(ctx, px, py, x, y, color, density) {
   }
 }
 
-// Suelos por sala (cada zona tiene su propia textura con dithering).
-function tanTile(ctx, px, py, x, y) {
-  const a = (x + y) % 2 === 0;
-  ctx.fillStyle = a ? "#dac9a6" : "#d3c19c";
-  ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, a ? "#e7dabd" : "#e0d3b4", 6);
-  dither(ctx, px, py, x + 5, y + 9, "#c6b48c", 4);
-  ctx.fillStyle = "rgba(150,130,95,0.18)";
-  ctx.fillRect(px, py, TILE, 1);
-  ctx.fillRect(px, py, 1, TILE);
-}
 
-// Moqueta: textura "afelpada" (dithering denso).
-function carpetTile(ctx, px, py, x, y, base, alt, light, dark) {
-  ctx.fillStyle = (x + y) % 2 === 0 ? base : alt;
+// Tablón de madera (suelo interior, estilo casa de Pokémon).
+function woodTile(ctx, px, py, x, y) {
+  ctx.fillStyle = y % 2 === 0 ? "#caa46a" : "#c29a5e";
   ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, light, 11);
-  dither(ctx, px, py, x + 4, y + 6, dark, 9);
-}
-
-// Baldosa: junta marcada en rejilla (recepción).
-function tileFloor(ctx, px, py, x, y, base, alt, seam) {
-  ctx.fillStyle = (x + y) % 2 === 0 ? base : alt;
-  ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, "#f3ecdd", 3);
-  ctx.fillStyle = seam;
+  dither(ctx, px, py, x, y, "#d4b378", 5);
+  dither(ctx, px, py, x + 3, y + 4, "#b58a4f", 5);
+  ctx.fillStyle = "rgba(90,60,30,0.30)"; // junta horizontal del tablón
   ctx.fillRect(px, py, TILE, 2);
-  ctx.fillRect(px, py, 2, TILE);
+  const off = y % 2 ? Math.floor(TILE / 2) : 0; // extremo de tablón (desplazado)
+  ctx.fillStyle = "rgba(90,60,30,0.22)";
+  ctx.fillRect(px + off, py, 2, TILE);
+  ctx.fillStyle = "rgba(255,235,200,0.12)"; // brillo
+  ctx.fillRect(px, py + 2, TILE, 1);
 }
 
-// Suelo técnico: paneles con tornillos en las esquinas.
-function techFloor(ctx, px, py, x, y) {
-  ctx.fillStyle = (x + y) % 2 === 0 ? "#8a909b" : "#838995";
+// Pared interior (marco de la sala) con zócalo.
+function wallTile(ctx, px, py) {
+  ctx.fillStyle = "#6b5440";
   ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, "#9aa0aa", 5);
-  ctx.fillStyle = "rgba(40,48,60,0.45)"; // juntas de panel
-  ctx.fillRect(px, py, TILE, 2);
-  ctx.fillRect(px, py, 2, TILE);
-  ctx.fillStyle = "#5e6470"; // tornillos
-  ctx.fillRect(px + 3, py + 3, 2, 2);
-  ctx.fillRect(px + TILE - 5, py + 3, 2, 2);
-  ctx.fillRect(px + 3, py + TILE - 5, 2, 2);
-  ctx.fillRect(px + TILE - 5, py + TILE - 5, 2, 2);
-}
-
-function hash(x, y) {
-  let h = (x * 374761393 + y * 668265263) >>> 0;
-  h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
-  return h >>> 0;
-}
-
-// Césped vivo con textura de briznas (base de "ruta" estilo GBA).
-function grassTile(ctx, px, py, x, y) {
-  const a = (x + y) % 2 === 0;
-  ctx.fillStyle = a ? "#7ec850" : "#77c247";
-  ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, "#8ed85f", 7);
-  dither(ctx, px, py, x + 3, y + 5, "#5fa838", 6);
-  // Briznas (pequeñas uves oscuras).
-  ctx.fillStyle = "#5aa336";
-  const h = hash(x, y);
-  for (let i = 0; i < 3; i++) {
-    const gx = px + ((h >>> (i * 5)) % (TILE - 6)) + 2;
-    const gy = py + ((h >>> (i * 5 + 3)) % (TILE - 8)) + 4;
-    ctx.fillRect(gx, gy, 1, 3);
-    ctx.fillRect(gx + 2, gy + 1, 1, 2);
-  }
-}
-
-// Parterre de flores (rosa / naranja / azul), como en la ruta.
-const FLOWER_COLS = ["#ec7fb0", "#f2a73a", "#5aa6e8"];
-function flower(ctx, cx, cy, col) {
-  ctx.fillStyle = col;
-  ctx.fillRect(cx - 1, cy - 3, 2, 2);
-  ctx.fillRect(cx - 3, cy - 1, 2, 2);
-  ctx.fillRect(cx + 1, cy - 1, 2, 2);
-  ctx.fillRect(cx - 1, cy + 1, 2, 2);
-  ctx.fillStyle = "#ffe06a";
-  ctx.fillRect(cx - 1, cy - 1, 2, 2);
-}
-function flowersOnGrass(ctx, px, py, x, y) {
-  const h = hash(x * 7 + 1, y * 13 + 3);
-  if (h % 100 < 30) {
-    const col = FLOWER_COLS[h % 3];
-    flower(ctx, px + 10, py + 12, col);
-    flower(ctx, px + 22, py + 22, col);
-    if (h % 2) flower(ctx, px + 24, py + 9, col);
-  }
-}
-
-// Acantilado con relieve: borde de tierra arriba y cara rocosa rayada.
-function drawCliff(ctx, px, py) {
-  ctx.fillStyle = "#a06a3c";
-  ctx.fillRect(px, py, TILE, TILE);
-  ctx.fillStyle = "#8a5a30"; // estrías verticales
-  for (let i = 4; i < TILE; i += 7) ctx.fillRect(px + i, py + 6, 2, TILE - 6);
-  ctx.fillStyle = "#c69256"; // borde de tierra superior
-  ctx.fillRect(px, py, TILE, 6);
-  ctx.fillStyle = "#d8a968";
-  ctx.fillRect(px, py, TILE, 2);
-  ctx.fillStyle = "rgba(0,0,0,0.30)"; // sombra inferior
+  ctx.fillStyle = "#7d6450";
+  ctx.fillRect(px, py, TILE, 4);
+  ctx.fillStyle = "#54402e";
+  for (let i = 6; i < TILE; i += 9) ctx.fillRect(px + i, py + 4, 2, TILE - 4);
+  ctx.fillStyle = "rgba(0,0,0,0.28)";
   ctx.fillRect(px, py + TILE - 3, TILE, 3);
-}
-
-// Copa de árbol (la línea superior del mapa es un bosque).
-function treeTile(ctx, px, py, x, y) {
-  ctx.fillStyle = "#2c6e34";
-  ctx.beginPath();
-  ctx.arc(px + TILE / 2, py + TILE / 2 + 2, TILE * 0.72, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#3f9a45"; // luces
-  const h = hash(x, y);
-  for (let i = 0; i < 5; i++) {
-    const gx = px + (h >>> (i * 4)) % (TILE - 6) + 2;
-    const gy = py + (h >>> (i * 4 + 2)) % (TILE - 10) + 2;
-    ctx.fillRect(gx, gy, 4, 4);
-  }
-  ctx.fillStyle = "#1c4a20"; // sombra/contorno inferior
-  ctx.fillRect(px - 2, py + TILE - 2, TILE + 4, 4);
-}
-
-// Sendero de tierra (conecta el corredor central con la escalera).
-function isPath(x, y) {
-  const onH = y === 10;
-  const onV = (x === DIVIDER.door || x === DIVIDER.door + 1) && y >= 9 && y <= 11;
-  return onH || onV;
-}
-function pathTile(ctx, px, py, x, y) {
-  const a = (x + y) % 2 === 0;
-  ctx.fillStyle = a ? "#cdab74" : "#c6a26a";
-  ctx.fillRect(px, py, TILE, TILE);
-  dither(ctx, px, py, x, y, "#d8b97f", 6);
-  dither(ctx, px, py, x + 4, y + 7, "#b58e54", 6);
-  // Guijarros ocasionales.
-  const h = hash(x * 3, y * 5);
-  if (h % 3 === 0) {
-    ctx.fillStyle = "#9c7a45";
-    ctx.fillRect(px + (h % (TILE - 6)) + 2, py + ((h >>> 8) % (TILE - 6)) + 2, 3, 2);
-  }
 }
 
 export function drawFloor(ctx, cam) {
@@ -179,73 +66,53 @@ export function drawFloor(ctx, cam) {
       const px = x * TILE - cam.x;
       const py = y * TILE - cam.y;
       const border = x === 0 || y === 0 || x === COLS - 1 || y === ROWS - 1;
-      if (border) {
-        if (y === 0) {
-          // El borde superior es una línea de árboles (bosque).
-          grassTile(ctx, px, py, x, y);
-          treeTile(ctx, px, py, x, y);
-        } else {
-          drawCliff(ctx, px, py);
-        }
-      } else {
-        switch (zoneOf(x, y)) {
-          case 0: // Recepción → baldosa clara
-            tileFloor(ctx, px, py, x, y, "#e7ddc6", "#ded3b8", "rgba(150,130,95,0.30)");
-            break;
-          case 1: // Sala de Streaming → moqueta gris-azulada
-            carpetTile(ctx, px, py, x, y, "#6f7a89", "#697585", "#7d8794", "#5d6878");
-            break;
-          case 2: // Lounge → moqueta verde
-            carpetTile(ctx, px, py, x, y, "#6fae84", "#67a67c", "#80bf95", "#5a9670");
-            break;
-          case 3: // Equipo Técnico → suelo técnico de paneles
-            techFloor(ctx, px, py, x, y);
-            break;
-          default: // Pasillos/exterior → césped con flores (o sendero)
-            if (isPath(x, y)) {
-              pathTile(ctx, px, py, x, y);
-            } else {
-              grassTile(ctx, px, py, x, y);
-              flowersOnGrass(ctx, px, py, x, y);
-            }
-        }
-      }
+      if (border) wallTile(ctx, px, py);
+      else woodTile(ctx, px, py, x, y);
     }
   }
 
-  // Muro divisorio interno como acantilado, con un hueco (escalera).
+  // Muro divisorio interno (pared) con hueco de paso (puerta).
   for (let x = 1; x < COLS - 1; x++) {
     if (x === DIVIDER.door || x === DIVIDER.door + 1) continue;
-    drawCliff(ctx, x * TILE - cam.x, DIVIDER.row * TILE - cam.y);
+    wallTile(ctx, x * TILE - cam.x, DIVIDER.row * TILE - cam.y);
   }
-  // Escalera en el hueco.
-  for (let d = 0; d < 2; d++) {
-    const px = (DIVIDER.door + d) * TILE - cam.x;
-    const py = DIVIDER.row * TILE - cam.y;
-    ctx.fillStyle = "#b9bcc2";
-    ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "#8d9097";
-    ctx.fillRect(px, py + 6, TILE, 3);
-    ctx.fillRect(px, py + TILE - 9, TILE, 3);
-    ctx.fillStyle = "#d7d9dd";
-    ctx.fillRect(px, py, TILE, 3);
-  }
+
+  // Zócalo: sombra donde la pared toca el suelo.
+  ctx.strokeStyle = "rgba(40,28,16,0.30)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    TILE - cam.x + 1, TILE - cam.y + 1,
+    (COLS - 2) * TILE - 2, (ROWS - 2) * TILE - 2,
+  );
 }
 
-// ── Umbral de las salas de reunión ─────────────────────────────
-// Cada sala ya tiene su propio suelo (ver drawFloor); aquí sólo se
-// remarca su borde para señalar el espacio (donde el audio es de grupo).
+// ── Alfombras de las salas de reunión ──────────────────────────
+// Alfombra de color con borde de puntitos blancos (estilo casa GBA);
+// marca cada sala, donde el audio es de grupo.
+const RUGS = ["#e3a0be", "#8fb3d9", "#9cc79f", "#c2a9dd"];
 export function drawRugs(ctx, cam) {
-  ZONES.forEach((z) => {
-    const px = z.x * TILE - cam.x;
-    const py = z.y * TILE - cam.y;
-    const w = z.w * TILE;
-    const h = z.h * TILE;
-    ctx.strokeStyle = "rgba(40,30,20,0.30)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(px + 1, py + 1, w - 2, h - 2);
-    ctx.strokeStyle = "rgba(255,255,255,0.18)";
-    ctx.strokeRect(px + 3, py + 3, w - 6, h - 6);
+  ZONES.forEach((z, i) => {
+    const px = (z.x + 0.5) * TILE - cam.x;
+    const py = (z.y + 0.5) * TILE - cam.y;
+    const w = (z.w - 1) * TILE;
+    const h = (z.h - 1) * TILE;
+    ctx.fillStyle = RUGS[i % RUGS.length];
+    ctx.fillRect(px, py, w, h);
+    ctx.fillStyle = "rgba(255,255,255,0.14)"; // brillo superior
+    ctx.fillRect(px, py, w, 3);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; // sombra inferior
+    ctx.fillRect(px, py + h - 3, w, 3);
+    // Borde de puntitos blancos.
+    ctx.fillStyle = "#f5f2ec";
+    const step = 8;
+    for (let gx = px + 3; gx < px + w - 4; gx += step) {
+      ctx.fillRect(gx, py + 3, 4, 4);
+      ctx.fillRect(gx, py + h - 7, 4, 4);
+    }
+    for (let gy = py + 3; gy < py + h - 4; gy += step) {
+      ctx.fillRect(px + 3, gy, 4, 4);
+      ctx.fillRect(px + w - 7, gy, 4, 4);
+    }
   });
 }
 
