@@ -11,7 +11,7 @@ import { EMOTES } from "./appearance.js";
 import { gameState } from "./gameState.js";
 
 const SPEED = 5.5 * TILE; // píxeles por segundo
-const PIXEL = 4;          // factor de pixelado (estética GBA, más chunky)
+const PIXEL = 3;          // factor de pixelado (estética GBA)
 const DIRS = {
   ArrowUp: "up", KeyW: "up",
   ArrowDown: "down", KeyS: "down",
@@ -290,7 +290,7 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
 
       // Reducir (suaviza) y ampliar sin interpolar → píxeles gordos GBA.
       const sctx = bufSmall.getContext("2d");
-      sctx.imageSmoothingEnabled = true;
+      sctx.imageSmoothingEnabled = false; // nearest → píxeles nítidos (GBA)
       sctx.clearRect(0, 0, sw, sh);
       sctx.drawImage(bufFull, 0, 0, viewW, viewH, 0, 0, sw, sh);
 

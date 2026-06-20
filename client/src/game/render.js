@@ -534,42 +534,47 @@ export function drawAvatarBody(ctx, a, dir, cx, cy, bob = 0, frame = 0) {
   ctx.lineCap = "round";
   ctx.strokeStyle = OUTLINE;
 
-  // Piernas / pies (alternan al andar).
-  const footY = cy + 11 + bob * 0.3;
+  // Pies (alternan al andar) — chibi: pies pequeños y juntos.
+  const footY = cy + 13 + bob * 0.3;
   const la = frame ? 2 : 0;
   const ra = frame ? 0 : 2;
-  ctx.fillStyle = "#39291f";
-  ctx.lineWidth = 1.5;
-  roundRect(ctx, cx - 6, footY - la, 5, 6, 2); ctx.fill(); ctx.stroke();
-  roundRect(ctx, cx + 1, footY - ra, 5, 6, 2); ctx.fill(); ctx.stroke();
-
-  // Cuerpo (camiseta) con contorno y sombreado de dos tonos.
-  const bodyTop = cy - 2 + bob;
+  ctx.fillStyle = "#34251c";
   ctx.lineWidth = 2;
-  roundRect(ctx, cx - 8, bodyTop, 16, 15, 5);
+  roundRect(ctx, cx - 6, footY - la, 6, 5, 2); ctx.fill(); ctx.stroke();
+  roundRect(ctx, cx + 0, footY - ra, 6, 5, 2); ctx.fill(); ctx.stroke();
+
+  // Cuerpo (camiseta) — más pequeño que la cabeza, con bracitos.
+  const bodyTop = cy + 2 + bob;
+  ctx.lineWidth = 2.4;
+  // Bracitos a los lados.
+  ctx.fillStyle = shirt;
+  roundRect(ctx, cx - 9, bodyTop + 1, 4, 8, 2); ctx.fill(); ctx.stroke();
+  roundRect(ctx, cx + 5, bodyTop + 1, 4, 8, 2); ctx.fill(); ctx.stroke();
+  // Torso.
+  roundRect(ctx, cx - 7, bodyTop, 14, 11, 4);
   ctx.fillStyle = shirt;
   ctx.fill();
   ctx.save();
   ctx.clip();
-  ctx.fillStyle = "rgba(0,0,0,0.20)";   // sombra inferior
-  ctx.fillRect(cx - 8, bodyTop + 9, 16, 8);
-  ctx.fillStyle = "rgba(255,255,255,0.16)"; // brillo superior
-  ctx.fillRect(cx - 8, bodyTop, 16, 4);
+  ctx.fillStyle = "rgba(0,0,0,0.22)";   // sombra inferior
+  ctx.fillRect(cx - 7, bodyTop + 6, 14, 6);
+  ctx.fillStyle = "rgba(255,255,255,0.18)"; // brillo superior
+  ctx.fillRect(cx - 7, bodyTop, 14, 3);
   ctx.restore();
   ctx.stroke();
 
-  // Cabeza con contorno y un toque de sombra lateral.
-  const hy = cy - 9 + bob;
+  // Cabeza grande (proporción chibi) con contorno marcado.
+  const hy = cy - 8 + bob;
   ctx.beginPath();
-  ctx.arc(cx, hy, 8.5, 0, Math.PI * 2);
+  ctx.ellipse(cx, hy, 10, 9, 0, 0, Math.PI * 2);
   ctx.fillStyle = skin;
   ctx.fill();
   ctx.save();
   ctx.clip();
-  ctx.fillStyle = "rgba(0,0,0,0.12)";
-  ctx.fillRect(cx - 8.5, hy + 3, 17, 6);
+  ctx.fillStyle = "rgba(0,0,0,0.10)";
+  ctx.fillRect(cx - 10, hy + 3, 20, 8);
   ctx.restore();
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2.4;
   ctx.stroke();
 
   drawHair(ctx, a, dir, cx, hy);
@@ -584,30 +589,30 @@ function drawAccessory(ctx, a, dir, cx, hy) {
     case "headphones":
       // Diadema sobre la cabeza.
       ctx.strokeStyle = "#2b2f36";
-      ctx.lineWidth = 2.4;
+      ctx.lineWidth = 2.8;
       ctx.beginPath();
-      ctx.arc(cx, hy, 9, Math.PI * 1.08, Math.PI * 1.92);
+      ctx.arc(cx, hy, 11, Math.PI * 1.08, Math.PI * 1.92);
       ctx.stroke();
       // Auriculares a los lados.
       ctx.fillStyle = "#2b2f36";
-      ctx.beginPath(); ctx.arc(cx - 8.5, hy + 1, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 8.5, hy + 1, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx - 10, hy + 1, 3.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 10, hy + 1, 3.4, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#5fb0e5";
-      ctx.beginPath(); ctx.arc(cx - 8.5, hy + 1, 1.3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + 8.5, hy + 1, 1.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx - 10, hy + 1, 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 10, hy + 1, 1.5, 0, Math.PI * 2); ctx.fill();
       break;
     case "hat":
       // Gorro de lana con pompón.
       ctx.strokeStyle = OUTLINE;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 2;
       ctx.fillStyle = "#c0392b";
       ctx.beginPath();
-      ctx.arc(cx, hy - 1, 8.4, Math.PI, Math.PI * 2);
+      ctx.ellipse(cx, hy - 1, 10.2, 9, 0, Math.PI, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
-      ctx.beginPath(); ctx.rect(cx - 8.4, hy - 2, 16.8, 3.2); ctx.fillStyle = "#ecf0f1"; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.rect(cx - 10.2, hy - 2, 20.4, 3.6); ctx.fillStyle = "#ecf0f1"; ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#ecf0f1";
-      ctx.beginPath(); ctx.arc(cx, hy - 9.5, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, hy - 11, 3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       break;
     case "bow":
       // Lazo sobre la cabeza.
@@ -638,52 +643,53 @@ function drawHair(ctx, a, dir, hx, hy) {
   const style = a.hair || "short";
   if (style === "bald") return;
   const color = a.hairColor || "#4a3526";
+  const R = 10.4; // radio de la cabeza grande
   ctx.fillStyle = color;
   ctx.strokeStyle = OUTLINE;
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 2;
 
   if (style === "cap") {
     ctx.beginPath();
-    ctx.arc(hx, hy, 8.7, Math.PI, Math.PI * 2);
+    ctx.ellipse(hx, hy - 1, R, R - 1, 0, Math.PI, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     // Visera según orientación.
     ctx.beginPath();
-    if (dir === "left") ctx.rect(hx - 13, hy - 2, 8, 3);
-    else if (dir === "right") ctx.rect(hx + 5, hy - 2, 8, 3);
-    else ctx.rect(hx - 8, hy - 2, 16, 3);
+    if (dir === "left") ctx.rect(hx - 15, hy - 2, 9, 4);
+    else if (dir === "right") ctx.rect(hx + 6, hy - 2, 9, 4);
+    else ctx.rect(hx - 9, hy - 2, 18, 4);
     ctx.fill();
     ctx.stroke();
     return;
   }
 
-  // Casquete de pelo (círculo completo si mira hacia arriba).
+  // Casquete de pelo (cubre la coronilla; entero si mira hacia arriba).
   ctx.beginPath();
-  if (dir === "up") ctx.arc(hx, hy, 8.7, 0, Math.PI * 2);
-  else ctx.arc(hx, hy, 8.7, Math.PI * 0.92, Math.PI * 2.08);
+  if (dir === "up") ctx.ellipse(hx, hy, R, R - 1, 0, 0, Math.PI * 2);
+  else ctx.ellipse(hx, hy, R, R - 1, 0, Math.PI * 0.9, Math.PI * 2.1);
   ctx.fill();
   ctx.stroke();
   // Brillo del pelo.
   ctx.save();
-  ctx.beginPath(); ctx.arc(hx, hy, 8.7, 0, Math.PI * 2); ctx.clip();
-  ctx.fillStyle = "rgba(255,255,255,0.14)";
-  ctx.fillRect(hx - 7, hy - 9, 14, 3);
+  ctx.beginPath(); ctx.ellipse(hx, hy, R, R - 1, 0, 0, Math.PI * 2); ctx.clip();
+  ctx.fillStyle = "rgba(255,255,255,0.16)";
+  ctx.fillRect(hx - 8, hy - 10, 7, 4);
   ctx.restore();
 
   if (style === "long") {
     ctx.fillStyle = color;
-    roundRect(ctx, hx - 9, hy - 1, 3.5, 14, 1.5); ctx.fill(); ctx.stroke();
-    roundRect(ctx, hx + 5.5, hy - 1, 3.5, 14, 1.5); ctx.fill(); ctx.stroke();
+    roundRect(ctx, hx - 11, hy - 2, 4, 16, 2); ctx.fill(); ctx.stroke();
+    roundRect(ctx, hx + 7, hy - 2, 4, 16, 2); ctx.fill(); ctx.stroke();
   } else if (style === "bun") {
     ctx.fillStyle = color;
-    ctx.beginPath(); ctx.arc(hx, hy - 9, 3.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(hx, hy - 11, 4.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   } else if (style === "spiky") {
     ctx.fillStyle = color;
     for (let i = -1; i <= 1; i++) {
       ctx.beginPath();
-      ctx.moveTo(hx + i * 5 - 3.2, hy - 4);
-      ctx.lineTo(hx + i * 5, hy - 13);
-      ctx.lineTo(hx + i * 5 + 3.2, hy - 4);
+      ctx.moveTo(hx + i * 6 - 4, hy - 5);
+      ctx.lineTo(hx + i * 6, hy - 15);
+      ctx.lineTo(hx + i * 6 + 4, hy - 5);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
@@ -692,37 +698,40 @@ function drawHair(ctx, a, dir, hx, hy) {
 }
 
 function drawFace(ctx, a, dir, cx, ey) {
-  const eyes = dir === "left" ? [-3.5] : dir === "right" ? [3.5] : [-3.2, 3.2];
-  const look = dir === "left" ? -0.8 : dir === "right" ? 0.8 : 0;
+  const eyes = dir === "left" ? [-4] : dir === "right" ? [4] : [-4, 4];
+  const look = dir === "left" ? -0.9 : dir === "right" ? 0.9 : 0;
 
   for (const dx of eyes) {
-    // Blanco del ojo con contorno.
+    // Blanco del ojo (grande, con contorno) — clave para el look sprite.
     ctx.beginPath();
-    ctx.ellipse(cx + dx, ey, 2.2, 2.6, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + dx, ey + 1, 2.8, 3.4, 0, 0, Math.PI * 2);
     ctx.fillStyle = "#fff";
     ctx.fill();
     ctx.strokeStyle = OUTLINE;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
     ctx.stroke();
-    // Pupila.
+    // Pupila grande.
     ctx.beginPath();
-    ctx.arc(cx + dx + look, ey + 0.4, 1.2, 0, Math.PI * 2);
+    ctx.arc(cx + dx + look, ey + 1.4, 1.7, 0, Math.PI * 2);
     ctx.fillStyle = "#231a1c";
     ctx.fill();
+    // Brillo del ojo.
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillRect(cx + dx + look - 1, ey - 0.4, 1.4, 1.4);
   }
 
   if (a.glasses) {
     ctx.strokeStyle = "#231a1c";
-    ctx.lineWidth = 1.4;
+    ctx.lineWidth = 1.6;
     for (const dx of eyes) {
       ctx.beginPath();
-      ctx.arc(cx + dx, ey, 3, 0, Math.PI * 2);
+      ctx.arc(cx + dx, ey + 1, 3.6, 0, Math.PI * 2);
       ctx.stroke();
     }
     if (eyes.length === 2) {
       ctx.beginPath();
-      ctx.moveTo(cx + eyes[0] + 3, ey);
-      ctx.lineTo(cx + eyes[1] - 3, ey);
+      ctx.moveTo(cx + eyes[0] + 3.6, ey + 1);
+      ctx.lineTo(cx + eyes[1] - 3.6, ey + 1);
       ctx.stroke();
     }
   }
