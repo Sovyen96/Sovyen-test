@@ -265,20 +265,30 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.fillStyle = "rgba(255,255,255,0.18)";
       ctx.fillRect(x + 4, y + 6, w - 8, 2);
       break;
-    case "monitors":
+    case "monitors": {
       ctx.strokeStyle = OUTLINE;
       ctx.lineWidth = 1.6;
+      const code = ["#5ad17a", "#e0c860", "#e08aa0", "#7fb8e8"];
       for (let i = 0; i < Math.round(w / TILE); i++) {
         ctx.fillStyle = "#222a33";
         roundRect(ctx, x + 6 + i * TILE, y + 6, TILE - 12, h - 14, 3);
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = "#3fa7e0";
-        ctx.fillRect(x + 9 + i * TILE, y + 9, TILE - 18, h - 22);
-        ctx.fillStyle = "rgba(255,255,255,0.25)";
-        ctx.fillRect(x + 9 + i * TILE, y + 9, TILE - 18, 2);
+        const sx = x + 9 + i * TILE;
+        const sy = y + 9;
+        const sw = TILE - 18;
+        const sh = h - 22;
+        ctx.fillStyle = "#16202b"; // pantalla tipo editor
+        ctx.fillRect(sx, sy, sw, sh);
+        // Líneas de "código".
+        for (let l = 0; l < Math.floor(sh / 3); l++) {
+          ctx.fillStyle = code[l % code.length];
+          const lw = 3 + ((i * 7 + l * 5) % (sw - 4));
+          ctx.fillRect(sx + 1, sy + 1 + l * 3, Math.min(lw, sw - 2), 1);
+        }
       }
       break;
+    }
     case "gamerchair":
       shadow(ctx, x, y, w, h);
       ctx.strokeStyle = OUTLINE;
@@ -458,6 +468,57 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.fillRect(x + w / 2 - 3, y + h / 2 - 3, 6, 6);
       ctx.strokeRect(x + w / 2 - 3, y + h / 2 - 3, 6, 6);
       ctx.fillStyle = "#7a5230"; ctx.fillRect(x + w / 2 - 2, y + h / 2 - 2, 4, 2);
+      break;
+    case "boardtable": // mesa de juntas alargada
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
+      ctx.fillStyle = "#7a5230";
+      roundRect(ctx, x + 2, y + 3, w - 4, h - 6, 6);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#8a6038"; // veta central
+      ctx.fillRect(x + 6, y + h / 2 - 1, w - 12, 2);
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.fillRect(x + 4, y + 4, w - 8, 2);
+      break;
+    case "keyboard": // teclado
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1;
+      ctx.fillStyle = "#2c333c";
+      roundRect(ctx, x + 7, y + h / 2 - 4, w - 14, 8, 2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#6a737d";
+      for (let ky = 0; ky < 2; ky++) {
+        for (let kx = 0; kx < 5; kx++) {
+          ctx.fillRect(x + 9 + kx * 4, y + h / 2 - 2 + ky * 3, 2, 2);
+        }
+      }
+      break;
+    case "papers": // pila de papeles
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1;
+      ctx.fillStyle = "#f4f1e8";
+      roundRect(ctx, x + 9, y + h / 2 - 5, w - 18, 11, 1);
+      ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = "rgba(120,120,110,0.6)";
+      ctx.beginPath();
+      ctx.moveTo(x + 11, y + h / 2 - 2); ctx.lineTo(x + w - 11, y + h / 2 - 2);
+      ctx.moveTo(x + 11, y + h / 2 + 1); ctx.lineTo(x + w - 11, y + h / 2 + 1);
+      ctx.stroke();
+      break;
+    case "presentation": // pantalla de presentación con gráfico
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
+      ctx.fillStyle = "#2c3440";
+      roundRect(ctx, x + 3, y + 2, w - 6, h - 8, 3);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#eef3f7"; // lámina
+      ctx.fillRect(x + 6, y + 5, w - 12, h - 16);
+      ctx.fillStyle = "#3fa7e0"; // barras
+      ctx.fillRect(x + 9, y + h - 14, 3, -6);
+      ctx.fillStyle = "#5ad17a";
+      ctx.fillRect(x + 14, y + h - 14, 3, -10);
+      ctx.fillStyle = "#e08aa0";
+      ctx.fillRect(x + 19, y + h - 14, 3, -8);
+      ctx.fillStyle = "#5a4632"; // pie
+      ctx.fillRect(x + w / 2 - 1, y + h - 8, 2, 5);
       break;
     default:
       ctx.fillStyle = "#bbb";

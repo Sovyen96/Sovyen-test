@@ -72,6 +72,22 @@ export const FURNITURE = [
   { x: 10, y: 14, w: 1, h: 1, kind: "mug", solid: false },
   { x: 11, y: 16, w: 2, h: 1, kind: "bookshelf", solid: true },
   { x: 13, y: 16, w: 1, h: 1, kind: "plant", solid: true },
+
+  // ── Detalle en escritorios (teclados y papeles) ──
+  { x: 4, y: 6, w: 1, h: 1, kind: "keyboard", solid: false },
+  { x: 6, y: 6, w: 1, h: 1, kind: "papers", solid: false },
+  { x: 2, y: 14, w: 1, h: 1, kind: "keyboard", solid: false },
+  { x: 9, y: 14, w: 1, h: 1, kind: "papers", solid: false },
+
+  // ── Sala de Juntas (abajo a la derecha) ──
+  { x: 17, y: 14, w: 6, h: 1, kind: "boardtable", solid: true },
+  { x: 17, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 19, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 21, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 17, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 19, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 21, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 24, y: 14, w: 2, h: 1, kind: "presentation", solid: true },
 ];
 
 // Zonas con etiqueta (no bloquean, sólo decoran y nombran espacios).
@@ -83,6 +99,7 @@ export const ZONES = [
   { x: 9, y: 4, w: 13, h: 5, name: "Lounge" },
   { x: 22, y: 4, w: 5, h: 5, name: "Cafetería" },
   { x: 1, y: 13, w: 13, h: 4, name: "Equipo Técnico" },
+  { x: 15, y: 13, w: 11, h: 4, name: "Sala de Juntas" },
 ];
 
 /** Índice de la zona/sala que contiene la casilla, o -1 si ninguna. */
@@ -109,6 +126,12 @@ export const SEATS = [
   { x: 20, y: 8, dir: "up" },
   { x: 22, y: 6, dir: "right" },// taburetes de la cafetería
   { x: 25, y: 6, dir: "left" },
+  { x: 17, y: 13, dir: "down" }, // sillas de la sala de juntas
+  { x: 19, y: 13, dir: "down" },
+  { x: 21, y: 13, dir: "down" },
+  { x: 17, y: 15, dir: "up" },
+  { x: 19, y: 15, dir: "up" },
+  { x: 21, y: 15, dir: "up" },
 ];
 
 // Pizarra colaborativa: zona de la pared superior. Te acercas a una
