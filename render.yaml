@@ -5,7 +5,7 @@ services:
     name: oficina-virtual
     runtime: node
     plan: free
-    buildCommand: npm --prefix server install && npm --prefix client install && npm --prefix client run build
+    buildCommand: npm --prefix server install && npm --prefix client install --include=dev && npm --prefix client run build
     startCommand: node server/index.js
     healthCheckPath: /health
     envVars:

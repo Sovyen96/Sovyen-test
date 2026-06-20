@@ -28,7 +28,7 @@ se servirá en producción, en una sola URL.
 2. En [render.com](https://render.com) → **New → Blueprint** y selecciona el
    repo: detectará el fichero [`render.yaml`](./render.yaml) y creará el servicio.
    - O bien **New → Web Service** manual con:
-     - **Build Command:** `npm --prefix server install && npm --prefix client install && npm --prefix client run build`
+     - **Build Command:** `npm --prefix server install && npm --prefix client install --include=dev && npm --prefix client run build`
      - **Start Command:** `node server/index.js`
 3. Render te da una URL pública tipo `https://oficina-virtual.onrender.com`.
    ¡Eso es lo que compartes para la reunión!
