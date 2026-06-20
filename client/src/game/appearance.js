@@ -32,6 +32,18 @@ export const ACCESSORIES = [
   { id: "bow", label: "Lazo" },
 ];
 
+export const OUTFITS = [
+  { id: "casual", label: "Casual" },
+  { id: "suit", label: "Traje" },
+  { id: "hoodie", label: "Sudadera" },
+];
+
+export const BEARDS = [
+  { id: "none", label: "Sin barba" },
+  { id: "short", label: "Barba corta" },
+  { id: "full", label: "Barba cerrada" },
+];
+
 // Emotes rápidos (teclas 1-6 en el juego).
 export const EMOTES = ["👍", "❤️", "😂", "🎉", "👋", "🔥"];
 
@@ -46,6 +58,8 @@ export function randomAppearance() {
     hairColor: pick(HAIR_COLORS),
     glasses: Math.random() < 0.3,
     accessory: pick(ACCESSORIES).id,
+    outfit: pick(OUTFITS).id,
+    beard: pick(BEARDS).id,
   };
 }
 
@@ -58,5 +72,7 @@ export function normalizeAppearance(a = {}) {
     hairColor: a.hairColor || HAIR_COLORS[1],
     glasses: !!a.glasses,
     accessory: a.accessory || "none",
+    outfit: a.outfit || "casual",
+    beard: a.beard || "none",
   };
 }

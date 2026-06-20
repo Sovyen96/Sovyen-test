@@ -174,8 +174,63 @@ export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
     }
   }
 
+  drawOutfit(put, a, dir, pal);
   if (!bald) drawHairExtra(put, a, dir, pal.H, pal.h);
+  if (a.beard && a.beard !== "none" && dir !== "up") drawBeard(put, a, dir, pal);
   drawAccessoryPixels(put, a, dir, pal);
+  drawBlink(put, a, dir, pal);
+}
+
+// Parpadeo: cada cierto tiempo cierra los ojos un instante.
+function drawBlink(put, a, dir, pal) {
+  if (dir === "up") return;
+  const phase = ((a.color || "").length * 311 + (a.skin || "").length * 97) % 4000;
+  if ((performance.now() + phase) % 4200 > 130) return; // ojos abiertos casi siempre
+  const eyes = dir === "down" ? [[5, 6], [9, 10]] : [[5, 6]];
+  for (const [a1, a2] of eyes) {
+    put(a1, 8, pal.s); put(a2, 8, pal.s);   // tapa el ojo con piel
+    put(a1, 9, pal.s); put(a2, 9, pal.s);
+    put(a1, 8, pal.O); put(a2, 8, pal.O);   // línea de ojo cerrado
+  }
+}
+
+// Barba sobre la parte baja de la cara.
+function drawBeard(put, a, dir, pal) {
+  const B = a.hair === "bald" ? "#4a3526" : (a.hairColor || "#4a3526");
+  if (dir === "down") {
+    for (const c of [3, 4, 11, 12]) put(c, 10, B);     // patillas
+    if (a.beard === "full") {
+      for (let c = 4; c <= 11; c++) put(c, 10, B);
+      for (let c = 5; c <= 10; c++) put(c, 11, B);
+    } else {
+      put(6, 11, B); put(7, 11, B); put(8, 11, B); put(9, 11, B); // perilla
+    }
+  } else { // perfil
+    put(3, 10, B); put(4, 10, B);
+    if (a.beard === "full") { put(3, 11, B); put(4, 11, B); put(5, 11, B); }
+    else { put(4, 11, B); }
+  }
+}
+
+// Atuendo: traje (chaqueta + corbata) o sudadera, sobre el torso.
+function drawOutfit(put, a, dir, pal) {
+  if (a.outfit === "suit") {
+    const JK = "#2b2e3a", JK2 = "#232532";
+    for (let r = 12; r <= 16; r++) {
+      for (let c = 4; c <= 11; c++) put(c, r, r >= 15 ? JK2 : JK);
+    }
+    if (dir === "down") {
+      put(6, 12, "#fff"); put(9, 12, "#fff");       // cuello camisa
+      put(7, 12, "#eef"); put(8, 12, "#eef");
+      for (let r = 13; r <= 15; r++) put(7, r, "#b03a3a"); // corbata
+      put(8, 13, "#b03a3a");
+    }
+  } else if (a.outfit === "hoodie") {
+    const HD = darken(a.color || "#3498db", 0.7);
+    for (let c = 3; c <= 12; c++) put(c, 12, HD);   // capucha
+    put(3, 13, HD); put(12, 13, HD);
+    if (dir === "down") { put(7, 13, "#fff"); put(8, 13, "#fff"); } // cordones
+  }
 }
 
 // Variaciones de peinado por encima del pelo base (corto).

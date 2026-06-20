@@ -71,7 +71,7 @@ export const FURNITURE = [
   { x: 9, y: 14, w: 3, h: 1, kind: "desk", solid: true },
   { x: 10, y: 14, w: 1, h: 1, kind: "mug", solid: false },
   { x: 11, y: 16, w: 2, h: 1, kind: "bookshelf", solid: true },
-  { x: 13, y: 16, w: 1, h: 1, kind: "plant", solid: true },
+  { x: 12, y: 13, w: 1, h: 1, kind: "plant", solid: true },
 
   // ── Detalle en escritorios (teclados y papeles) ──
   { x: 4, y: 6, w: 1, h: 1, kind: "keyboard", solid: false },
@@ -81,9 +81,8 @@ export const FURNITURE = [
 
   // ── Sala de Juntas (abajo a la derecha) ──
   { x: 17, y: 14, w: 6, h: 1, kind: "boardtable", solid: true },
-  { x: 17, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
-  { x: 19, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
-  { x: 21, y: 13, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 16, y: 14, w: 1, h: 1, kind: "gamerchair", solid: true }, // extremo izq.
+  { x: 23, y: 14, w: 1, h: 1, kind: "gamerchair", solid: true }, // extremo der.
   { x: 17, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
   { x: 19, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
   { x: 21, y: 15, w: 1, h: 1, kind: "gamerchair", solid: true },
@@ -126,9 +125,8 @@ export const SEATS = [
   { x: 20, y: 8, dir: "up" },
   { x: 22, y: 6, dir: "right" },// taburetes de la cafetería
   { x: 25, y: 6, dir: "left" },
-  { x: 17, y: 13, dir: "down" }, // sillas de la sala de juntas
-  { x: 19, y: 13, dir: "down" },
-  { x: 21, y: 13, dir: "down" },
+  { x: 16, y: 14, dir: "right" }, // sillas de la sala de juntas
+  { x: 23, y: 14, dir: "left" },
   { x: 17, y: 15, dir: "up" },
   { x: 19, y: 15, dir: "up" },
   { x: 21, y: 15, dir: "up" },
@@ -146,13 +144,16 @@ export function isNearBoard(tx, ty) {
   return false;
 }
 
-// Pared divisoria horizontal con un hueco (puerta) para pasar.
+// Muro divisorio horizontal con dos puertas, y un tabique vertical que
+// separa los dos despachos de abajo (Equipo Técnico / Sala de Juntas).
 const DIVIDER_ROW = 12;
-const DOOR_COL = 6;
+const DOORS = new Set([6, 7]); // columnas abiertas (puertas)
+// Tabique col 14, filas 13-15; la fila 16 queda abierta (puerta interior).
+const PARTITIONS = [[14, 13], [14, 14], [14, 15]];
 
 /**
  * Construye el conjunto de celdas bloqueadas ("x,y").
- * Incluye paredes exteriores, la divisoria y los muebles sólidos.
+ * Incluye paredes exteriores, la divisoria, los tabiques y los muebles.
  */
 export function buildBlocked() {
   const blocked = new Set();
@@ -168,11 +169,14 @@ export function buildBlocked() {
     block(COLS - 1, y);
   }
 
-  // Pared divisoria con puerta.
+  // Muro divisorio con puertas.
   for (let x = 1; x < COLS - 1; x++) {
-    if (x === DOOR_COL || x === DOOR_COL + 1) continue;
+    if (DOORS.has(x)) continue;
     block(x, DIVIDER_ROW);
   }
+
+  // Tabique vertical entre despachos.
+  for (const [x, y] of PARTITIONS) block(x, y);
 
   // Muebles sólidos.
   for (const f of FURNITURE) {
@@ -187,4 +191,4 @@ export function buildBlocked() {
   return blocked;
 }
 
-export const DIVIDER = { row: DIVIDER_ROW, door: DOOR_COL };
+export const DIVIDER = { row: DIVIDER_ROW, doors: DOORS, partitions: PARTITIONS };

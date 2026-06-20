@@ -334,6 +334,8 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
           hairColor: me.hairColor,
           glasses: me.glasses,
           accessory: me.accessory,
+          outfit: me.outfit,
+          beard: me.beard,
         },
       });
     socket.on("connect", doJoin);

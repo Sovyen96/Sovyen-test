@@ -108,6 +108,8 @@ io.on("connection", (socket) => {
       hairColor: typeof a.hairColor === "string" ? a.hairColor : "#4a3526",
       glasses: !!a.glasses,
       accessory: typeof a.accessory === "string" ? a.accessory : "none",
+      outfit: typeof a.outfit === "string" ? a.outfit : "casual",
+      beard: typeof a.beard === "string" ? a.beard : "none",
       tx: spawn.tx,
       ty: spawn.ty,
       dir: "down",
@@ -171,7 +173,7 @@ io.on("connection", (socket) => {
     if (typeof fields.name === "string") {
       p.name = fields.name.slice(0, 16).trim() || p.name;
     }
-    for (const key of ["color", "skin", "hair", "hairColor", "accessory"]) {
+    for (const key of ["color", "skin", "hair", "hairColor", "accessory", "outfit", "beard"]) {
       if (typeof fields[key] === "string") p[key] = fields[key];
     }
     if ("glasses" in fields) p.glasses = !!fields.glasses;
@@ -184,6 +186,8 @@ io.on("connection", (socket) => {
       hairColor: p.hairColor,
       glasses: p.glasses,
       accessory: p.accessory,
+      outfit: p.outfit,
+      beard: p.beard,
     });
   });
 

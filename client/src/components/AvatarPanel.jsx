@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  SKIN_TONES, HAIR_COLORS, SHIRT_COLORS, HAIR_STYLES, ACCESSORIES,
+  SKIN_TONES, HAIR_COLORS, SHIRT_COLORS, HAIR_STYLES, ACCESSORIES, OUTFITS, BEARDS,
 } from "../game/appearance.js";
 import { drawTrainer } from "../game/sprites.js";
 
@@ -89,6 +89,20 @@ export default function AvatarPanel({ value, onChange }) {
         <label>Color de camiseta</label>
         <Swatches values={SHIRT_COLORS} current={value.color} onPick={(color) => set({ color })} />
 
+        <label>Atuendo</label>
+        <div className="style-row">
+          {OUTFITS.map((s) => (
+            <button
+              type="button"
+              key={s.id}
+              className={"style-btn" + (s.id === value.outfit ? " selected" : "")}
+              onClick={() => set({ outfit: s.id })}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
         <label>Accesorio</label>
         <div className="style-row">
           {ACCESSORIES.map((s) => (
@@ -97,6 +111,20 @@ export default function AvatarPanel({ value, onChange }) {
               key={s.id}
               className={"style-btn" + (s.id === value.accessory ? " selected" : "")}
               onClick={() => set({ accessory: s.id })}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        <label>Barba</label>
+        <div className="style-row">
+          {BEARDS.map((s) => (
+            <button
+              type="button"
+              key={s.id}
+              className={"style-btn" + (s.id === value.beard ? " selected" : "")}
+              onClick={() => set({ beard: s.id })}
             >
               {s.label}
             </button>

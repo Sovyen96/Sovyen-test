@@ -72,10 +72,14 @@ export function drawFloor(ctx, cam) {
     }
   }
 
-  // Muro divisorio interno (pared) con hueco de paso (puerta).
+  // Muro divisorio interno (pared) con puertas.
   for (let x = 1; x < COLS - 1; x++) {
-    if (x === DIVIDER.door || x === DIVIDER.door + 1) continue;
+    if (DIVIDER.doors.has(x)) continue;
     wallTile(ctx, x * TILE - cam.x, DIVIDER.row * TILE - cam.y);
+  }
+  // Tabique vertical entre despachos.
+  for (const [px, py] of DIVIDER.partitions) {
+    wallTile(ctx, px * TILE - cam.x, py * TILE - cam.y);
   }
 
   // Zócalo: sombra donde la pared toca el suelo.
