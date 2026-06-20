@@ -395,6 +395,70 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.fillStyle = "#5ad17a";
       ctx.fillRect(x + 13, y + 8, 4, 4);
       break;
+    case "counter": // mostrador de recepción
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
+      ctx.fillStyle = "#9a6f3f";
+      roundRect(ctx, x + 2, y + 4, w - 4, h - 8, 4);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#caa472"; // encimera
+      ctx.fillRect(x + 3, y + 5, w - 6, 4);
+      ctx.fillStyle = "rgba(255,255,255,0.2)";
+      ctx.fillRect(x + 3, y + 5, w - 6, 1);
+      break;
+    case "coffee": // máquina de café
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1.6;
+      ctx.fillStyle = "#33373e";
+      roundRect(ctx, x + 7, y + 3, w - 14, h - 6, 3);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#e0392b"; ctx.fillRect(x + 10, y + 6, 3, 2); // luz
+      ctx.fillStyle = "#7a818c"; ctx.fillRect(x + 9, y + h - 10, w - 18, 3); // boquilla
+      ctx.fillStyle = "#e8e2d6"; ctx.fillRect(x + 12, y + h - 8, w - 24, 3); // tacita
+      break;
+    case "fridge": // nevera
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1.6;
+      ctx.fillStyle = "#dfe6ec";
+      roundRect(ctx, x + 6, y + 2, w - 12, h - 4, 3);
+      ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = "rgba(120,130,140,0.6)"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x + 8, y + 12); ctx.lineTo(x + w - 8, y + 12); ctx.stroke();
+      ctx.fillStyle = "#9aa6b0"; ctx.fillRect(x + w - 10, y + 5, 2, 5); // tirador
+      break;
+    case "window": { // ventanal con vistas (decoración de pared)
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
+      ctx.fillStyle = "#6b5440"; roundRect(ctx, x + 2, y + 1, w - 4, h - 4, 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#aee3f5"; ctx.fillRect(x + 4, y + 3, w - 8, h - 9);
+      ctx.fillStyle = "#7fc8e8"; ctx.fillRect(x + 4, y + h - 9, w - 8, 3);
+      ctx.fillStyle = "#cdebf7"; ctx.fillRect(x + 7, y + 5, 6, 2); ctx.fillRect(x + w - 14, y + 6, 5, 2); // nubes
+      ctx.fillStyle = "#3f9d52"; ctx.fillRect(x + 4, y + h - 8, w - 8, 2); // colina
+      ctx.strokeStyle = "#6b5440"; ctx.lineWidth = 1.4; // cruceta
+      ctx.beginPath(); ctx.moveTo(x + w / 2, y + 3); ctx.lineTo(x + w / 2, y + h - 6);
+      ctx.moveTo(x + 4, y + (h - 6) / 2 + 2); ctx.lineTo(x + w - 4, y + (h - 6) / 2 + 2); ctx.stroke();
+      break;
+    }
+    case "bookshelf": // estantería con libros
+      shadow(ctx, x, y, w, h);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
+      ctx.fillStyle = "#8a6038";
+      roundRect(ctx, x + 2, y + 3, w - 4, h - 6, 3);
+      ctx.fill(); ctx.stroke();
+      {
+        const books = ["#c0392b", "#2980b9", "#27ae60", "#f1c40f", "#9b59b6", "#e67e22"];
+        for (let i = 0; i < Math.floor((w - 10) / 5); i++) {
+          ctx.fillStyle = books[(x + i) % books.length];
+          ctx.fillRect(x + 5 + i * 5, y + 6, 4, h - 14);
+        }
+      }
+      break;
+    case "mug": // taza sobre la mesa
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1;
+      ctx.fillStyle = "#e8e2d6";
+      ctx.fillRect(x + w / 2 - 3, y + h / 2 - 3, 6, 6);
+      ctx.strokeRect(x + w / 2 - 3, y + h / 2 - 3, 6, 6);
+      ctx.fillStyle = "#7a5230"; ctx.fillRect(x + w / 2 - 2, y + h / 2 - 2, 4, 2);
+      break;
     default:
       ctx.fillStyle = "#bbb";
       roundRect(ctx, x + 4, y + 4, w - 8, h - 8, 4);

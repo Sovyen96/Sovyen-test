@@ -41,6 +41,21 @@ export const FURNITURE = [
   { x: 9, y: 11, w: 2, h: 1, kind: "cabinet", solid: true },
   { x: 16, y: 11, w: 1, h: 1, kind: "deer", solid: false },
 
+  // ── Recepción premium ──
+  { x: 2, y: 3, w: 4, h: 1, kind: "counter", solid: true },
+
+  // ── Ventanales con vistas (pared superior, decorativos) ──
+  { x: 3, y: 0, w: 2, h: 1, kind: "window", solid: false },
+  { x: 9, y: 0, w: 2, h: 1, kind: "window", solid: false },
+  { x: 19, y: 0, w: 2, h: 1, kind: "window", solid: false },
+
+  // ── Cafetería (zona derecha) ──
+  { x: 23, y: 4, w: 1, h: 1, kind: "coffee", solid: true },
+  { x: 24, y: 4, w: 1, h: 1, kind: "fridge", solid: true },
+  { x: 23, y: 6, w: 2, h: 2, kind: "roundtable", solid: true },
+  { x: 22, y: 6, w: 1, h: 1, kind: "stool", solid: true },
+  { x: 25, y: 6, w: 1, h: 1, kind: "stool", solid: true },
+
   // ── Plantas decorativas (toque premium) ──
   { x: 1, y: 10, w: 1, h: 1, kind: "plant", solid: true },
   { x: 26, y: 2, w: 1, h: 1, kind: "plant", solid: true },
@@ -51,8 +66,11 @@ export const FURNITURE = [
   { x: 2, y: 14, w: 3, h: 1, kind: "desk", solid: true },
   { x: 2, y: 15, w: 1, h: 1, kind: "monitors", solid: true },
   { x: 3, y: 16, w: 1, h: 1, kind: "gamerchair", solid: true },
+  { x: 3, y: 14, w: 1, h: 1, kind: "mug", solid: false },
   { x: 7, y: 14, w: 1, h: 1, kind: "tower", solid: true },
   { x: 9, y: 14, w: 3, h: 1, kind: "desk", solid: true },
+  { x: 10, y: 14, w: 1, h: 1, kind: "mug", solid: false },
+  { x: 11, y: 16, w: 2, h: 1, kind: "bookshelf", solid: true },
   { x: 13, y: 16, w: 1, h: 1, kind: "plant", solid: true },
 ];
 
@@ -63,6 +81,7 @@ export const ZONES = [
   { x: 1, y: 1, w: 8, h: 4, name: "Recepción" },
   { x: 2, y: 6, w: 6, h: 3, name: "Sala de Streaming" },
   { x: 9, y: 4, w: 13, h: 5, name: "Lounge" },
+  { x: 22, y: 4, w: 5, h: 5, name: "Cafetería" },
   { x: 1, y: 13, w: 13, h: 4, name: "Equipo Técnico" },
 ];
 
@@ -88,6 +107,8 @@ export const SEATS = [
   { x: 5, y: 1, dir: "down" },
   { x: 19, y: 8, dir: "up" },   // sofá lounge
   { x: 20, y: 8, dir: "up" },
+  { x: 22, y: 6, dir: "right" },// taburetes de la cafetería
+  { x: 25, y: 6, dir: "left" },
 ];
 
 // Pizarra colaborativa: zona de la pared superior. Te acercas a una

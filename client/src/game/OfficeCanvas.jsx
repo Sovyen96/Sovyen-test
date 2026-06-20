@@ -300,6 +300,16 @@ export default function OfficeCanvas({ me, onPrompt, onOpenBoard }) {
       // ── Personajes: sprites pixel-art nítidos sobre el fondo ──
       for (const p of ordered) drawCharacterSprite(ctx, p, cam, PIXEL);
 
+      // ── Iluminación cálida (viñeta sutil) ──
+      const lg = ctx.createRadialGradient(
+        viewW / 2, viewH * 0.42, Math.min(viewW, viewH) * 0.25,
+        viewW / 2, viewH / 2, Math.max(viewW, viewH) * 0.72,
+      );
+      lg.addColorStop(0, "rgba(255,238,205,0.05)");
+      lg.addColorStop(1, "rgba(35,25,15,0.22)");
+      ctx.fillStyle = lg;
+      ctx.fillRect(0, 0, viewW, viewH);
+
       // ── Capa de texto nítida por encima ──
       ctx.imageSmoothingEnabled = true;
       drawZoneLabels(ctx, cam);
