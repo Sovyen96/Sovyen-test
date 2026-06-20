@@ -146,10 +146,12 @@ export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
   const skin = a.skin || "#f1c9a5";
   const hair = a.hairColor || "#4a3526";
   const shirt = a.color || "#3498db";
+  const bald = a.hair === "bald";
   const pal = {
     O: OUTLINE,
     S: skin, s: darken(skin, 0.82),
-    H: hair, h: darken(hair, 0.75),
+    // "Rapado": el pelo se pinta como piel (cabeza sin pelo).
+    H: bald ? skin : hair, h: bald ? darken(skin, 0.82) : darken(hair, 0.72),
     C: shirt, c: darken(shirt, 0.78),
     N: "#3b3f56", B: "#3a2b20", W: "#ffffff",
   };
@@ -157,64 +159,98 @@ export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
   // Origen alineado a la rejilla de píxeles (evita parpadeo al moverse).
   const ox = Math.round(cx - (SPRITE_W * px) / 2);
   const oy = Math.round(cy + 13 - SPRITE_H * px); // pies ~ cy+13
-
-  for (let r = 0; r < grid.length; r++) {
-    const row = grid[r];
-    for (let c = 0; c < row.length; c++) {
-      const ch = row[c];
-      if (ch === ".") continue;
-      const color = pal[ch];
-      if (!color) continue;
-      const col = mirror ? SPRITE_W - 1 - c : c;
-      ctx.fillStyle = color;
-      ctx.fillRect(ox + col * px, oy + r * px, px, px);
-    }
-  }
-
-  drawAccessoryPixels(ctx, a, dir, ox, oy, px, mirror, pal);
-}
-
-// Accesorios sobre el sprite (gafas, cascos, gorra, gorro, lazo).
-function drawAccessoryPixels(ctx, a, dir, ox, oy, px, mirror, pal) {
   const put = (c, r, color) => {
+    if (!color) return;
     const col = mirror ? SPRITE_W - 1 - c : c;
     ctx.fillStyle = color;
     ctx.fillRect(ox + col * px, oy + r * px, px, px);
   };
 
-  // Gafas: barra sobre los ojos (fila 8) cuando se ve la cara.
+  // Base.
+  for (let r = 0; r < grid.length; r++) {
+    const row = grid[r];
+    for (let c = 0; c < row.length; c++) {
+      if (row[c] !== ".") put(c, r, pal[row[c]]);
+    }
+  }
+
+  if (!bald) drawHairExtra(put, a, dir, pal.H, pal.h);
+  drawAccessoryPixels(put, a, dir, pal);
+}
+
+// Variaciones de peinado por encima del pelo base (corto).
+function drawHairExtra(put, a, dir, H, h) {
+  switch (a.hair) {
+    case "spiky": // mechones de punta arriba
+      for (const c of [4, 7, 10]) {
+        put(c, -1, H); put(c - 1, 0, h); put(c, 0, H); put(c + 1, 0, H);
+      }
+      break;
+    case "long": // melena por los lados hasta los hombros
+      for (let r = 7; r <= 13; r++) { put(2, r, H); put(13, r, h); }
+      put(3, 13, H); put(12, 13, h);
+      break;
+    case "bun": // moño en la coronilla
+      put(7, -2, H); put(8, -2, H);
+      put(6, -1, H); put(7, -1, H); put(8, -1, H); put(9, -1, H);
+      put(7, 0, h); put(8, 0, h);
+      break;
+    case "cap": // gorra: visera al frente
+      for (let c = 3; c <= 12; c++) put(c, 1, h);
+      if (dir === "down") for (let c = 4; c <= 11; c++) put(c, 4, "#2b2f36");
+      else if (dir !== "up") { put(13, 3, "#2b2f36"); put(14, 3, "#2b2f36"); }
+      break;
+    default:
+      break;
+  }
+}
+
+// Accesorios sobre el sprite (gafas, cascos, gorro, lazo).
+function drawAccessoryPixels(put, a, dir, pal) {
+  // Gafas: montura alrededor de los ojos.
   if (a.glasses && dir !== "up") {
-    const cols = dir === "down" ? [4, 5, 7, 8, 10, 11] : [3, 4, 6];
-    for (const c of cols) put(c, 8, pal.O);
+    const G = "#23191c";
+    if (dir === "down") {
+      for (const c of [4, 5, 6, 9, 10, 11]) { put(c, 7, G); put(c, 9, G); }
+      put(4, 8, G); put(6, 8, G); put(9, 8, G); put(11, 8, G);
+      put(7, 8, G); put(8, 8, G); // puente
+    } else {
+      for (const c of [4, 5, 6]) { put(c, 7, G); put(c, 9, G); }
+      put(4, 8, G); put(6, 8, G);
+    }
   }
 
   switch (a.accessory) {
-    case "headphones":
+    case "headphones": {
+      const D = "#2b2f36", B = "#5fb0e5";
       if (dir === "down" || dir === "up") {
-        for (const r of [4, 5, 6]) { put(2, r, "#2b2f36"); put(13, r, "#2b2f36"); }
-        put(2, 5, "#5fb0e5"); put(13, 5, "#5fb0e5");
+        for (let c = 4; c <= 11; c++) put(c, -1, D);       // diadema
+        put(4, 0, D); put(11, 0, D);
+        for (const r of [4, 5, 6]) { put(2, r, D); put(3, r, D); put(12, r, D); put(13, r, D); }
+        put(2, 5, B); put(13, 5, B);                        // almohadillas
       } else {
-        for (const r of [4, 5, 6]) put(1, r, "#2b2f36");
-        put(1, 5, "#5fb0e5");
+        for (let c = 5; c <= 9; c++) put(c, -1, D);
+        for (const r of [4, 5, 6]) { put(3, r, D); put(4, r, D); }
+        put(3, 5, B);
       }
       break;
-    case "cap": {
-      const brim = "#c0392b";
-      for (let c = 2; c <= 13; c++) put(c, 4, brim);
-      for (let c = 3; c <= 11; c++) put(c, 3, brim);
-      put(12, 5, brim); put(13, 5, brim); // visera
+    }
+    case "hat": { // gorro de lana con pompón
+      const W = "#c0392b";
+      for (let c = 3; c <= 12; c++) put(c, 1, W);
+      for (let c = 2; c <= 13; c++) put(c, 2, W);
+      put(2, 3, W); put(13, 3, W);
+      for (let c = 3; c <= 12; c++) put(c, 0, W);
+      put(7, -2, "#ecf0f1"); put(8, -2, "#ecf0f1"); // pompón
+      put(7, -1, "#fff"); put(8, -1, "#fff");
       break;
     }
-    case "hat":
-      for (let c = 3; c <= 12; c++) put(c, 1, "#c0392b");
-      for (let c = 2; c <= 13; c++) put(c, 2, "#c0392b");
-      put(7, 0, "#ecf0f1"); put(8, 0, "#ecf0f1"); // pompón
+    case "bow": { // lazo a un lado de la cabeza
+      const P = "#e84393", D = "#c2185b";
+      put(3, 0, P); put(2, -1, P); put(2, 1, P);
+      put(4, 0, D);
       break;
-    case "bow":
-      put(6, 1, "#e84393"); put(9, 1, "#e84393");
-      put(7, 1, "#c2185b"); put(8, 1, "#c2185b");
-      put(6, 0, "#e84393"); put(9, 0, "#e84393");
-      break;
+    }
     default:
       break;
   }

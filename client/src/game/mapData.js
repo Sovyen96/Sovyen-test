@@ -41,6 +41,12 @@ export const FURNITURE = [
   { x: 9, y: 11, w: 2, h: 1, kind: "cabinet", solid: true },
   { x: 16, y: 11, w: 1, h: 1, kind: "deer", solid: false },
 
+  // ── Plantas decorativas (toque premium) ──
+  { x: 1, y: 10, w: 1, h: 1, kind: "plant", solid: true },
+  { x: 26, y: 2, w: 1, h: 1, kind: "plant", solid: true },
+  { x: 25, y: 10, w: 1, h: 1, kind: "plant", solid: true },
+  { x: 26, y: 15, w: 1, h: 1, kind: "plant", solid: true },
+
   // ── Equipo Técnico (zona inferior) ──
   { x: 2, y: 14, w: 3, h: 1, kind: "desk", solid: true },
   { x: 2, y: 15, w: 1, h: 1, kind: "monitors", solid: true },

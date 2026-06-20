@@ -317,6 +317,16 @@ function drawItem(ctx, kind, x, y, w, h) {
       ctx.beginPath();
       ctx.ellipse(x + w / 2 - 4, y + h / 2 - 4, w / 2 - 12, h / 2 - 12, 0, 0, Math.PI * 1.2);
       ctx.fill();
+      // Centro: jarroncito con planta (toque premium).
+      ctx.fillStyle = "#7d8aa0";
+      ctx.fillRect(x + w / 2 - 3, y + h / 2 - 1, 6, 6);
+      ctx.strokeStyle = OUTLINE; ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + w / 2 - 3, y + h / 2 - 1, 6, 6);
+      ctx.fillStyle = "#3f9d52";
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + h / 2 - 3, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
       break;
     case "stool":
       ctx.strokeStyle = OUTLINE;
