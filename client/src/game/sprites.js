@@ -110,7 +110,7 @@ export const SPRITE_H = 21;
  * Dibuja el sprite del personaje píxel a píxel (nítido).
  * (cx, cy) es el centro del tile; `px` el tamaño del píxel de arte.
  */
-export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
+export function drawTrainer(ctx, a, dir, frame, cx, cy, px, opts = {}) {
   const frames = FRAMES[dir] || FRAMES.down;
   const grid = frames[frame] || frames[0];
   const mirror = dir === "left";
@@ -118,12 +118,16 @@ export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
   const hair = a.hairColor || "#4a3526";
   const shirt = a.color || "#3498db";
   const bald = a.hair === "bald";
+  // `opts.outline` permite un contorno más suave; `opts.softShade`,
+  // un sombreado más plano (estética tipo Kenney).
+  const OUT = opts.outline || OUTLINE;
+  const sh = (c, f) => darken(c, opts.softShade ? Math.min(1, f + 0.1) : f);
   const pal = {
-    O: OUTLINE,
-    S: skin, s: darken(skin, 0.82),
+    O: OUT,
+    S: skin, s: sh(skin, 0.82),
     // "Rapado": el pelo se pinta como piel (cabeza sin pelo).
-    H: bald ? skin : hair, h: bald ? darken(skin, 0.82) : darken(hair, 0.72),
-    C: shirt, c: darken(shirt, 0.78),
+    H: bald ? skin : hair, h: bald ? sh(skin, 0.82) : sh(hair, 0.72),
+    C: shirt, c: sh(shirt, 0.78),
     N: "#3b3f56", B: "#3a2b20", W: "#ffffff",
   };
 
