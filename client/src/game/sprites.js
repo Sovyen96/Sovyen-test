@@ -23,7 +23,8 @@ function darken(hex, f) {
 }
 
 // ── Fotograma "mirando abajo" ──────────────────────────────────
-const DOWN_A = [
+// Parte superior (cabeza + torso) compartida por los 3 fotogramas.
+const DOWN_TOP = [
   "......OOOO......",
   "....OOHHHHOO....",
   "...OHHHHHHHHO...",
@@ -41,37 +42,8 @@ const DOWN_A = [
   "..OSCCCCCCCCSO..",
   "..OCcCCCCCCcCO..",
   "...OCCCCCCCCO...",
-  "...ONNNNNNNNO...",
-  "...ONNNOONNNO...",
-  "...OBBBOOBBBO...",
-  "....OOOOOOOO....",
 ];
-const DOWN_B = [
-  "......OOOO......",
-  "....OOHHHHOO....",
-  "...OHHHHHHHHO...",
-  "..OHHHHHHHHHHO..",
-  "..OHHHHHHHHHHO..",
-  "..OHHSSSSSSHHO..",
-  "..OHSSSSSSSSHO..",
-  "..OSSSSSSSSSSO..",
-  "..OSSOOSSOOSSO..",
-  "..OSSOWSSWOSSO..",
-  "..OsSSSSSSSSsO..",
-  "...OSSSSSSSSO...",
-  "...OCCCCCCCCO...",
-  "..OCCCCCCCCCCO..",
-  "..OSCCCCCCCCSO..",
-  "..OCcCCCCCCcCO..",
-  "...OCCCCCCCCO...",
-  "...ONNNNNNNNO...",
-  "...ONNNNNNNNO...",
-  "...OBBOOOOBBO...",
-  "....OOOOOOOO....",
-];
-
-// ── Fotograma "mirando arriba" (nuca: todo pelo) ───────────────
-const UP_A = [
+const UP_TOP = [
   "......OOOO......",
   "....OOHHHHOO....",
   "...OHHHHHHHHO...",
@@ -89,17 +61,8 @@ const UP_A = [
   "..OCCCCCCCCCCO..",
   "..OCcCCCCCCcCO..",
   "...OCCCCCCCCO...",
-  "...ONNNNNNNNO...",
-  "...ONNNOONNNO...",
-  "...OBBBOOBBBO...",
-  "....OOOOOOOO....",
 ];
-const UP_B = UP_A.map((r, i) =>
-  i === 18 ? "...ONNNNNNNNO..." : i === 19 ? "...OBBOOOOBBO..." : r,
-);
-
-// ── Fotograma "mirando a la derecha" (perfil) ──────────────────
-const SIDE_A = [
+const SIDE_TOP = [
   ".....OOOO.......",
   "...OOHHHHO......",
   "..OHHHHHHHO.....",
@@ -117,21 +80,28 @@ const SIDE_A = [
   ".OCCCCCCCCSO....",
   ".OCcCCCCCCcO....",
   "..OCCCCCCCO.....",
-  "..ONNNNNNO......",
-  "..ONNOONNO......",
-  "..OBBOOBBO......",
-  "...OOOOOO.......",
 ];
-const SIDE_B = SIDE_A.map((r, i) =>
-  i === 18 ? "..ONNNNNNO......" : i === 19 ? "..OBBOOBBO......" : r,
-);
 
-const FRAMES = {
-  down: [DOWN_A, DOWN_B],
-  up: [UP_A, UP_B],
-  right: [SIDE_A, SIDE_B],
-  left: [SIDE_A, SIDE_B], // se dibuja espejado
+// Piernas (4 filas) con 3 poses: reposo, paso A y paso B (andar).
+const FRONT_LEGS = {
+  idle: ["...ONNNNNNNNO...", "...ONNNOONNNO...", "...OBBBOOBBBO...", "....OOOOOOOO...."],
+  a:    ["...ONNNNNNNNO...", "..ONNNOONNNO....", "..OBBBOOBBBO....", "...OOOOOOOO....."],
+  b:    ["...ONNNNNNNNO...", "....ONNNOONNNO..", "....OBBBOOBBBO..", ".....OOOOOOOO..."],
 };
+const SIDE_LEGS = {
+  idle: ["..ONNNNNNO......", "..ONNOONNO......", "..OBBOOBBO......", "...OOOOOO......."],
+  a:    ["..ONNNNNNO......", ".ONNOONNO.......", ".OBBOOBBO.......", "..OOOOOO........"],
+  b:    ["..ONNNNNNO......", "...ONNOONNO.....", "...OBBOOBBO.....", "....OOOOOO......"],
+};
+
+const compose = (top, legs) => [...top, ...legs];
+const FRAMES = {
+  down: [compose(DOWN_TOP, FRONT_LEGS.idle), compose(DOWN_TOP, FRONT_LEGS.a), compose(DOWN_TOP, FRONT_LEGS.b)],
+  up: [compose(UP_TOP, FRONT_LEGS.idle), compose(UP_TOP, FRONT_LEGS.a), compose(UP_TOP, FRONT_LEGS.b)],
+  right: [compose(SIDE_TOP, SIDE_LEGS.idle), compose(SIDE_TOP, SIDE_LEGS.a), compose(SIDE_TOP, SIDE_LEGS.b)],
+};
+FRAMES.left = FRAMES.right; // se dibuja espejado
+
 
 export const SPRITE_W = 16;
 export const SPRITE_H = 21;
@@ -141,7 +111,8 @@ export const SPRITE_H = 21;
  * (cx, cy) es el centro del tile; `px` el tamaño del píxel de arte.
  */
 export function drawTrainer(ctx, a, dir, frame, cx, cy, px) {
-  const grid = (FRAMES[dir] || FRAMES.down)[frame ? 1 : 0];
+  const frames = FRAMES[dir] || FRAMES.down;
+  const grid = frames[frame] || frames[0];
   const mirror = dir === "left";
   const skin = a.skin || "#f1c9a5";
   const hair = a.hairColor || "#4a3526";

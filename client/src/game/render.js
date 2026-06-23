@@ -577,7 +577,7 @@ export function drawCharacterSprite(ctx, p, cam, px = 3) {
     ctx.stroke();
   }
 
-  const frame = p.moving && !p.sitting ? Math.floor(p.animT * 8) % 2 : 0;
+  const frame = p.moving && !p.sitting ? [1, 0, 2, 0][Math.floor(p.animT * 8) % 4] : 0;
   drawTrainer(ctx, p, p.dir, frame, cx, cy + sit + bob, px);
 }
 
