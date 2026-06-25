@@ -12,6 +12,9 @@ export function Hud() {
   const openTerminal = useStore((s) => s.openTerminal);
   const restartAgent = useStore((s) => s.restartAgent);
   const removeAgent = useStore((s) => s.removeAgent);
+  const tileTerminals = useStore((s) => s.tileTerminals);
+  const openAllTerminals = useStore((s) => s.openAllTerminals);
+  const openCount = useStore((s) => Object.keys(s.terminals).length);
 
   const list = Object.values(agents);
   const working = list.filter((a) => a.status === "working").length;
@@ -38,6 +41,14 @@ export function Hud() {
             <span className="stat-num accent-dim">{backend === "pty" ? "PTY" : backend ? "pipe" : "…"}</span>
             <span className="stat-label">terminal</span>
           </div>
+        </div>
+        <div className="hud-win-controls">
+          <button className="ghost-btn" onClick={openAllTerminals} disabled={list.length === 0} title="Open every agent's terminal">
+            ▦ Open all
+          </button>
+          <button className="ghost-btn" onClick={tileTerminals} disabled={openCount === 0} title="Tile open terminals">
+            ⊞ Tile{openCount ? ` (${openCount})` : ""}
+          </button>
         </div>
         <button className="recruit-btn" onClick={openRecruit}>
           ＋ Recruit Agent

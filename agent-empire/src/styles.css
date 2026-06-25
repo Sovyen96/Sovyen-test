@@ -370,10 +370,6 @@ body,
 /* ── Terminal window ─────────────────────────────────────── */
 .terminal-window {
   position: absolute;
-  right: 24px;
-  bottom: 90px;
-  width: min(720px, 70vw);
-  height: min(440px, 60vh);
   display: flex;
   flex-direction: column;
   background: #0c0a16;
@@ -381,7 +377,9 @@ body,
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
-  z-index: 40;
+}
+.terminal-window.min {
+  height: auto;
 }
 .terminal-titlebar {
   display: flex;
@@ -443,6 +441,86 @@ body,
   flex: 1;
   padding: 6px 8px;
   overflow: hidden;
+  min-height: 0;
+}
+.tw-badge {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--panel-soft);
+  color: var(--text-dim);
+}
+.tw-badge.s-working {
+  color: #08160a;
+  background: var(--green);
+}
+.tw-badge.s-exited {
+  color: #fff;
+  background: var(--accent);
+}
+.terminal-task {
+  display: flex;
+  gap: 6px;
+  padding: 7px 8px;
+  border-top: 1px solid var(--border);
+  background: rgba(20, 15, 38, 0.9);
+}
+.terminal-task input {
+  flex: 1;
+  background: rgba(8, 6, 18, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.terminal-task input:focus {
+  border-color: var(--accent-2);
+}
+.terminal-task button {
+  background: var(--accent-2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.terminal-resize {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, rgba(180, 150, 255, 0.5) 50%);
+  border-radius: 0 0 8px 0;
+}
+
+/* top-bar window controls */
+.hud-win-controls {
+  display: flex;
+  gap: 6px;
+}
+.ghost-btn {
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.12s;
+}
+.ghost-btn:hover:not(:disabled) {
+  border-color: var(--accent-2);
+}
+.ghost-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* ── Empty state ─────────────────────────────────────────── */
@@ -462,6 +540,25 @@ body,
   color: var(--text-dim);
   margin: 0 0 16px;
 }
+.controls-hint {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 12px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+.controls-hint span:nth-child(even) {
+  opacity: 0.4;
+}
+
 .empty-hint button {
   pointer-events: auto;
   background: linear-gradient(135deg, var(--accent), #b3325f);

@@ -2,6 +2,8 @@
 // Each entry mirrors the "Recruit Agent" grid from the reference design:
 // a stylized avatar, a brand color, and the CLI command it launches.
 
+export type Silhouette = "astronaut" | "robot" | "gem" | "ninja" | "hood" | "lobster";
+
 export type AgentKind = {
   id: string;
   name: string;
@@ -15,6 +17,8 @@ export type AgentKind = {
   defaultCommand: string;
   /** Emoji used as a quick avatar glyph (kept dependency-free). */
   glyph: string;
+  /** Drives the procedural accessory drawn on the scene character. */
+  silhouette: Silhouette;
 };
 
 export const AGENT_KINDS: AgentKind[] = [
@@ -26,6 +30,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#a7502f",
     defaultCommand: "claude",
     glyph: "🤖",
+    silhouette: "robot",
   },
   {
     id: "codex",
@@ -35,6 +40,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#8b929b",
     defaultCommand: "codex",
     glyph: "🧑‍🚀",
+    silhouette: "astronaut",
   },
   {
     id: "gemini",
@@ -44,6 +50,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#6b5cc4",
     defaultCommand: "gemini",
     glyph: "💎",
+    silhouette: "gem",
   },
   {
     id: "qwen",
@@ -53,6 +60,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#52459e",
     defaultCommand: "qwen",
     glyph: "🥷",
+    silhouette: "ninja",
   },
   {
     id: "cursor",
@@ -62,6 +70,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#9aa0a6",
     defaultCommand: "cursor-agent",
     glyph: "🗡️",
+    silhouette: "hood",
   },
   {
     id: "molly",
@@ -71,6 +80,7 @@ export const AGENT_KINDS: AgentKind[] = [
     shade: "#a01f1f",
     defaultCommand: "bash",
     glyph: "🦞",
+    silhouette: "lobster",
   },
 ];
 

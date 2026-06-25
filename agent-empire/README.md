@@ -13,12 +13,21 @@ character on the map, with an idle/working state, and a live PTY behind it.
 ## What it does
 
 - **Recruit Agent** — pick an AI avatar and configure its launch command,
-  working directory and optional dev server (mirrors the reference UI).
-- **Isometric scene** — each agent is a character that wanders the floor and
-  shows a green **Working** ring when its process is producing output.
-- **Real terminals** — double-click an agent (or "Open terminal") to attach a
-  live [xterm.js](https://xtermjs.org/) terminal to its actual process. Type
-  into it, restart it, or disband it.
+  working directory and optional dev server (mirrors the reference UI). Each
+  agent has its own procedural look (astronaut, robot, ninja, hooded, …).
+- **Isometric scene** — every agent is a character that wanders the floor,
+  emits little "code" particles, and shows a green **Working** ring when its
+  process is producing output. Decorative desk/paper props dress the room.
+- **Many live terminals at once** — open any number of agents' terminals as
+  independent, **draggable & resizable** windows. **Open all** + **Tile**
+  arrange them in a grid so you can watch every agent simultaneously. Each is a
+  real [xterm.js](https://xtermjs.org/) terminal bound to the process.
+- **Dispatch tasks** — type a prompt in a terminal's task bar and hit ⏎ to send
+  it straight into that agent's CLI (the "orchestration" from the video).
+- **RTS controls** — **click** to select, **right-click** the floor to issue a
+  move order (AoE-style ground ping), **double-click** to open a terminal,
+  **wheel** to zoom, **shift/middle-drag** to pan. Shortcuts: `R` recruit,
+  `T` tile, `Esc` deselect.
 - **Live status** — the backend spawns each agent in a real pseudo-terminal
   ([node-pty](https://github.com/microsoft/node-pty)) and streams output over a
   WebSocket. It falls back to plain pipes if `node-pty` can't be built.
@@ -57,7 +66,9 @@ npm start            # serves UI + API from the Node server on :8787
 
 ## Roadmap
 
-- Multiple terminal windows tiled at once (the reference shows several open).
-- Per-agent task queue + "move order" to assign work spots on the map.
+- ~~Multiple terminal windows tiled at once.~~ ✅ done
+- ~~"Move order" to assign work spots on the map.~~ ✅ done
+- ~~RTS camera (pan/zoom) + dispatch tasks from the UI.~~ ✅ done
+- Persist recruited agents/config between sessions.
 - 3D avatars (three.js) instead of the stylized 2D characters.
 - Package as a desktop app (Tauri/Electron) for a true native window.
