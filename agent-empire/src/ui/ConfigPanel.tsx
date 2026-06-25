@@ -68,12 +68,21 @@ export function ConfigPanel() {
           </button>
         </header>
 
-        {thumb && (
+        {(kind?.image || thumb) && (
           <div
             className="config-preview"
             style={{ background: `radial-gradient(circle at 50% 40%, ${kind?.shade}33, transparent 70%)` }}
           >
-            <img src={thumb} alt={kind?.name} />
+            <img
+              src={kind?.image || thumb}
+              alt={kind?.name}
+              onError={(e) => {
+                // Fall back to the procedural thumbnail if the AI image fails.
+                if (thumb && (e.currentTarget as HTMLImageElement).src !== thumb) {
+                  (e.currentTarget as HTMLImageElement).src = thumb;
+                }
+              }}
+            />
           </div>
         )}
 

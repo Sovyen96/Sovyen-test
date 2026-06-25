@@ -77,15 +77,32 @@ change you make shows up everywhere consistently.
 
 ---
 
-## 4. (Optional) Use real 3D models instead of the procedural ones
+## 4. AI-generated portraits (already wired)
 
-Want pixel-perfect avatars like a specific game? The cleanest upgrade is to
-load `.glb`/`.gltf` models:
+Each catalog entry can carry an **`image`** URL — an AI-generated portrait used
+in the recruit grid and the config preview. The defaults were generated with
+Higgsfield (chibi low-poly renders) and point at a CDN. The app prefers this
+image and **falls back automatically** to the procedural 3D thumbnail, then to
+the emoji glyph, if it can't load — so it never breaks.
 
-1. Drop model files in `public/models/<id>.glb`.
-2. Add a `model: "/models/<id>.glb"` field to the catalog entry.
-3. In `character.ts`, load it with three.js's `GLTFLoader` when `model` is set,
-   falling back to the procedural rig otherwise.
+To swap a portrait, just change its `image` field, or **localize** the files:
 
-You can generate matching low-poly characters with an AI asset tool (image →
-3D), or model them in Blender. Ask and this hook can be wired up.
+```bash
+# download into public/avatars/<id>.png on your machine, then set
+#   image: "/avatars/claude.png"
+```
+
+## 5. (Optional) Real 3D GLB models in the scene
+
+Each entry can also carry a **`model`** URL (a textured `.glb`). When set, the
+scene loads that real 3D model instead of the procedural chibi rig — and falls
+back to the rig if loading fails (`loadModel()` in `src/scene/character.ts`).
+
+```ts
+model: "/models/claude.glb",          // or a remote https URL
+```
+
+The GLBs can be produced from the portraits with an image→3D tool (e.g.
+Higgsfield's `image_to_3d`, `should_texture: true`, `pose_mode: "a-pose"`) and
+either referenced by URL or dropped in `public/models/`. CORS must allow the
+host for `GLTFLoader`; local files in `public/models/` always work.

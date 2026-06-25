@@ -168,3 +168,33 @@ export function buildCharacter(kindId: string): THREE.Group {
   addAccessory(g, sil, color, shade, headY);
   return g;
 }
+
+// Load a textured GLB and normalize it to ~1.7 units tall with feet on the
+// floor. Returns null on any failure so callers can fall back to the
+// procedural rig. GLTFLoader is imported lazily so it only ships when used.
+export async function loadModel(url: string): Promise<THREE.Group | null> {
+  try {
+    // @ts-ignore — three/addons has no bundled types in this setup
+    const mod = await import("three/addons/loaders/GLTFLoader.js");
+    const loader = new mod.GLTFLoader();
+    const gltf = await loader.loadAsync(url);
+    const g: THREE.Group = gltf.scene;
+
+    const box = new THREE.Box3().setFromObject(g);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const h = size.y || 1;
+    g.scale.setScalar(1.7 / h);
+
+    const box2 = new THREE.Box3().setFromObject(g);
+    g.position.y -= box2.min.y; // drop feet to y = 0
+    g.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if ((m as any).isMesh) m.castShadow = true;
+    });
+    return g;
+  } catch (e) {
+    console.warn("[agent-empire] GLB model load failed:", url, e);
+    return null;
+  }
+}

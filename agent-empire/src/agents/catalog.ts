@@ -19,7 +19,23 @@ export type AgentKind = {
   glyph: string;
   /** Drives the procedural accessory drawn on the scene character. */
   silhouette: Silhouette;
+  /**
+   * Optional AI-generated portrait (PNG URL) shown in the recruit grid and the
+   * config preview. Falls back to the procedural 3D thumbnail when absent or if
+   * the image fails to load. These were generated with Higgsfield; to localize
+   * them, download into `public/avatars/<id>.png` and point this at that path.
+   */
+  image?: string;
+  /**
+   * Optional textured GLB model (URL or /models/<id>.glb). When set, the scene
+   * loads this real 3D model instead of the procedural chibi rig (with the rig
+   * as a fallback if loading fails).
+   */
+  model?: string;
 };
+
+// Higgsfield CDN base for the generated portraits.
+const HF = "https://d8j0ntlcm91z4.cloudfront.net/user_336dMRtiLiYw5EWi7ucJABZQ1pp";
 
 export const AGENT_KINDS: AgentKind[] = [
   {
@@ -31,6 +47,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "claude",
     glyph: "🤖",
     silhouette: "robot",
+    image: `${HF}/hf_20260625_193101_eb7508f8-3d14-47a4-9ec5-538d80fe31db.png`,
   },
   {
     id: "codex",
@@ -41,6 +58,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "codex",
     glyph: "🧑‍🚀",
     silhouette: "astronaut",
+    image: `${HF}/hf_20260625_193111_5c664635-f16a-4368-a504-32fefde80171.png`,
   },
   {
     id: "gemini",
@@ -51,6 +69,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "gemini",
     glyph: "💎",
     silhouette: "gem",
+    image: `${HF}/hf_20260625_193113_be847ce5-e2fd-4daa-9d98-b9793794bc4e.png`,
   },
   {
     id: "qwen",
@@ -61,6 +80,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "qwen",
     glyph: "🥷",
     silhouette: "ninja",
+    image: `${HF}/hf_20260625_193116_e023e725-f0b7-4c5a-a486-9c65dbe27e24.png`,
   },
   {
     id: "cursor",
@@ -71,6 +91,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "cursor-agent",
     glyph: "🗡️",
     silhouette: "hood",
+    image: `${HF}/hf_20260625_193118_ac981358-c050-4db6-88d4-55d5fd0b01f1.png`,
   },
   {
     id: "molly",
@@ -81,6 +102,7 @@ export const AGENT_KINDS: AgentKind[] = [
     defaultCommand: "bash",
     glyph: "🦞",
     silhouette: "lobster",
+    image: `${HF}/hf_20260625_193120_9e1782b7-0e45-4896-8272-74c2ea7edebf.png`,
   },
 ];
 

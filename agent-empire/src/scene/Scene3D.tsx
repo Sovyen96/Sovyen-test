@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useStore } from "../store";
-import { buildCharacter } from "./character";
+import { findKind } from "../agents/catalog";
+import { buildCharacter, loadModel } from "./character";
 
 // 3D isometric battlefield built with three.js. An orthographic camera at a
 // fixed iso angle keeps the Age-of-Empires look while giving real depth,
@@ -59,10 +60,25 @@ function drawLabel(l: Built["label"], name: string, status: string, selected: bo
 function buildAgent(kindId: string): Built {
   const group = new THREE.Group();
 
-  // Stylized chibi character (toon-shaded + outlined).
+  // Stylized chibi character (toon-shaded + outlined). If the kind has a real
+  // GLB model, load it and swap it in once ready; otherwise keep the rig.
   const character = buildCharacter(kindId);
   group.add(character);
   const body = character.getObjectByName("pick") as THREE.Mesh;
+
+  const kind = findKind(kindId);
+  if (kind?.model) {
+    loadModel(kind.model).then((model) => {
+      if (!model || !group.parent) return; // despawned meanwhile
+      group.remove(character);
+      character.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (m.geometry) m.geometry.dispose();
+      });
+      model.name = "model";
+      group.add(model);
+    });
+  }
 
   // Ground ring (selection / working indicator).
   const ring = new THREE.Mesh(
