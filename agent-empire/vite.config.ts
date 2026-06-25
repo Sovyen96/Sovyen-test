@@ -17,5 +17,14 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    chunkSizeWarningLimit: 700, // three.js is intentionally its own ~500kB chunk
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three"],
+          xterm: ["@xterm/xterm", "@xterm/addon-fit"],
+        },
+      },
+    },
   },
 });

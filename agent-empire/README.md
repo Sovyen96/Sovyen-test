@@ -15,9 +15,11 @@ character on the map, with an idle/working state, and a live PTY behind it.
 - **Recruit Agent** — pick an AI avatar and configure its launch command,
   working directory and optional dev server (mirrors the reference UI). Each
   agent has its own procedural look (astronaut, robot, ninja, hooded, …).
-- **Isometric scene** — every agent is a character that wanders the floor,
-  emits little "code" particles, and shows a green **Working** ring when its
-  process is producing output. Decorative desk/paper props dress the room.
+- **3D isometric scene** — a real [three.js](https://threejs.org/) world with
+  an orthographic iso camera, lighting and shadows. Every agent is a low-poly
+  character (with a per-kind accessory: helmet, antenna, crown, headband, hood,
+  claws) that wanders the floor, emits "code" particles, and lights up a green
+  **Working** ring while its process is producing output.
 - **Many live terminals at once** — open any number of agents' terminals as
   independent, **draggable & resizable** windows. **Open all** + **Tile**
   arrange them in a grid so you can watch every agent simultaneously. Each is a
@@ -31,6 +33,9 @@ character on the map, with an idle/working state, and a live PTY behind it.
 - **Live status** — the backend spawns each agent in a real pseudo-terminal
   ([node-pty](https://github.com/microsoft/node-pty)) and streams output over a
   WebSocket. It falls back to plain pipes if `node-pty` can't be built.
+- **Persistence** — your recruited roster is saved to
+  `~/.agent-empire/agents.json` and the agents are re-spawned automatically when
+  the server restarts.
 
 ## Run it
 
@@ -57,18 +62,21 @@ npm start            # serves UI + API from the Node server on :8787
 
 | Reference UI                | Here                                             |
 | --------------------------- | ------------------------------------------------ |
-| Isometric room / floor      | `src/scene/IsoScene.tsx` + `src/scene/iso.ts`    |
+| 3D isometric room / floor   | `src/scene/Scene3D.tsx` (three.js)               |
 | Recruit Agent grid          | `src/ui/RecruitModal.tsx`                        |
 | Name / Command / Cwd / Dev  | `src/ui/ConfigPanel.tsx`                         |
-| Terminal windows            | `src/ui/TerminalPanel.tsx` (xterm.js)            |
-| "Working" status + rings    | server status heuristic → `drawCharacter()`      |
+| Many terminal windows       | `src/ui/TerminalPanel.tsx` (xterm.js, tileable)  |
+| "Working" status + rings    | server status heuristic → agent ring/particles   |
 | Spawning the real CLI       | `server/index.mjs` (node-pty / pipe fallback)    |
+| Persisted roster            | `server/index.mjs` → `~/.agent-empire/agents.json` |
 
 ## Roadmap
 
 - ~~Multiple terminal windows tiled at once.~~ ✅ done
 - ~~"Move order" to assign work spots on the map.~~ ✅ done
 - ~~RTS camera (pan/zoom) + dispatch tasks from the UI.~~ ✅ done
-- Persist recruited agents/config between sessions.
-- 3D avatars (three.js) instead of the stylized 2D characters.
+- ~~Persist recruited agents/config between sessions.~~ ✅ done
+- ~~3D avatars (three.js) instead of the stylized 2D characters.~~ ✅ done
+- Camera rotation (Q/E) and edge-scroll for a fuller RTS feel.
+- Richer 3D models / animations (walk cycles, GLTF avatars).
 - Package as a desktop app (Tauri/Electron) for a true native window.

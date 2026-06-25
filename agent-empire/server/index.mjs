@@ -63,6 +63,39 @@ const agents = new Map();
 const sockets = new Set();
 const MAX_BUFFER = 4000; // lines of scrollback kept server-side per agent
 
+// ── Persistence ──────────────────────────────────────────────────────────────
+// The recruited roster (configs, not live processes) is saved to disk so the
+// same agents come back — and are re-spawned — after a restart.
+const STATE_DIR = path.join(HOME, ".agent-empire");
+const STATE_FILE = path.join(STATE_DIR, "agents.json");
+
+function persist() {
+  try {
+    fs.mkdirSync(STATE_DIR, { recursive: true });
+    const data = [...agents.values()].map((a) => ({
+      kind: a.kind,
+      name: a.name,
+      command: a.command,
+      cwd: a.cwd,
+      devCommand: a.devCommand,
+    }));
+    fs.writeFileSync(STATE_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.warn("[agent-empire] persist failed:", e.message);
+  }
+}
+
+function restore() {
+  try {
+    if (!fs.existsSync(STATE_FILE)) return;
+    const data = JSON.parse(fs.readFileSync(STATE_FILE, "utf8"));
+    for (const c of data) createAgent(c);
+    if (data.length) console.log(`[agent-empire] restored ${data.length} agent(s) from disk`);
+  } catch (e) {
+    console.warn("[agent-empire] restore failed:", e.message);
+  }
+}
+
 function expandHome(p) {
   if (!p) return process.cwd();
   if (p === "~") return HOME;
@@ -255,6 +288,7 @@ app.get("/api/agents", (_req, res) => {
 
 app.post("/api/agents", (req, res) => {
   const a = createAgent(req.body || {});
+  persist();
   res.json(publicAgent(a));
 });
 
@@ -263,6 +297,7 @@ app.delete("/api/agents/:id", (req, res) => {
   if (!a) return res.status(404).json({ error: "not found" });
   killAgent(a);
   agents.delete(req.params.id);
+  persist();
   broadcast({ type: "despawn", id: a.id });
   res.json({ ok: true });
 });
@@ -328,4 +363,6 @@ server.listen(PORT, () => {
   if (!fs.existsSync(distDir)) {
     console.log("[agent-empire] dev mode — run the Vite client with: npm run dev");
   }
+  // Bring back the saved roster once the server is up.
+  restore();
 });

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useStore } from "./store";
-import { IsoScene } from "./scene/IsoScene";
+import { Scene3D } from "./scene/Scene3D";
 import { Hud } from "./ui/Hud";
 import { RecruitModal } from "./ui/RecruitModal";
 import { ConfigPanel } from "./ui/ConfigPanel";
@@ -37,7 +37,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <IsoScene />
+      <Scene3D />
       <Hud />
       {agentCount === 0 && (
         <div className="empty-hint">
