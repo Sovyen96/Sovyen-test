@@ -12,9 +12,11 @@ character on the map, with an idle/working state, and a live PTY behind it.
 
 ## What it does
 
-- **Recruit Agent** — pick an AI avatar and configure its launch command,
-  working directory and optional dev server (mirrors the reference UI). Each
-  agent has its own procedural look (astronaut, robot, ninja, hooded, …).
+- **Recruit Agent** — pick an AI avatar (rendered as a 3D portrait) and
+  configure its launch command, working directory and optional dev server
+  (mirrors the reference UI). Each agent has its own cel-shaded chibi look
+  (astronaut, robot, gem, ninja, hooded, lobster). See
+  [CUSTOMIZING.md](CUSTOMIZING.md) to add, remove or restyle agents.
 - **3D isometric scene** — a real [three.js](https://threejs.org/) world with
   an orthographic iso camera, lighting and shadows. Every agent is a low-poly
   character (with a per-kind accessory: helmet, antenna, crown, headband, hood,

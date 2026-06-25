@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useStore } from "../store";
-import { findKind, type Silhouette } from "../agents/catalog";
+import { buildCharacter } from "./character";
 
 // 3D isometric battlefield built with three.js. An orthographic camera at a
 // fixed iso angle keeps the Age-of-Empires look while giving real depth,
@@ -56,84 +56,13 @@ function drawLabel(l: Built["label"], name: string, status: string, selected: bo
   l.tex.needsUpdate = true;
 }
 
-function addAccessory(group: THREE.Group, sil: Silhouette, color: number, shade: number, headY: number) {
-  const mk = (geo: THREE.BufferGeometry, mat: THREE.Material) => {
-    const m = new THREE.Mesh(geo, mat);
-    m.castShadow = true;
-    return m;
-  };
-  const std = (c: number, emissive = 0) =>
-    new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, metalness: 0.2, emissive, emissiveIntensity: 0.4 });
-  switch (sil) {
-    case "astronaut": {
-      const ring = mk(new THREE.TorusGeometry(0.34, 0.05, 8, 24), std(0xdfe7ff));
-      ring.rotation.x = Math.PI / 2;
-      ring.position.y = headY;
-      group.add(ring);
-      break;
-    }
-    case "robot": {
-      const stalk = mk(new THREE.CylinderGeometry(0.03, 0.03, 0.3), std(shade));
-      stalk.position.y = headY + 0.32;
-      const bulb = mk(new THREE.SphereGeometry(0.07), std(0xffd36b, 0xffb020));
-      bulb.position.y = headY + 0.5;
-      group.add(stalk, bulb);
-      break;
-    }
-    case "gem": {
-      const crown = mk(new THREE.ConeGeometry(0.18, 0.3, 4), std(color, color));
-      crown.position.y = headY + 0.34;
-      crown.rotation.y = Math.PI / 4;
-      group.add(crown);
-      break;
-    }
-    case "ninja": {
-      const band = mk(new THREE.TorusGeometry(0.29, 0.06, 8, 20), std(shade));
-      band.rotation.x = Math.PI / 2;
-      band.position.y = headY + 0.05;
-      group.add(band);
-      break;
-    }
-    case "hood": {
-      const hood = mk(new THREE.SphereGeometry(0.36, 16, 12, 0, Math.PI * 2, 0, Math.PI / 1.7), std(shade));
-      hood.position.y = headY;
-      group.add(hood);
-      break;
-    }
-    case "lobster": {
-      const clawGeo = new THREE.SphereGeometry(0.13);
-      const cL = mk(clawGeo, std(color));
-      cL.position.set(-0.45, 0.5, 0);
-      const cR = mk(clawGeo, std(color));
-      cR.position.set(0.45, 0.5, 0);
-      group.add(cL, cR);
-      break;
-    }
-  }
-}
-
 function buildAgent(kindId: string): Built {
-  const kind = findKind(kindId);
-  const color = new THREE.Color(kind?.color ?? "#8888aa").getHex();
-  const shade = new THREE.Color(kind?.shade ?? "#555577").getHex();
   const group = new THREE.Group();
 
-  const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.25 });
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.35, 0.5, 6, 14), bodyMat);
-  body.position.y = 0.55;
-  body.castShadow = true;
-  group.add(body);
-
-  const headY = 1.15;
-  const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.28, 16, 14),
-    new THREE.MeshStandardMaterial({ color: 0xf3e6d6, roughness: 0.7 })
-  );
-  head.position.y = headY;
-  head.castShadow = true;
-  group.add(head);
-
-  addAccessory(group, kind?.silhouette ?? "robot", color, shade, headY);
+  // Stylized chibi character (toon-shaded + outlined).
+  const character = buildCharacter(kindId);
+  group.add(character);
+  const body = character.getObjectByName("pick") as THREE.Mesh;
 
   // Ground ring (selection / working indicator).
   const ring = new THREE.Mesh(
@@ -266,7 +195,17 @@ export function Scene3D() {
 
     // ── Agent meshes, diffed against the store each frame ──
     const built = new Map<string, Built>();
-    const pickables: THREE.Mesh[] = [];
+    const pickables: THREE.Object3D[] = [];
+
+    // Climb from a raycast hit up to the character group carrying the agent id.
+    function findId(o: THREE.Object3D | null): string | undefined {
+      let cur = o;
+      while (cur) {
+        if (cur.userData && cur.userData.id) return cur.userData.id as string;
+        cur = cur.parent;
+      }
+      return undefined;
+    }
 
     function ensureAgents() {
       const agents = useStore.getState().agents;
@@ -274,11 +213,11 @@ export function Scene3D() {
       for (const a of Object.values(agents)) {
         if (!built.has(a.id)) {
           const b = buildAgent(a.kind);
-          b.body.userData.id = a.id;
+          b.group.userData.id = a.id;
           b.group.position.set(a.x, 0, a.y);
           scene.add(b.group);
           built.set(a.id, b);
-          pickables.push(b.body);
+          pickables.push(b.group);
         }
       }
       // remove
@@ -294,7 +233,7 @@ export function Scene3D() {
               mats.forEach((mm) => mm.dispose());
             }
           });
-          const pi = pickables.indexOf(b.body);
+          const pi = pickables.indexOf(b.group);
           if (pi >= 0) pickables.splice(pi, 1);
           built.delete(id);
         }
@@ -315,15 +254,15 @@ export function Scene3D() {
       if (Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y) > 5) return;
       setNdc(e);
       ray.setFromCamera(ndc, cam);
-      const hits = ray.intersectObjects(pickables, false);
-      const id = hits[0]?.object.userData.id as string | undefined;
+      const hits = ray.intersectObjects(pickables, true);
+      const id = findId(hits[0]?.object ?? null);
       useStore.getState().select(id ?? null);
     }
     function onDouble(e: MouseEvent) {
       setNdc(e);
       ray.setFromCamera(ndc, cam);
-      const hits = ray.intersectObjects(pickables, false);
-      const id = hits[0]?.object.userData.id as string | undefined;
+      const hits = ray.intersectObjects(pickables, true);
+      const id = findId(hits[0]?.object ?? null);
       if (id) useStore.getState().openTerminal(id);
     }
     function onContext(e: MouseEvent) {

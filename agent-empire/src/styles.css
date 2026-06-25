@@ -298,6 +298,33 @@ body,
   height: 72px;
   font-size: 34px;
 }
+.avatar.portrait {
+  width: 92px;
+  height: 92px;
+  border-radius: 16px;
+  box-shadow: none;
+  overflow: hidden;
+}
+.avatar.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+}
+.config-preview {
+  display: grid;
+  place-items: center;
+  height: 150px;
+  margin: -4px 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(8, 6, 18, 0.5);
+}
+.config-preview img {
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5));
+}
 .recruit-name {
   font-weight: 700;
 }

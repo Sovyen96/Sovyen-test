@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { findKind } from "../agents/catalog";
+import { getThumbnails } from "../scene/thumbnails";
 import { useStore } from "../store";
 
 // Agent configuration form, shown after picking an avatar in the recruit modal.
@@ -19,6 +20,19 @@ export function ConfigPanel() {
   const [devCommand, setDevCommand] = useState("");
   const [split, setSplit] = useState<"vertical" | "horizontal">("vertical");
   const [busy, setBusy] = useState(false);
+  const thumb = useMemo(() => (isNew ? getThumbnails()[kindId] : undefined), [isNew, kindId]);
+
+  // The panel stays mounted (returns null when closed), so refresh the form
+  // defaults whenever a different agent kind is chosen.
+  useEffect(() => {
+    if (!isNew) return;
+    const k = findKind(kindId);
+    setName(k?.name ?? "Agent");
+    setCommand(k?.defaultCommand ?? "bash");
+    setCwd("~/projects/my-app");
+    setDevCommand("");
+    setSplit("vertical");
+  }, [kindId, isNew]);
 
   if (!configFor || !isNew) return null;
 
@@ -53,6 +67,15 @@ export function ConfigPanel() {
             ✕
           </button>
         </header>
+
+        {thumb && (
+          <div
+            className="config-preview"
+            style={{ background: `radial-gradient(circle at 50% 40%, ${kind?.shade}33, transparent 70%)` }}
+          >
+            <img src={thumb} alt={kind?.name} />
+          </div>
+        )}
 
         <label className="field">
           <span>👤 Name</span>
