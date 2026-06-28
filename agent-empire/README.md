@@ -79,6 +79,7 @@ npm start            # serves UI + API from the Node server on :8787
 - ~~RTS camera (pan/zoom) + dispatch tasks from the UI.~~ ✅ done
 - ~~Persist recruited agents/config between sessions.~~ ✅ done
 - ~~3D avatars (three.js) instead of the stylized 2D characters.~~ ✅ done
+- ~~AI-generated chibi portraits + textured GLB models per agent.~~ ✅ done
 - Camera rotation (Q/E) and edge-scroll for a fuller RTS feel.
-- Richer 3D models / animations (walk cycles, GLTF avatars).
+- Rigged GLB animations (idle / walk cycles).
 - Package as a desktop app (Tauri/Electron) for a true native window.

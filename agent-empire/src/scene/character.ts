@@ -177,6 +177,13 @@ export async function loadModel(url: string): Promise<THREE.Group | null> {
     // @ts-ignore — three/addons has no bundled types in this setup
     const mod = await import("three/addons/loaders/GLTFLoader.js");
     const loader = new mod.GLTFLoader();
+    try {
+      // @ts-ignore — enable meshopt-compressed GLBs (self-contained wasm)
+      const { MeshoptDecoder } = await import("three/addons/libs/meshopt_decoder.module.js");
+      loader.setMeshoptDecoder(MeshoptDecoder);
+    } catch {
+      /* decoder optional */
+    }
     const gltf = await loader.loadAsync(url);
     const g: THREE.Group = gltf.scene;
 

@@ -77,32 +77,36 @@ change you make shows up everywhere consistently.
 
 ---
 
-## 4. AI-generated portraits (already wired)
+## 4. AI-generated art (already wired)
 
-Each catalog entry can carry an **`image`** URL — an AI-generated portrait used
-in the recruit grid and the config preview. The defaults were generated with
-Higgsfield (chibi low-poly renders) and point at a CDN. The app prefers this
-image and **falls back automatically** to the procedural 3D thumbnail, then to
-the emoji glyph, if it can't load — so it never breaks.
+Each catalog entry carries two optional AI assets, both generated with
+Higgsfield and referenced by CDN URL by default:
 
-To swap a portrait, just change its `image` field, or **localize** the files:
+- **`image`** — a chibi portrait shown in the recruit grid + config preview.
+- **`model`** — a **textured GLB** loaded as the real 3D character in the scene.
+
+Both degrade gracefully: the portrait falls back to the procedural 3D thumbnail
+then the emoji glyph; the model falls back to the procedural chibi rig
+(`loadModel()` in `src/scene/character.ts`). So a blocked, expired or
+CORS-restricted asset never breaks the app — it just shows the procedural
+version.
+
+### Serving the assets locally (recommended for reliability)
+
+CDN links can expire and `GLTFLoader` needs the host to allow CORS. To make the
+assets bulletproof, download them into `/public` and serve them yourself:
 
 ```bash
-# download into public/avatars/<id>.png on your machine, then set
-#   image: "/avatars/claude.png"
+node scripts/fetch-assets.mjs        # downloads the 6 PNGs + 6 GLBs into public/
+# then set LOCAL_ASSETS = true in src/agents/catalog.ts
 ```
 
-## 5. (Optional) Real 3D GLB models in the scene
+`LOCAL_ASSETS` just swaps the CDN bases for `/avatars` and `/models`; the
+filenames are identical, so nothing else changes.
 
-Each entry can also carry a **`model`** URL (a textured `.glb`). When set, the
-scene loads that real 3D model instead of the procedural chibi rig — and falls
-back to the rig if loading fails (`loadModel()` in `src/scene/character.ts`).
+### Regenerating / replacing art
 
-```ts
-model: "/models/claude.glb",          // or a remote https URL
-```
-
-The GLBs can be produced from the portraits with an image→3D tool (e.g.
-Higgsfield's `image_to_3d`, `should_texture: true`, `pose_mode: "a-pose"`) and
-either referenced by URL or dropped in `public/models/`. CORS must allow the
-host for `GLTFLoader`; local files in `public/models/` always work.
+Swap any `image`/`model` URL for your own. To regenerate matching characters,
+make a portrait with an image model, then convert it to a textured GLB with an
+image→3D tool (here: Higgsfield `image_to_3d`, `should_texture: true`,
+`pose_mode: "a-pose"`).
