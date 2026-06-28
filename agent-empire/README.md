@@ -49,6 +49,26 @@ npm run dev          # starts the Node backend (:8787) + Vite UI (:5173)
 
 Then open <http://localhost:5173>.
 
+### macOS (easiest)
+
+Double-click **`start.command`** in Finder — it installs dependencies on first
+run, starts everything, and opens your browser. (You need [Node.js](https://nodejs.org)
+LTS installed.) For real PTY terminals, Apple's Command Line Tools help
+`node-pty` build (`xcode-select --install`); without them the app still runs in
+pipe-fallback mode.
+
+### Controls
+
+| Action            | Input                                  |
+| ----------------- | -------------------------------------- |
+| Select agent      | click                                  |
+| Open terminal     | double-click (or "Open terminal")      |
+| Move order        | right-click the floor                  |
+| Pan camera        | `WASD` / arrows, or shift / middle-drag |
+| Rotate camera     | `Q` / `E`                              |
+| Zoom              | mouse wheel                            |
+| Recruit / Tile    | `R` / `T`                              |
+
 > The agents run **on your machine**, so the CLIs you reference (`claude`,
 > `codex`, `gemini`, `cursor-agent`, …) must be installed and on your `PATH`.
 > Start by recruiting **Claude** with the launch command `claude`.

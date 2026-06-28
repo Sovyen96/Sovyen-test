@@ -14,6 +14,7 @@ const CENTER = N / 2;
 
 type Built = {
   group: THREE.Group;
+  anim: THREE.Object3D; // the character node we apply walk/idle motion to
   body: THREE.Mesh;
   ring: THREE.Mesh;
   label: { spr: THREE.Sprite; canvas: HTMLCanvasElement; tex: THREE.CanvasTexture; last: string };
@@ -66,6 +67,17 @@ function buildAgent(kindId: string): Built {
   group.add(character);
   const body = character.getObjectByName("pick") as THREE.Mesh;
 
+  // `built` is created below; we keep a placeholder so the async swap can
+  // retarget the animation node once the GLB arrives.
+  const result: Built = {
+    group,
+    anim: character,
+    body,
+    ring: null as unknown as THREE.Mesh,
+    label: null as unknown as Built["label"],
+    particles: [],
+  };
+
   const kind = findKind(kindId);
   if (kind?.model) {
     loadModel(kind.model).then((model) => {
@@ -77,6 +89,7 @@ function buildAgent(kindId: string): Built {
       });
       model.name = "model";
       group.add(model);
+      result.anim = model;
     });
   }
 
@@ -103,8 +116,10 @@ function buildAgent(kindId: string): Built {
   const label = makeLabel();
   group.add(label.spr);
 
-  body.userData.id = ""; // set by caller
-  return { group, body, ring, label, particles };
+  result.ring = ring;
+  result.label = label;
+  result.particles = particles;
+  return result;
 }
 
 export function Scene3D() {
@@ -121,13 +136,20 @@ export function Scene3D() {
 
     const scene = new THREE.Scene();
 
-    // ── Camera (orthographic iso) ──
+    // ── Camera (orthographic iso, rotatable around the target) ──
     let frustum = 13;
     let zoom = 1;
+    let camYaw = Math.PI / 4; // 45° → classic iso; Q/E rotate this
+    const CAM_RADIUS = 22.6; // keeps the default offset at (~16, 18, ~16)
+    const CAM_HEIGHT = 18;
     const camTarget = new THREE.Vector3(CENTER, 0, CENTER);
     const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
     const placeCam = () => {
-      cam.position.set(camTarget.x + 16, 18, camTarget.z + 16);
+      cam.position.set(
+        camTarget.x + Math.cos(camYaw) * CAM_RADIUS,
+        camTarget.y + CAM_HEIGHT,
+        camTarget.z + Math.sin(camYaw) * CAM_RADIUS
+      );
       cam.lookAt(camTarget);
     };
     const applyFrustum = () => {
@@ -298,11 +320,22 @@ export function Scene3D() {
       zoom = Math.min(3, Math.max(0.5, zoom * (e.deltaY > 0 ? 0.9 : 1.1)));
       applyFrustum();
     }
+    // Ground-projected camera basis (recomputed so panning is correct at any
+    // rotation).
+    const _right = new THREE.Vector3();
+    const _up = new THREE.Vector3();
+    function groundBasis() {
+      _right.setFromMatrixColumn(cam.matrixWorld, 0);
+      _right.y = 0;
+      _right.normalize();
+      _up.setFromMatrixColumn(cam.matrixWorld, 1);
+      _up.y = 0;
+      _up.normalize();
+    }
+
     // Pan with middle-mouse or shift+left drag.
     let panning = false;
     let panStart = { x: 0, y: 0, tx: 0, tz: 0 };
-    const rightDir = new THREE.Vector3(1, 0, -1).normalize();
-    const upDir = new THREE.Vector3(-1, 0, -1).normalize();
     function onDown(e: PointerEvent) {
       downPos = { x: e.clientX, y: e.clientY };
       if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
@@ -316,13 +349,55 @@ export function Scene3D() {
       const wpp = frustum / zoom / mount.clientHeight;
       const dx = (e.clientX - panStart.x) * wpp;
       const dy = (e.clientY - panStart.y) * wpp;
+      groundBasis();
       camTarget.set(panStart.tx, 0, panStart.tz);
-      camTarget.addScaledVector(rightDir, -dx);
-      camTarget.addScaledVector(upDir, dy);
+      camTarget.addScaledVector(_right, -dx);
+      camTarget.addScaledVector(_up, dy);
       placeCam();
     }
     function onUp() {
       panning = false;
+    }
+
+    // Keyboard: WASD / arrows pan, Q / E rotate. Held keys apply each frame.
+    const keys = new Set<string>();
+    function onKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      keys.add(e.key.toLowerCase());
+    }
+    function onKeyUp(e: KeyboardEvent) {
+      keys.delete(e.key.toLowerCase());
+    }
+    function applyKeys(dt: number) {
+      let moved = false;
+      const panStep = (frustum / zoom) * 0.9 * dt;
+      groundBasis();
+      if (keys.has("w") || keys.has("arrowup")) {
+        camTarget.addScaledVector(_up, panStep);
+        moved = true;
+      }
+      if (keys.has("s") || keys.has("arrowdown")) {
+        camTarget.addScaledVector(_up, -panStep);
+        moved = true;
+      }
+      if (keys.has("a") || keys.has("arrowleft")) {
+        camTarget.addScaledVector(_right, -panStep);
+        moved = true;
+      }
+      if (keys.has("d") || keys.has("arrowright")) {
+        camTarget.addScaledVector(_right, panStep);
+        moved = true;
+      }
+      if (keys.has("q")) {
+        camYaw -= 1.4 * dt;
+        moved = true;
+      }
+      if (keys.has("e")) {
+        camYaw += 1.4 * dt;
+        moved = true;
+      }
+      if (moved) placeCam();
     }
 
     const el = renderer.domElement;
@@ -333,6 +408,8 @@ export function Scene3D() {
     el.addEventListener("pointerdown", onDown);
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerup", onUp);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
 
     function onResize() {
       renderer.setSize(mount.clientWidth, mount.clientHeight);
@@ -347,6 +424,7 @@ export function Scene3D() {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const t = now / 1000;
+      applyKeys(dt);
       ensureAgents();
       const { agents, selectedId } = useStore.getState();
 
@@ -370,7 +448,8 @@ export function Scene3D() {
           }
         }
         const speed = a.ordered ? 3.2 : working ? 0.6 : 1.2;
-        if (dist > 0.02) {
+        const moving = dist > 0.02;
+        if (moving) {
           a.x += (dx / dist) * speed * dt;
           a.y += (dy / dist) * speed * dt;
           const ang = Math.atan2(dx, dy);
@@ -379,7 +458,19 @@ export function Scene3D() {
 
         b.group.position.x = a.x;
         b.group.position.z = a.y;
-        b.group.position.y = Math.abs(Math.sin(a.bob)) * 0.12;
+        b.group.position.y = (moving ? Math.abs(Math.sin(a.bob)) : 0.3 + 0.3 * Math.abs(Math.sin(a.bob * 0.4))) * 0.12;
+
+        // Walk / idle body motion on the character node (works for the
+        // procedural rig and the swapped-in GLB alike).
+        if (b.anim) {
+          if (moving) {
+            b.anim.rotation.z = Math.sin(a.bob * 2) * 0.1; // waddle
+            b.anim.rotation.x = 0.1; // lean into the walk
+          } else {
+            b.anim.rotation.z = Math.sin(t * 1.6) * 0.025; // gentle idle sway
+            b.anim.rotation.x = 0;
+          }
+        }
 
         const selected = a.id === selectedId;
         const ringMat = b.ring.material as THREE.MeshBasicMaterial;
@@ -420,6 +511,8 @@ export function Scene3D() {
       el.removeEventListener("pointerdown", onDown);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerup", onUp);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
       renderer.dispose();
       if (el.parentNode) el.parentNode.removeChild(el);
     };

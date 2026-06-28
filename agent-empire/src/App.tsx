@@ -55,7 +55,9 @@ export default function App() {
         <span>·</span>
         <span>wheel zoom</span>
         <span>·</span>
-        <span>shift/mid-drag pan</span>
+        <span>WASD/drag pan</span>
+        <span>·</span>
+        <span>Q/E rotate</span>
       </div>
       <RecruitModal />
       <ConfigPanel />
