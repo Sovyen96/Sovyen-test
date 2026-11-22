@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sovyen · Consultora boutique de marketing e inteligencia artificial</title>
+<meta name="description" content="Encontramos qué frena a tu negocio y lo resolvemos con marketing digital y sistemas de inteligencia artificial. Auditoría gratuita.">
+<meta property="og:title" content="Sovyen · Marketing e inteligencia artificial para tu negocio">
+<meta property="og:description" content="Consultora boutique. Auditoría gratuita de tu web y tu Instagram.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#0a0a0a;--panel:#101010;--line:#1e1e1e;--line2:#333;--fg:#fafafa;--soft:#b4b4b4;--muted:#777;--accent:#e5383b;--ink:#0a0a0a;
+--serif:"Inter Tight","Inter",system-ui,sans-serif;--sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Inter",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+h1,h2,h3,p{margin:0}
+h1,h2{font-family:var(--serif);font-weight:500;line-height:1.06;letter-spacing:-.035em;text-wrap:balance}
+em{font-style:normal;color:#6f6f6f}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:6px}
+.label{font-family:var(--mono);font-weight:500;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0}
+.brand{font-family:var(--serif);font-weight:600;letter-spacing:.3em;font-size:.82rem;text-decoration:none}
+.brand i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:12px;vertical-align:middle}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--fg);color:var(--ink);font-weight:600;font-size:.95rem;text-decoration:none;border-radius:999px;padding:14px 26px;transition:transform .15s ease,box-shadow .15s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 14px 36px -16px rgba(255,255,255,.45)}
+.btn.ghost{background:none;color:var(--fg);border:1px solid var(--line2);padding:10px 20px;font-weight:500;font-size:.88rem}
+.btn.ghost:hover{border-color:var(--fg);box-shadow:none}
+.hero{padding:88px 0 112px;position:relative}
+.hero::before{content:"";position:absolute;inset:-120px 0 auto;height:520px;z-index:-1;background:radial-gradient(46% 60% at 50% 0%,rgba(255,255,255,.07),transparent 70%)}
+.hero h1{font-size:clamp(2.5rem,6.4vw,4.6rem);max-width:17ch;margin:22px 0 26px}
+.hero p.sub{color:var(--soft);font-size:clamp(1.05rem,1.7vw,1.22rem);max-width:52ch}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:38px}
+.cta span{color:var(--muted);font-size:.9rem}
+section{padding:96px 0;border-top:1px solid var(--line)}
+.head{max-width:640px;margin-bottom:52px}
+.head h2{font-size:clamp(1.8rem,3.8vw,2.7rem);margin-top:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.grid3>div{padding:32px 28px;background:var(--panel);border-right:1px solid var(--line);display:grid;gap:12px;align-content:start}
+.grid3>div:last-child{border-right:0}
+.grid3 h3{font-family:var(--serif);font-weight:500;font-size:1.3rem;line-height:1.2;letter-spacing:-.02em}
+.grid3 p{color:var(--soft);font-size:.98rem}
+.grid3 .n{font-family:var(--mono);font-weight:500;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.team{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.person{display:flex;gap:20px;align-items:center;border:1px solid var(--line);border-radius:20px;padding:26px;background:var(--panel)}
+.avatar{flex:none;width:72px;height:72px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-family:var(--serif);font-weight:500;font-size:1.4rem;color:var(--fg)}
+.person h3{font-size:1.1rem;font-weight:600}
+.person p{color:var(--soft);font-size:.95rem}
+.person .label{display:block;margin-bottom:4px}
+.form-card{background:#fff;color:#111;border-radius:22px;padding:clamp(18px,4vw,40px)}
+.form-card iframe{display:block;width:100%;min-height:560px;border:0}
+.after{margin-top:26px;color:var(--soft);font-size:.95rem}
+.after a{color:var(--fg)}
+footer{border-top:1px solid var(--line);padding:36px 0 52px;color:var(--muted);font-size:.82rem}
+footer .wrap{display:grid;gap:10px}
+footer p{max-width:72ch}
+@media (max-width:800px){
+  .hero{padding:56px 0 80px}
+  section{padding:72px 0}
+  .grid3,.team{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--line)}
+  .grid3>div:last-child{border-bottom:0}
+}
+
+h2{color:#7c7c7c}
+h2 strong{font-weight:500;color:var(--fg)}
+.hero{text-align:center;display:grid;justify-items:center}
+.hero h1{max-width:19ch}
+.hero .cta{justify-content:center;flex-direction:column;gap:14px}
+.center{text-align:center;display:grid;justify-items:center}
+.center .head{margin-left:auto;margin-right:auto}
+.band{padding:56px 0;text-align:center;display:grid;justify-items:center;gap:14px}
+.band span{color:var(--muted);font-size:.9rem}
+.lead{color:var(--soft);font-size:1.05rem;max-width:60ch;margin-top:18px}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:8px 0 44px;text-align:left}
+.col{border:1px solid var(--line);border-radius:20px;background:var(--panel);padding:30px 26px;display:grid;gap:14px;align-content:start}
+.col .n{font-weight:500;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.col h3{font-family:var(--serif);font-weight:500;font-size:1.25rem;line-height:1.2;letter-spacing:-.02em}
+.col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.col li{color:var(--soft);font-size:.95rem;padding-left:18px;position:relative}
+.col li::before{content:"";position:absolute;left:0;top:.68em;width:6px;height:1px;background:var(--muted)}
+.faq{max-width:760px;margin:0 auto;border-top:1px solid var(--line);text-align:left}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 34px 22px 0;font-weight:500;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:4px;top:18px;font-size:1.3rem;font-weight:400;color:var(--muted)}
+.faq details[open] summary::after{content:"\2212";color:var(--accent)}
+.faq p{color:var(--soft);padding:0 34px 24px 0;font-size:.97rem}
+@media (max-width:800px){.cols{grid-template-columns:1fr}}
+
+/* Capa visual: luces difuminadas y vidrio */
+body{position:relative;overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;z-index:-2;border-radius:50%;filter:blur(120px);pointer-events:none}
+body::before{width:62vw;height:62vw;max-width:900px;max-height:900px;left:50%;top:-34vw;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,255,255,.16),rgba(255,255,255,0) 68%)}
+body::after{width:46vw;height:46vw;max-width:640px;max-height:640px;right:-16vw;top:52vh;background:radial-gradient(circle,rgba(229,56,59,.13),rgba(229,56,59,0) 70%)}
+.hero::before{display:none}
+.hero h1{background:linear-gradient(180deg,#fff 30%,#8f8f8f 115%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em}
+nav{position:sticky;top:12px;z-index:5;margin-top:12px;padding:12px 14px 12px 22px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(14,14,14,.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%)}
+section{border-top:0;position:relative}
+section::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(1040px,86vw);height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)}
+.col,.case{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 30px 80px -50px rgba(0,0,0,.9);transition:border-color .25s ease,transform .25s ease}
+.col:hover,.case:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
+.btn{box-shadow:0 0 0 1px rgba(255,255,255,.25),0 18px 50px -18px rgba(255,255,255,.35)}
+.btn.ghost{box-shadow:none;background:rgba(255,255,255,.04)}
+.form-card{box-shadow:0 0 0 1px rgba(255,255,255,.2),0 60px 160px -60px rgba(255,255,255,.22)}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;text-align:left}
+.case{border-radius:20px;padding:28px 26px;display:grid;gap:10px;align-content:start}
+.case .n{font-weight:500;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.case h3{font-family:var(--serif);font-weight:500;font-size:1.2rem;line-height:1.25;letter-spacing:-.02em}
+.case p{color:var(--soft);font-size:.95rem}
+@media (max-width:800px){.cases{grid-template-columns:1fr}nav{top:8px}}
+@media (prefers-reduced-motion:reduce){.col,.case,.btn{transition:none}}
+
+.people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:760px;margin:0 auto;text-align:left}
+.member{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/5;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,#1a1a1a,#0d0d0d);box-shadow:0 40px 100px -60px rgba(0,0,0,.9)}
+.member img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;filter:grayscale(1) contrast(1.05);transition:filter .4s ease,transform .6s ease}
+.member:hover img{filter:grayscale(0) contrast(1);transform:scale(1.02)}
+.member .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:500;font-size:5rem;color:#2c2c2c}
+.member .cap{position:absolute;left:0;right:0;bottom:0;padding:70px 24px 22px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));display:grid;gap:4px}
+.member .cap .label{color:#a8a8a8}
+.member .cap h3{font-family:var(--serif);font-weight:500;font-size:1.25rem;letter-spacing:-.02em}
+.member .cap p{color:var(--soft);font-size:.92rem}
+@media (max-width:640px){.people{grid-template-columns:1fr;max-width:420px}}
+@media (prefers-reduced-motion:reduce){.member img{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#top" id="top"><i></i>SOVYEN</a>
+    <a class="btn ghost" href="#auditoria">Auditoría gratuita</a>
+  </nav>
+
+  <header class="hero">
+    <span class="label">Consultora boutique · Marketing + inteligencia artificial</span>
+    <h1>Marketing que trae clientes. Sistemas que quitan trabajo.</h1>
+    <p class="sub">Para negocios que ya venden y se han quedado atascados: no entran suficientes clientes, los que entran no se convierten o todo depende del dueño.</p>
+    <div class="cta">
+      <a class="btn" href="#auditoria">Pedir auditoría gratuita →</a>
+      <span>3 minutos. Sin coste y sin compromiso.</span>
+    </div>
+  </header>
+</div>
+
+<section class="center">
+  <div class="wrap">
+    <div class="head">
+      <span class="label">Sobre Sovyen</span>
+      <h2>La consultora donde el marketing y la <strong>inteligencia artificial trabajan juntos.</strong></h2>
+      <p class="lead">Encontramos qué frena a tu negocio y lo resolvemos con marketing digital y sistemas de inteligencia artificial. No es un curso ni un paquete cerrado: es trabajo hecho para tu caso.</p>
+    </div>
+    <div class="cols">
+      <div class="col"><span class="n">Qué resolvemos</span><h3>Captación, conversión y tiempo.</h3><ul>
+        <li>Contenido y captación para que te escriba quien puede comprarte.</li>
+        <li>Perfil, web y seguimiento para que cada interesado dé el siguiente paso.</li>
+        <li>Sistemas de inteligencia artificial para las tareas repetitivas.</li></ul></div>
+      <div class="col"><span class="n">Cómo funciona</span><h3>Primero el trabajo, después hablamos.</h3><ul>
+        <li>Rellenas un formulario de 3 minutos.</li>
+        <li>Analizamos tu web y tu Instagram antes de la llamada.</li>
+        <li>Llamada de 30 minutos con mejoras concretas.</li>
+        <li>Te las quedas, trabajemos juntos o no.</li></ul></div>
+      <div class="col"><span class="n">Por qué nosotros</span><h3>Marketing y tecnología en el mismo equipo.</h3><ul>
+        <li>Javier Rodríguez: estrategia, contenido y captación.</li>
+        <li>Sergi Ruiz: automatización y sistemas con inteligencia artificial.</li>
+        <li>Trato directo con los dos, sin intermediarios.</li>
+        <li>Pocos clientes a la vez.</li></ul></div>
+    </div>
+    <a class="btn" href="#auditoria">Pedir auditoría gratuita →</a>
+  </div>
+</section>
+
+<section class="center">
+  <div class="wrap">
+    <div class="head">
+      <span class="label">Trabajo reciente</span>
+      <h2>Negocios con los que <strong>hemos trabajado.</strong></h2>
+    </div>
+    <div class="cases">
+      <div class="case"><span class="n">Clínica de medicina estética · Barcelona</span><h3>Contenido orgánico de Instagram</h3><p>Estrategia, guiones y producción para las dos cuentas de la clínica: 9 piezas por semana entre carruseles, reels y publicaciones.</p></div>
+      <div class="case"><span class="n">Gimnasio · Santander</span><h3>Redes sociales y contenido</h3><p>Gestión de las redes y del contenido orgánico del centro.</p></div>
+      <div class="case"><span class="n">Marca personal · Venta directa</span><h3>De cero a un perfil que vende</h3><p>Acompañamiento desde el primer día: mensaje, perfil, contenido y secuencias de historias. El proceso está documentado en vídeo.</p></div>
+      <div class="case"><span class="n">Tienda online · Nutrición deportiva</span><h3>Integración de pagos</h3><p>Integración de la pasarela de pago en la tienda.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="center">
+  <div class="wrap">
+    <div class="head">
+      <span class="label">Quiénes somos</span>
+      <h2>Dos personas. <strong>Trato directo con los dos.</strong></h2>
+    </div>
+    <div class="people">
+      <div class="member"><img src="javi.jpg" alt="Javier Rodríguez" loading="lazy" width="880" height="1100"><div class="cap"><span class="label">Marketing y contenido</span><h3>Javier Rodríguez</h3><p>Estrategia, contenido y captación.</p></div></div>
+      <div class="member"><div class="ph" aria-hidden="true">S</div><div class="cap"><span class="label">Sistemas e IA</span><h3>Sergi Ruiz</h3><p>Automatización y sistemas con inteligencia artificial.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="center">
+  <div class="wrap">
+    <div class="head">
+      <span class="label">Preguntas frecuentes</span>
+      <h2>Lo que <strong>conviene saber.</strong></h2>
+    </div>
+    <div class="faq">
+      <details><summary>¿La auditoría tiene algún coste?</summary><p>No. Es gratuita y no te compromete a nada.</p></details>
+      <details><summary>¿Qué analizáis exactamente?</summary><p>Tu web y tu Instagram, junto con lo que nos cuentas en el formulario. Si subes capturas de tus estadísticas, también las revisamos.</p></details>
+      <details><summary>¿Cómo es la llamada?</summary><p>30 minutos por Google Meet. Te enseñamos las mejoras concretas que hemos encontrado y te las quedas, trabajemos juntos o no.</p></details>
+      <details><summary>¿Para qué tipo de negocio es?</summary><p>Para negocios que ya venden y tienen alguno de estos problemas: no entran suficientes clientes, entran pero no se convierten, o todo depende del dueño. El sector importa menos que el problema.</p></details>
+      <details><summary>¿Qué pasa después de la llamada?</summary><p>Si vemos que podemos ayudarte, te proponemos cómo trabajar juntos según lo que necesite tu negocio. Si no encaja, te lo decimos.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="auditoria" class="center">
+  <div class="wrap">
+    <div class="head">
+      <span class="label">Auditoría gratuita</span>
+      <h2>Cuéntanos tu negocio. <strong>Llegamos a la llamada con el análisis hecho.</strong></h2>
+    </div>
+    <div class="form-card" style="text-align:left">
+      <iframe data-tally-src="https://tally.so/embed/xVD8K9?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" title="Pre-auditoría gratuita · Sovyen"></iframe>
+    </div>
+    <p class="after">¿Ya lo has enviado? <a href="https://calendly.com/javiviroinfo/30min" target="_blank" rel="noopener">Reserva tu llamada →</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand"><i></i>SOVYEN</span>
+    <p>Al enviar el formulario aceptas que el equipo de Sovyen se ponga en contacto contigo por teléfono, WhatsApp o email con los datos que has introducido. No vendemos tu información personal.</p>
+    <p>© 2026 Sovyen</p>
+  </div>
+</footer>
+
+<script>
+(function(){var s="https://tally.so/widgets/embed.js",l=function(){if(window.Tally){Tally.loadEmbeds()}else{document.querySelectorAll("iframe[data-tally-src]:not([src])").forEach(function(e){e.src=e.dataset.tallySrc})}};
+var t=document.createElement("script");t.src=s;t.onload=l;t.onerror=l;document.body.appendChild(t)})();
+</script>
+</body>
+</html>
