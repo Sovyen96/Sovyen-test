@@ -2,187 +2,78 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sovyen, consultora de marketing e inteligencia artificial</title>
-<meta name="description" content="Encontramos qué frena a tu negocio y lo resolvemos con marketing digital y sistemas de inteligencia artificial. Auditoría gratuita.">
-<meta property="og:title" content="Sovyen, marketing e inteligencia artificial para tu negocio">
-<meta property="og:description" content="Consultora boutique. Auditoría gratuita de tu web y tu Instagram.">
+<meta name="description" content="Consultora de marketing e inteligencia artificial para negocios que ya venden. Analizamos tu web y tu Instagram y te llevas mejoras concretas en una llamada gratuita de 30 minutos.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23e02b2e'/%3E%3C/svg%3E">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Sovyen, consultora de marketing e inteligencia artificial">
+<meta property="og:description" content="Auditoría gratuita de tu web y tu Instagram, con mejoras concretas en una llamada de 30 minutos.">
+<meta property="og:image" content="https://sovyen96.github.io/Sovyen-test/assets/share.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#000000">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap">
-<style>
-:root{
-  --black:#000;--ink:#161616;--paper:#f1f1f0;--white:#fff;
-  --grey:#6b6b6b;--grey-d:#9a9a9a;--rule:#d4d4d2;--rule-d:#2a2a2a;--red:#e02b2e;
-  --font:"Instrument Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
-h1,h2,h3,p,ol,ul,dl,dd{margin:0;padding:0}
-ol,ul{list-style:none}
-a{color:inherit}
-img{display:block;max-width:100%}
-:focus-visible{outline:2px solid var(--red);outline-offset:3px}
-.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
-
-/* Tipografía */
-h1,h2{font-weight:500;letter-spacing:-.035em;line-height:1;text-wrap:balance}
-h1{font-size:clamp(2.7rem,6.6vw,5.9rem);font-stretch:92%}
-h2{font-size:clamp(2rem,4.2vw,3.5rem);font-stretch:94%}
-h3{font-size:1.25rem;font-weight:600;letter-spacing:-.015em;line-height:1.25}
-
-/* Botón */
-.btn{display:inline-block;background:var(--white);color:var(--black);font-weight:600;font-size:1rem;text-decoration:none;padding:17px 28px;border-radius:3px}
-.btn:hover{background:var(--red);color:var(--white)}
-.btn-dark{background:var(--black);color:var(--white)}
-
-/* Cabecera y portada */
-.top{background:var(--black);color:var(--white)}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:26px 0}
-.brand{font-weight:600;font-size:1.15rem;letter-spacing:-.02em;text-decoration:none;display:inline-flex;align-items:center;gap:9px}
-.brand::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--red)}
-.bar a.link{font-size:.95rem;text-underline-offset:5px;text-decoration-thickness:1px}
-.bar a.link:hover{text-decoration-color:var(--red)}
-.hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,5vw,80px);align-items:center;padding:clamp(48px,7vw,104px) 0 clamp(72px,9vw,128px)}
-.hero p.sub{color:var(--grey-d);font-size:clamp(1.08rem,1.5vw,1.3rem);max-width:44ch;margin-top:30px}
-.hero .go{margin-top:40px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
-.hero .go span{color:var(--grey-d);font-size:.95rem}
-
-/* Hoja de ejemplo */
-.sheet{background:var(--white);color:var(--ink);padding:clamp(22px,2.6vw,36px);transform:rotate(2.2deg);box-shadow:6px 8px 0 #2b2b2b;font-size:.95rem;line-height:1.45;animation:lay .9s cubic-bezier(.2,.7,.2,1) both}
-@keyframes lay{from{opacity:0;transform:rotate(6deg) translateY(26px)}}
-.sheet header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--ink)}
-.sheet header b{font-weight:600;font-size:1.05rem;letter-spacing:-.02em}
-.sheet header span{color:var(--grey);font-size:.82rem}
-.sheet ol{counter-reset:f}
-.sheet li{counter-increment:f;display:grid;grid-template-columns:1.6em 1fr;padding:16px 0;border-bottom:1px solid var(--rule)}
-.sheet li::before{content:counter(f);color:var(--red);font-weight:600}
-.sheet li p{font-weight:500}
-.sheet li p u{text-decoration-color:var(--red);text-decoration-thickness:2px;text-underline-offset:4px}
-.sheet li small{display:block;grid-column:2;color:var(--grey);font-size:.88rem;margin-top:5px}
-.sheet footer{padding-top:14px;color:var(--grey);font-size:.82rem}
-
-/* Secciones */
-.sec{padding:clamp(72px,10vw,150px) 0}
-.sec-dark{background:var(--black);color:var(--white)}
-.sec-white{background:var(--white)}
-.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,6vw,96px);align-items:start}
-
-/* Qué resolvemos */
-.claim{font-size:clamp(1.5rem,3.1vw,2.6rem);font-weight:500;letter-spacing:-.03em;line-height:1.12;font-stretch:94%;max-width:26ch;text-wrap:balance}
-.claim + p{color:var(--grey);max-width:52ch;margin-top:22px}
-.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,48px);margin-top:clamp(48px,7vw,96px)}
-.three li{border-top:2px solid var(--ink);padding-top:18px}
-.three p{color:var(--grey);margin-top:10px;max-width:34ch}
-
-/* Cómo funciona */
-.steps{counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:clamp(54px,7vw,96px) 1fr;align-items:baseline;padding:clamp(18px,2.4vw,28px) 0;border-top:1px solid var(--rule)}
-.steps li:last-child{border-bottom:1px solid var(--rule)}
-.steps li::before{content:counter(s);font-size:clamp(2rem,4vw,3.4rem);font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--grey-d)}
-.steps li p{font-size:clamp(1.1rem,1.7vw,1.4rem);font-weight:500;letter-spacing:-.015em;line-height:1.3}
-.steps li:last-child::before{color:var(--red)}
-.how h2 + p{color:var(--grey);margin-top:22px;max-width:36ch}
-
-/* Trabajo */
-.work{margin-top:clamp(36px,5vw,64px)}
-.work li{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(16px,4vw,64px);padding:clamp(20px,2.6vw,32px) 0;border-top:1px solid var(--rule-d)}
-.work li:last-child{border-bottom:1px solid var(--rule-d)}
-.work .who{color:var(--grey-d)}
-.work p{color:var(--grey-d);margin-top:6px;max-width:58ch}
-
-/* Equipo */
-.team-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,4vw,64px);align-items:end}
-.team-head p{color:var(--grey)}
-.people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2.4vw,32px);margin-top:clamp(36px,5vw,64px);max-width:980px}
-.member .pic{aspect-ratio:4/5;background:#dcdcda;overflow:hidden;position:relative}
-.member img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;filter:grayscale(1) contrast(1.06)}
-.member .ph{position:absolute;inset:0;display:grid;place-items:center;color:#b9b9b6;font-size:.95rem}
-.member h3{margin-top:16px}
-.member p{color:var(--grey)}
-
-/* Preguntas */
-.faq details{border-top:1px solid var(--rule)}
-.faq details:last-child{border-bottom:1px solid var(--rule)}
-.faq summary{list-style:none;cursor:pointer;padding:22px 40px 22px 0;font-weight:500;font-size:1.12rem;letter-spacing:-.01em;position:relative}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";position:absolute;right:2px;top:16px;font-size:1.6rem;font-weight:400;line-height:1.2;color:var(--grey)}
-.faq details[open] summary::after{content:"\2212";color:var(--red)}
-.faq details p{color:var(--grey);padding:0 40px 24px 0;max-width:60ch}
-
-/* Formulario */
-.form h2{max-width:18ch}
-.form .intro{color:var(--grey);margin-top:22px;max-width:40ch}
-.form iframe{display:block;width:100%;min-height:560px;border:0}
-.form .box{border-top:2px solid var(--ink);padding-top:22px}
-.form .after{margin-top:22px}
-.form .after a{text-decoration-color:var(--red);text-underline-offset:4px}
-.form .legal{margin-top:12px;color:var(--grey);font-size:.85rem;max-width:62ch}
-
-/* Pie */
-.foot{background:var(--black);color:var(--grey-d);padding:44px 0 56px;font-size:.9rem}
-.foot .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:18px 32px;align-items:baseline}
-.foot .brand{color:var(--white)}
-.foot ul{display:flex;flex-wrap:wrap;gap:8px 26px}
-.foot ul a{text-decoration:none}
-.foot ul a:hover{color:var(--white)}
-.foot p{margin-top:26px;max-width:70ch}
-
-@media (max-width:860px){
-  .hero,.split,.team-head{grid-template-columns:1fr}
-  .hero{padding-top:36px}
-  .sheet{transform:rotate(1.2deg);margin:8px 4px 0}
-  .three{grid-template-columns:1fr}
-  .work li{grid-template-columns:1fr;gap:6px}
-}
-@media (max-width:560px){
-  .people{grid-template-columns:1fr;max-width:400px}
-}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .sheet{animation:none}
-}
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23e02b2e'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
 
-<div class="top" id="top">
+<header class="bar" data-over>
   <div class="wrap">
-    <nav class="bar" aria-label="Principal">
-      <a class="brand" href="#top">Sovyen</a>
-      <a class="link" href="#auditoria">Pedir auditoría gratuita</a>
+    <a class="brand" href="#top">Sovyen</a>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a class="tlink" href="#como-funciona">Cómo funciona</a></li>
+        <li><a class="tlink" href="#trabajo">Trabajo</a></li>
+        <li><a class="tlink" href="#equipo">Equipo</a></li>
+        <li><a class="tlink" href="#preguntas">Preguntas</a></li>
+      </ul>
     </nav>
-    <header class="hero">
-      <div>
-        <h1>Marketing que trae clientes. Sistemas que quitan trabajo.</h1>
-        <p class="sub">Para negocios que ya venden y se han quedado atascados: no entran suficientes clientes, los que entran no se convierten o todo depende del dueño.</p>
-        <div class="go">
-          <a class="btn" href="#auditoria">Pedir auditoría gratuita</a>
-          <span>3 minutos. Sin coste y sin compromiso.</span>
-        </div>
+    <a class="btn btn-small" href="#auditoria">Pedir auditoría gratuita</a>
+  </div>
+</header>
+
+<div class="hero on-black" id="top">
+  <div class="wrap">
+    <div>
+      <h1>Consultora de marketing e inteligencia artificial para negocios que ya venden</h1>
+      <p class="lead">Analizamos tu web y tu Instagram antes de hablar contigo y llegamos a la llamada con mejoras concretas. Te las quedas, trabajemos juntos o no.</p>
+      <div class="go">
+        <a class="btn" href="#auditoria">Pedir auditoría gratuita</a>
+        <p>Gratuita. Llamada de 30 minutos por Google Meet.</p>
       </div>
-      <aside class="sheet" aria-label="Ejemplo de lo que recibes en la auditoría">
-        <header><b>Auditoría previa</b><span>Ejemplo ilustrativo</span></header>
-        <ol>
-          <li><p>La bio <u>no dice qué vendes</u> ni para quién.</p><small>Reescribirla en una frase: servicio, ciudad y siguiente paso.</small></li>
-          <li><p>El enlace del perfil lleva a la portada, <u>no a reservar</u>.</p><small>Enlazar directo al formulario de cita.</small></li>
-          <li><p>Te escriben por mensaje y la respuesta llega <u>al día siguiente</u>.</p><small>Respuesta automática con las preguntas que filtran.</small></li>
-        </ol>
-        <footer>Mejoras así, sobre tu negocio, antes de la llamada.</footer>
-      </aside>
-    </header>
+    </div>
+    <div class="report" role="group" aria-label="Ejemplo del informe que preparamos antes de la llamada">
+      <div class="report-head"><strong>Auditoría previa</strong><span>Negocio de ejemplo</span></div>
+      <table>
+        <thead><tr><th scope="col">Dónde</th><th scope="col">Qué vemos</th><th scope="col">Qué cambiamos</th></tr></thead>
+        <tbody>
+          <tr><td>Perfil</td><td>La bio no dice qué vendes ni para quién.</td><td>Una frase con el servicio, la ciudad y el siguiente paso.</td></tr>
+          <tr><td>Enlace</td><td>Lleva a la portada de la web, no a reservar.</td><td>Enlace directo al formulario de cita.</td></tr>
+          <tr><td>Mensajes</td><td>La respuesta llega al día siguiente.</td><td>Respuesta automática con las preguntas que filtran.</td></tr>
+        </tbody>
+      </table>
+      <p class="report-foot">Así llega tu auditoría a la llamada: hallazgo y cambio, uno por uno.</p>
+    </div>
   </div>
 </div>
 
-<main>
-<section class="sec">
+<main id="contenido">
+
+<section class="statement" aria-label="Qué hacemos">
   <div class="wrap">
-    <p class="claim">Encontramos qué frena a tu negocio y lo resolvemos con marketing digital y sistemas de inteligencia artificial.</p>
+    <p>Encontramos qué frena a tu negocio y lo resolvemos con marketing digital y sistemas de inteligencia artificial.</p>
     <p>No es un curso ni un paquete cerrado: es trabajo hecho para tu caso.</p>
+  </div>
+</section>
+
+<section class="sec sec-white">
+  <div class="wrap">
+    <div class="head">
+      <h2>Los tres problemas que resolvemos</h2>
+      <p>Para negocios que ya venden y se han quedado atascados. El sector importa menos que el problema.</p>
+    </div>
     <ul class="three">
       <li><h3>No entran suficientes clientes</h3><p>Contenido y captación para que te escriba quien puede comprarte.</p></li>
       <li><h3>Entran, pero no compran</h3><p>Perfil, web y seguimiento para que cada interesado dé el siguiente paso.</p></li>
@@ -191,89 +82,105 @@ h3{font-size:1.25rem;font-weight:600;letter-spacing:-.015em;line-height:1.25}
   </div>
 </section>
 
-<section class="sec sec-white how">
+<section class="sec" id="como-funciona">
   <div class="wrap split">
     <div>
-      <h2>Primero el trabajo, después hablamos.</h2>
-      <p>Llegamos a la llamada con tu negocio ya analizado.</p>
+      <h2>Cómo funciona la auditoría gratuita</h2>
+      <p>Primero hacemos el trabajo y después hablamos. Llegamos a la llamada con tu negocio ya analizado.</p>
+      <a class="btn" href="#auditoria">Pedir auditoría gratuita</a>
     </div>
     <ol class="steps">
-      <li><p>Rellenas un formulario de 3 minutos.</p></li>
-      <li><p>Analizamos tu web y tu Instagram antes de la llamada.</p></li>
-      <li><p>Llamada de 30 minutos con mejoras concretas.</p></li>
-      <li><p>Te las quedas, trabajemos juntos o no.</p></li>
+      <li><div><h3>Rellenas un formulario</h3><p>Son 3 minutos: tu negocio, tu web y tu Instagram.</p></div></li>
+      <li><div><h3>Analizamos tu web y tu Instagram</h3><p>Antes de la llamada. Si subes capturas de tus estadísticas, también las revisamos.</p></div></li>
+      <li><div><h3>Hablamos 30 minutos</h3><p>Por Google Meet, con las mejoras concretas que hemos encontrado.</p></div></li>
+      <li><div><h3>Te quedas las mejoras</h3><p>Trabajemos juntos o no.</p></div></li>
     </ol>
   </div>
 </section>
 
-<section class="sec sec-dark">
+<section class="sec sec-white" id="trabajo">
   <div class="wrap">
-    <h2>Negocios con los que hemos trabajado.</h2>
+    <div class="head">
+      <h2>Negocios con los que hemos trabajado</h2>
+      <p>Cuatro encargos recientes, del contenido a la tecnología.</p>
+    </div>
     <ul class="work">
-      <li><span class="who">Clínica de medicina estética, Barcelona</span><div><h3>Contenido orgánico de Instagram</h3><p>Estrategia, guiones y producción para las dos cuentas de la clínica: 9 piezas por semana entre carruseles, reels y publicaciones.</p></div></li>
-      <li><span class="who">Gimnasio, Santander</span><div><h3>Redes sociales y contenido</h3><p>Gestión de las redes y del contenido orgánico del centro.</p></div></li>
-      <li><span class="who">Marca personal, venta directa</span><div><h3>De cero a un perfil que vende</h3><p>Acompañamiento desde el primer día: mensaje, perfil, contenido y secuencias de historias. El proceso está documentado en vídeo.</p></div></li>
-      <li><span class="who">Tienda online, nutrición deportiva</span><div><h3>Integración de pagos</h3><p>Integración de la pasarela de pago en la tienda.</p></div></li>
+      <li><p class="who">Clínica de medicina estética, Barcelona</p><div><h3>Contenido orgánico de Instagram</h3><p>Estrategia, guiones y producción para las dos cuentas de la clínica: 9 piezas por semana entre carruseles, reels y publicaciones.</p></div></li>
+      <li><p class="who">Gimnasio, Santander</p><div><h3>Redes sociales y contenido</h3><p>Gestión de las redes y del contenido orgánico del centro.</p></div></li>
+      <li><p class="who">Marca personal, venta directa</p><div><h3>De cero a un perfil que vende</h3><p>Acompañamiento desde el primer día: mensaje, perfil, contenido y secuencias de historias. El proceso está documentado en vídeo.</p></div></li>
+      <li><p class="who">Tienda online, nutrición deportiva</p><div><h3>Integración de pagos</h3><p>Integración de la pasarela de pago en la tienda.</p></div></li>
     </ul>
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap">
-    <div class="team-head">
+<section class="sec" id="equipo">
+  <div class="wrap team">
+    <figure><img src="javi.jpg" alt="Javier Rodríguez, de Sovyen" width="1080" height="1350" loading="lazy"></figure>
+    <div>
       <h2>Dos personas. Trato directo con los dos.</h2>
-      <p>Marketing y tecnología en el mismo equipo, sin intermediarios y con pocos clientes a la vez.</p>
-    </div>
-    <div class="people">
-      <div class="member"><div class="pic"><img src="javi.jpg" alt="Javier Rodríguez" loading="lazy" width="880" height="1100"></div><h3>Javier Rodríguez</h3><p>Estrategia, contenido y captación.</p></div>
-      <div class="member"><div class="pic"><div class="ph" aria-hidden="true">Foto en camino</div></div><h3>Sergi Ruiz</h3><p>Automatización y sistemas con inteligencia artificial.</p></div>
+      <p class="lead">Marketing y tecnología en el mismo equipo, sin intermediarios y con pocos clientes a la vez.</p>
+      <ul class="people">
+        <li><h3>Javier Rodríguez</h3><p>Estrategia, contenido y captación. Santander.</p></li>
+        <li><h3>Sergi Ruiz</h3><p>Automatización y sistemas con inteligencia artificial. Barcelona.</p></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<section class="sec sec-white">
+<section class="sec sec-white" id="preguntas">
   <div class="wrap split">
-    <h2>Lo que conviene saber.</h2>
+    <div>
+      <h2>Preguntas antes de pedirla</h2>
+    </div>
     <div class="faq">
-      <details><summary>¿La auditoría tiene algún coste?</summary><p>No. Es gratuita y no te compromete a nada.</p></details>
-      <details><summary>¿Qué analizáis exactamente?</summary><p>Tu web y tu Instagram, junto con lo que nos cuentas en el formulario. Si subes capturas de tus estadísticas, también las revisamos.</p></details>
-      <details><summary>¿Cómo es la llamada?</summary><p>30 minutos por Google Meet. Te enseñamos las mejoras concretas que hemos encontrado y te las quedas, trabajemos juntos o no.</p></details>
-      <details><summary>¿Para qué tipo de negocio es?</summary><p>Para negocios que ya venden y tienen alguno de estos problemas: no entran suficientes clientes, entran pero no se convierten, o todo depende del dueño. El sector importa menos que el problema.</p></details>
-      <details><summary>¿Qué pasa después de la llamada?</summary><p>Si vemos que podemos ayudarte, te proponemos cómo trabajar juntos según lo que necesite tu negocio. Si no encaja, te lo decimos.</p></details>
+      <details name="faq"><summary>¿La auditoría tiene algún coste?</summary><p>No. Es gratuita y no te compromete a nada.</p></details>
+      <details name="faq"><summary>¿Qué analizáis exactamente?</summary><p>Tu web y tu Instagram, junto con lo que nos cuentas en el formulario. Si subes capturas de tus estadísticas, también las revisamos.</p></details>
+      <details name="faq"><summary>¿Cómo es la llamada?</summary><p>30 minutos por Google Meet. Te enseñamos las mejoras concretas que hemos encontrado y te las quedas, trabajemos juntos o no.</p></details>
+      <details name="faq"><summary>¿Para qué tipo de negocio es?</summary><p>Para negocios que ya venden y tienen alguno de estos problemas: no entran suficientes clientes, entran pero no se convierten, o todo depende del dueño. El sector importa menos que el problema.</p></details>
+      <details name="faq"><summary>¿Qué pasa después de la llamada?</summary><p>Si vemos que podemos ayudarte, te proponemos cómo trabajar juntos según lo que necesite tu negocio. Si no encaja, te lo decimos.</p></details>
     </div>
   </div>
 </section>
 
-<section class="sec form" id="auditoria">
+<section class="sec" id="auditoria">
   <div class="wrap split">
     <div>
-      <h2>Cuéntanos tu negocio.</h2>
-      <p class="intro">Llegamos a la llamada con el análisis hecho. Son 3 minutos.</p>
+      <h2>Pide tu auditoría gratuita</h2>
+      <p>Cuéntanos tu negocio en 3 minutos. Al terminar eliges el día de la llamada.</p>
     </div>
     <div>
-      <div class="box">
-        <iframe data-tally-src="https://tally.so/embed/xVD8K9?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" title="Pre-auditoría gratuita de Sovyen"></iframe>
+      <div class="form-box">
+        <iframe data-tally-src="https://tally.so/embed/xVD8K9?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" title="Formulario de la auditoría gratuita de Sovyen"></iframe>
       </div>
-      <p class="after">¿Ya lo has enviado? <a href="https://calendly.com/javiviroinfo/30min" target="_blank" rel="noopener">Reserva tu llamada</a></p>
-      <p class="legal">Al enviar el formulario aceptas la <a href="privacidad.html">política de privacidad</a>. Usamos tus datos solo para preparar tu auditoría y ponernos en contacto contigo.</p>
+      <p class="after">¿Ya lo has enviado? <a href="https://calendly.com/javiviroinfo/30min" target="_blank" rel="noopener">Reserva tu llamada</a>.</p>
+      <p class="small">Al enviar el formulario aceptas la <a href="privacidad.html">política de privacidad</a>. Usamos tus datos solo para preparar tu auditoría y ponernos en contacto contigo.</p>
     </div>
   </div>
 </section>
+
 </main>
 
 <footer class="foot">
   <div class="wrap">
-    <div class="row">
-      <span class="brand">Sovyen</span>
-      <ul><li><a href="privacidad.html">Política de privacidad</a></li><li><a href="aviso-legal.html">Aviso legal</a></li><li><a href="privacidad.html#cookies">Cookies</a></li></ul>
+    <div class="foot-top">
+      <p>Consultora de marketing e inteligencia artificial. Santander y Barcelona.</p>
+      <ul>
+        <li><a class="tlink" href="mailto:javiviroinfo@gmail.com">javiviroinfo@gmail.com</a></li>
+        <li><a class="tlink" href="#auditoria">Pedir auditoría gratuita</a></li>
+      </ul>
+      <ul>
+        <li><a class="tlink" href="privacidad.html">Política de privacidad</a></li>
+        <li><a class="tlink" href="aviso-legal.html">Aviso legal</a></li>
+        <li><a class="tlink" href="privacidad.html#cookies">Cookies</a></li>
+      </ul>
     </div>
-    <p>© 2026 Sovyen. Los resultados dependen de cada negocio y no están garantizados.</p>
+    <span class="wordmark" aria-hidden="true">Sovyen<i></i></span>
+    <p class="foot-end">© 2026 Sovyen. Los resultados dependen de cada negocio y no están garantizados.</p>
   </div>
 </footer>
 
-<script>
-(function(){var s="https://tally.so/widgets/embed.js",l=function(){if(window.Tally){Tally.loadEmbeds()}else{document.querySelectorAll("iframe[data-tally-src]:not([src])").forEach(function(e){e.src=e.dataset.tallySrc})}};
-var t=document.createElement("script");t.src=s;t.onload=l;t.onerror=l;document.body.appendChild(t)})();
-</script>
+<div class="phonebar"><a class="btn" href="#auditoria">Pedir auditoría gratuita</a></div>
+
+<script src="assets/site.js" defer></script>
 </body>
 </html>
